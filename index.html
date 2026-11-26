@@ -92,14 +92,15 @@ body{background:linear-gradient(135deg,var(--bg-from),var(--bg-to));min-height:1
    TOP NAV
 ═══════════════════════════════════════════════════════ */
 nav{
-  position:sticky;top:0;z-index:100;
-  display:flex;align-items:center;gap:12px;
-  padding:14px 32px;
-  background:rgba(255,255,255,0.22);
+  position:sticky;top:0;z-index:100;min-height:66px;
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  padding:12px 28px;
+  background:rgba(255,255,255,0.72);
   backdrop-filter:blur(28px);
   border-bottom:1.5px solid var(--glass-border);
-  box-shadow:0 2px 24px rgba(80,60,180,0.08);
+  box-shadow:0 4px 24px rgba(15,23,42,0.06);
 }
+[data-theme="dark"] nav{background:rgba(15,23,42,0.84)}
 .nav-logo{font-size:1.1rem;font-weight:800;background:linear-gradient(90deg,#6c63ff,#43e97b);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .nav-tabs{display:flex;gap:6px;margin-left:auto}
 .nav-tab{
@@ -570,36 +571,50 @@ input[type=range]{accent-color:var(--accent1)}
 ::-webkit-scrollbar-thumb{background:rgba(108,99,255,.3);border-radius:40px}
 
 /* ═══ AI TUTOR CHAT WIDGET ═══ */
+@keyframes fabPulse{
+  0%,100%{box-shadow:0 12px 32px rgba(79,70,229,0.38),0 0 0 0 rgba(6,182,212,0.45)}
+  50%{box-shadow:0 14px 36px rgba(79,70,229,0.5),0 0 0 10px rgba(6,182,212,0)}
+}
+@keyframes vennCircleIn{0%{opacity:0;transform:scale(.82)}100%{opacity:1;transform:scale(1)}}
+.venn-circle-anim{transform-origin:center;animation:vennCircleIn .5s var(--spring) both}
+.responsive-2col{display:grid;grid-template-columns:1.35fr 1fr;gap:20px;align-items:center}
+.oop-lab-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+@media(max-width:860px){.responsive-2col,.oop-lab-grid{grid-template-columns:1fr}}
 #ai-fab{
   position:fixed;right:24px;bottom:24px;z-index:250;
   display:flex;align-items:center;gap:8px;padding:12px 20px;border-radius:50px;
-  border:1.5px solid var(--glass-border);cursor:pointer;font-weight:800;font-size:.88rem;
+  border:1.5px solid rgba(255,255,255,0.5);cursor:pointer;font-weight:800;font-size:.88rem;
   color:#fff;background:linear-gradient(135deg,var(--accent1),var(--accent5));
-  box-shadow:0 12px 32px rgba(79,70,229,0.38);transition:transform .28s var(--spring),box-shadow .28s;
+  animation:fabPulse 3s ease-in-out infinite;transition:transform .28s var(--spring);
 }
-#ai-fab:hover{transform:translateY(-3px) scale(1.05);box-shadow:0 16px 40px rgba(79,70,229,0.48)}
+#ai-fab:hover{transform:translateY(-3px) scale(1.06)}
 #ai-drawer{
-  position:fixed;right:24px;bottom:82px;width:360px;max-width:calc(100vw - 32px);
-  height:480px;max-height:72vh;z-index:250;display:none;flex-direction:column;
+  position:fixed;right:24px;bottom:84px;width:370px;max-width:calc(100vw - 32px);
+  height:470px;max-height:calc(100vh - 120px);z-index:260;display:none;flex-direction:column;
   overflow:hidden;animation:jtrPop .3s var(--spring);
+  background:rgba(255,255,255,0.92);backdrop-filter:blur(28px);
 }
+[data-theme="dark"] #ai-drawer{background:rgba(15,23,42,0.94)}
 #ai-drawer.open{display:flex}
 .ai-head{
   display:flex;align-items:center;justify-content:space-between;padding:12px 16px;
-  border-bottom:1px solid var(--glass-border);background:rgba(79,70,229,0.12);
+  border-bottom:1px solid var(--glass-border);background:rgba(79,70,229,0.10);
 }
 .ai-msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
 .ai-msg{
   max-width:88%;padding:10px 14px;border-radius:14px;font-size:.84rem;line-height:1.55;
-  white-space:pre-wrap;word-break:break-word;
+  white-space:pre-wrap;word-break:break-word;animation:jtrPop .25s var(--spring);
 }
 .ai-msg.user{align-self:flex-end;background:linear-gradient(135deg,var(--accent1),#6366f1);color:#fff;border-bottom-right-radius:4px}
-.ai-msg.bot{align-self:flex-start;background:var(--glass-bg);border:1px solid var(--glass-border);color:var(--txt);border-bottom-left-radius:4px}
-.ai-chips{display:flex;gap:6px;padding:6px 12px;overflow-x:auto;border-top:1px solid var(--glass-border)}
+.ai-msg.bot{align-self:flex-start;background:rgba(241,245,249,0.85);border:1px solid var(--glass-border);color:var(--txt);border-bottom-left-radius:4px}
+[data-theme="dark"] .ai-msg.bot{background:rgba(30,41,59,0.85)}
+.ai-chips{display:flex;gap:6px;padding:8px 12px;flex-wrap:wrap;border-top:1px solid var(--glass-border)}
 .ai-chip{
   white-space:nowrap;padding:4px 10px;border-radius:20px;border:1px solid var(--glass-border);
   background:var(--glass-bg);font-size:.72rem;font-weight:700;color:var(--accent1);cursor:pointer;
+  transition:transform .2s var(--spring);
 }
+.ai-chip:hover{transform:scale(1.05)}
 .ai-foot{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--glass-border)}
 #ai-input{
   flex:1;padding:9px 12px;border-radius:12px;border:1.5px solid var(--glass-border);
@@ -803,7 +818,7 @@ input[type=range]{accent-color:var(--accent1)}
         </div>
         <span style="font-size:.76rem;color:var(--txt2);font-weight:600">Click any student avatar inside the Venn to view ID card</span>
       </div>
-      <div style="display:grid;grid-template-columns:1.35fr 1fr;gap:20px;align-items:center">
+      <div class="responsive-2col">
         <div>
           <div class="stage-3d-shell" id="sets-lab-3d-shell">
             <div class="stage-3d-inner" id="sets-lab-venn-stage"></div>
@@ -990,7 +1005,7 @@ input[type=range]{accent-color:var(--accent1)}
     </div>
 
     <!-- Main 2-col layout -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+    <div class="oop-lab-grid">
 
       <!-- LEFT: Editable Code Editor -->
       <div style="display:flex;flex-direction:column;gap:0">
@@ -1077,15 +1092,71 @@ input[type=range]{accent-color:var(--accent1)}
      COMBINED QUIZ PAGE (via nav)
 ═══════════════════════════════════════════════════════ -->
 <div class="page" id="page-quiz">
-  <div style="max-width:1000px;margin:0 auto;padding:32px 24px 16px">
-    <div style="font-size:1.5rem;font-weight:900;margin-bottom:8px">🎯 Quiz Portal</div>
-    <p style="color:var(--txt2);font-size:.9rem;margin-bottom:20px">Test your knowledge — 5 questions from each topic. One question at a time.</p>
-    <div style="display:flex;gap:12px;margin-bottom:28px">
-      <button class="ts-btn active" id="q-topic-sets" onclick="selectQuizTopic('sets')">Topic 14: Sets</button>
-      <button class="ts-btn" id="q-topic-oop" onclick="selectQuizTopic('oop')">Topic 23: OOP</button>
+  <div style="max-width:1040px;margin:0 auto;padding:32px 24px 16px">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:18px">
+      <div>
+        <div style="font-size:1.6rem;font-weight:900;margin-bottom:4px">🎯 Quiz &amp; Test Portal <span class="s-badge" style="vertical-align:middle">100 Questions Bank</span></div>
+        <p style="color:var(--txt2);font-size:.9rem">Choose your topic, number of questions, and time limit — every test &amp; lab run is logged below.</p>
+      </div>
+      <button class="vis-btn" id="btn-back-setup" style="display:none" onclick="showQuizSetup()">⚙ Change Quiz Settings</button>
+    </div>
+
+    <!-- Custom Quiz Setup -->
+    <div class="glass" id="quiz-setup-panel" style="padding:26px;margin-bottom:24px">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-bottom:20px">
+        <div>
+          <div class="sim-label">1. Select Topic</div>
+          <select class="sim-input" id="qs-topic">
+            <option value="sets">Topic 14: Sets (50 Qs)</option>
+            <option value="oop">Topic 23: OOP (50 Qs)</option>
+            <option value="mixed" selected>Mixed: Sets + OOP (100 Qs)</option>
+          </select>
+        </div>
+        <div>
+          <div class="sim-label">2. Number of Questions</div>
+          <select class="sim-input" id="qs-count">
+            <option value="5">5 Questions (Quick)</option>
+            <option value="10" selected>10 Questions (Standard)</option>
+            <option value="20">20 Questions (Practice)</option>
+            <option value="30">30 Questions (Deep)</option>
+            <option value="50">50 Questions (Topic Mastery)</option>
+            <option value="100">100 Questions (Full Marathon)</option>
+          </select>
+        </div>
+        <div>
+          <div class="sim-label">3. Time Limit</div>
+          <select class="sim-input" id="qs-time">
+            <option value="0">No Time Limit</option>
+            <option value="180">3 Minutes</option>
+            <option value="300" selected>5 Minutes</option>
+            <option value="600">10 Minutes</option>
+            <option value="900">15 Minutes</option>
+            <option value="1800">30 Minutes</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+        <span style="font-size:.82rem;color:var(--txt2)">Questions are shuffled randomly on every attempt.</span>
+        <button class="tc-btn" style="--grad:linear-gradient(135deg,var(--accent1),var(--accent5))" onclick="startCustomQuiz()">🚀 Start Test</button>
+      </div>
     </div>
   </div>
+
   <div id="quiz-container"></div>
+
+  <!-- Test & Activity Log Panel -->
+  <div style="max-width:1040px;margin:0 auto;padding:0 24px 60px">
+    <div class="glass" style="padding:24px">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+        <div>
+          <div style="font-size:1.05rem;font-weight:800">📋 Test &amp; Quiz Activity Log</div>
+          <div style="font-size:.8rem;color:var(--txt2)">Tracks every quiz attempt (topic, questions, score, time taken) and Python Lab runs.</div>
+        </div>
+        <button class="vis-btn" style="padding:5px 12px;font-size:.75rem" onclick="clearQuizLogs()">🗑 Clear Log</button>
+      </div>
+      <div id="quiz-log-list" style="display:flex;flex-direction:column;gap:8px;max-height:260px;overflow-y:auto"></div>
+    </div>
+  </div>
 </div>
 
 <!-- Floating AI Tutor Bot -->
@@ -1799,6 +1870,7 @@ function startSimSets() {
 
   simSteps = steps;
   simCurrent = -1;
+  recordActivityLog('Sets Lab', `Ran ${steps.length} steps`, outputs.length ? outputs[outputs.length - 1] : 'Visualized');
   document.getElementById('sim-vis-controls').style.display = 'flex';
   simStep(1);
 }
@@ -1965,6 +2037,7 @@ function initSets3D() {
       );
       camera.lookAt(0, 0.2, 0);
       const t = performance.now() * 0.002;
+      root.rotation.y = Math.sin(t * 0.35) * 0.08;
       state.pickables.forEach((g, idx) => {
         g.position.y = 0.25 + Math.sin(t + idx) * 0.08 + (g.userData.studentName === selectedLabStudent ? 0.28 : 0);
       });
@@ -2093,8 +2166,11 @@ function initOOP3D() {
         Math.cos(state.yaw) * Math.cos(state.pitch) * state.dist
       );
       camera.lookAt(0.3, 0.1, 0);
-      state.cards.forEach(c => {
+      const t = performance.now() * 0.0018;
+      root.rotation.y = Math.sin(t * 0.35) * 0.07;
+      state.cards.forEach((c, idx) => {
         c.rotation.y += (c.userData.targetRotY - c.rotation.y) * 0.14;
+        c.position.y = 0.15 + Math.sin(t + idx * 0.9) * 0.06;
       });
       renderer.render(scene, camera);
     };
@@ -2233,69 +2309,73 @@ function renderStudentIDCard(name) {
 function renderLabVenn() {
   const stage = document.getElementById('sets-lab-venn-stage');
   if (!stage) return;
+  let chipIdx = 0;
   const chip = (name, x, y, fill) => {
     const active = selectedLabStudent === name;
+    const delay = (chipIdx++) * 0.07;
     return `<g style="cursor:pointer" onclick="selectLabStudent('${name}')">
-      <circle class="${active?'pulse-ring':''}" cx="${x}" cy="${y}" r="${active?22:18}" fill="${fill}" stroke="#fff" stroke-width="${active?3:1.8}"/>
-      <text x="${x}" y="${y+4}" text-anchor="middle" font-size="10.5" font-weight="800" fill="#fff">${name}</text>
+      <g class="chip-anim" style="animation-delay:${delay}s;transform-origin:${x}px ${y}px">
+        <circle class="${active?'pulse-ring':''}" cx="${x}" cy="${y}" r="${active?22:18}" fill="${fill}" stroke="#fff" stroke-width="${active?3:1.8}"/>
+        <text x="${x}" y="${y+4}" text-anchor="middle" font-size="10.5" font-weight="800" fill="#fff">${name}</text>
+      </g>
     </g>`;
   };
 
   let svg = '';
   if (labVennType === 'two') {
-    svg = `<svg viewBox="0 0 380 210" style="width:100%;max-height:220px">
-      <defs><clipPath id="lv-clip-a"><circle cx="140" cy="108" r="74"/></clipPath></defs>
-      <rect x="6" y="6" width="368" height="198" rx="16" fill="rgba(148,163,184,0.12)" stroke="#94a3b8" stroke-width="1.5"/>
+    svg = `<svg viewBox="0 0 380 214" style="width:100%;max-height:224px">
+      <defs><clipPath id="lv-clip-a"><circle cx="140" cy="110" r="74"/></clipPath></defs>
+      <rect x="6" y="6" width="368" height="202" rx="16" fill="rgba(148,163,184,0.12)" stroke="#94a3b8" stroke-width="1.5"/>
       <text x="18" y="25" font-size="11" font-weight="800" fill="var(--txt2)">U (All Students)</text>
-      <circle cx="140" cy="108" r="74" fill="rgba(79,70,229,0.20)" stroke="#4f46e5" stroke-width="2.5"/>
-      <circle cx="240" cy="108" r="74" fill="rgba(245,158,11,0.20)" stroke="#f59e0b" stroke-width="2.5"/>
-      <circle cx="240" cy="108" r="74" fill="rgba(139,92,246,0.34)" clip-path="url(#lv-clip-a)"/>
+      <circle class="venn-circle-anim" cx="140" cy="110" r="74" fill="rgba(79,70,229,0.20)" stroke="#4f46e5" stroke-width="2.5"/>
+      <circle class="venn-circle-anim" style="animation-delay:.08s" cx="240" cy="110" r="74" fill="rgba(245,158,11,0.20)" stroke="#f59e0b" stroke-width="2.5"/>
+      <circle cx="240" cy="110" r="74" fill="rgba(139,92,246,0.34)" clip-path="url(#lv-clip-a)"/>
       <text x="102" y="54" font-size="12" font-weight="800" fill="#4f46e5">A (Cricket)</text>
       <text x="234" y="54" font-size="12" font-weight="800" fill="#d97706">B (Music)</text>
       ${chip('Aarav', 102, 95, '#4f46e5')}
-      ${chip('Kabir', 106, 140, '#06b6d4')}
-      ${chip('Diya', 190, 112, '#8b5cf6')}
+      ${chip('Kabir', 106, 142, '#06b6d4')}
+      ${chip('Diya', 190, 114, '#8b5cf6')}
       ${chip('Riya', 274, 95, '#f59e0b')}
-      ${chip('Meera', 270, 140, '#ec4899')}
-      ${chip('Neha', 338, 174, '#10b981')}
+      ${chip('Meera', 270, 142, '#ec4899')}
+      ${chip('Neha', 338, 176, '#10b981')}
     </svg>`;
   } else if (labVennType === 'three') {
-    svg = `<svg viewBox="0 0 380 225" style="width:100%;max-height:230px">
-      <circle cx="145" cy="86" r="64" fill="rgba(79,70,229,0.20)" stroke="#4f46e5" stroke-width="2.2"/>
-      <circle cx="235" cy="86" r="64" fill="rgba(245,158,11,0.20)" stroke="#f59e0b" stroke-width="2.2"/>
-      <circle cx="190" cy="148" r="64" fill="rgba(16,185,129,0.20)" stroke="#10b981" stroke-width="2.2"/>
-      <text x="98" y="42" font-size="11.5" font-weight="800" fill="#4f46e5">A Cricket</text>
-      <text x="242" y="42" font-size="11.5" font-weight="800" fill="#d97706">B Music</text>
-      <text x="190" y="218" text-anchor="middle" font-size="11.5" font-weight="800" fill="#059669">C Robotics</text>
-      ${chip('Aarav', 115, 76, '#4f46e5')}
-      ${chip('Diya', 190, 108, '#8b5cf6')}
-      ${chip('Riya', 265, 76, '#f59e0b')}
-      ${chip('Kabir', 148, 140, '#06b6d4')}
-      ${chip('Meera', 232, 140, '#ec4899')}
-      ${chip('Neha', 190, 178, '#10b981')}
+    svg = `<svg viewBox="0 0 380 236" style="width:100%;max-height:240px">
+      <circle class="venn-circle-anim" cx="145" cy="92" r="62" fill="rgba(79,70,229,0.20)" stroke="#4f46e5" stroke-width="2.2"/>
+      <circle class="venn-circle-anim" style="animation-delay:.08s" cx="235" cy="92" r="62" fill="rgba(245,158,11,0.20)" stroke="#f59e0b" stroke-width="2.2"/>
+      <circle class="venn-circle-anim" style="animation-delay:.16s" cx="190" cy="150" r="62" fill="rgba(16,185,129,0.20)" stroke="#10b981" stroke-width="2.2"/>
+      <text x="72" y="24" font-size="11.5" font-weight="800" fill="#4f46e5">A Cricket</text>
+      <text x="256" y="24" font-size="11.5" font-weight="800" fill="#d97706">B Music</text>
+      <text x="190" y="228" text-anchor="middle" font-size="11.5" font-weight="800" fill="#059669">C Robotics</text>
+      ${chip('Aarav', 112, 82, '#4f46e5')}
+      ${chip('Diya', 190, 112, '#8b5cf6')}
+      ${chip('Riya', 268, 82, '#f59e0b')}
+      ${chip('Kabir', 146, 142, '#06b6d4')}
+      ${chip('Meera', 234, 142, '#ec4899')}
+      ${chip('Neha', 190, 182, '#10b981')}
     </svg>`;
   } else if (labVennType === 'subset') {
-    svg = `<svg viewBox="0 0 380 210" style="width:100%;max-height:220px">
-      <circle cx="190" cy="105" r="90" fill="rgba(245,158,11,0.16)" stroke="#f59e0b" stroke-width="2.5"/>
-      <text x="190" y="32" text-anchor="middle" font-size="12" font-weight="800" fill="#d97706">B = All Club Members</text>
-      <circle cx="166" cy="116" r="54" fill="rgba(79,70,229,0.22)" stroke="#4f46e5" stroke-width="2.5"/>
-      <text x="166" y="80" text-anchor="middle" font-size="11.5" font-weight="800" fill="#4f46e5">A ⊂ B (CSE)</text>
-      ${chip('Aarav', 145, 118, '#4f46e5')}
-      ${chip('Kabir', 188, 132, '#06b6d4')}
-      ${chip('Diya', 248, 92, '#8b5cf6')}
-      ${chip('Riya', 248, 142, '#f59e0b')}
+    svg = `<svg viewBox="0 0 380 214" style="width:100%;max-height:224px">
+      <circle class="venn-circle-anim" cx="190" cy="107" r="90" fill="rgba(245,158,11,0.16)" stroke="#f59e0b" stroke-width="2.5"/>
+      <text x="190" y="34" text-anchor="middle" font-size="12" font-weight="800" fill="#d97706">B = All Club Members</text>
+      <circle class="venn-circle-anim" style="animation-delay:.1s" cx="166" cy="118" r="54" fill="rgba(79,70,229,0.22)" stroke="#4f46e5" stroke-width="2.5"/>
+      <text x="166" y="82" text-anchor="middle" font-size="11.5" font-weight="800" fill="#4f46e5">A ⊂ B (CSE)</text>
+      ${chip('Aarav', 145, 120, '#4f46e5')}
+      ${chip('Kabir', 188, 134, '#06b6d4')}
+      ${chip('Diya', 248, 94, '#8b5cf6')}
+      ${chip('Riya', 248, 144, '#f59e0b')}
     </svg>`;
   } else {
-    svg = `<svg viewBox="0 0 380 200" style="width:100%;max-height:210px">
-      <circle cx="110" cy="100" r="72" fill="rgba(79,70,229,0.20)" stroke="#4f46e5" stroke-width="2.5"/>
+    svg = `<svg viewBox="0 0 380 204" style="width:100%;max-height:214px">
+      <circle class="venn-circle-anim" cx="110" cy="102" r="72" fill="rgba(79,70,229,0.20)" stroke="#4f46e5" stroke-width="2.5"/>
       <text x="110" y="48" text-anchor="middle" font-size="12" font-weight="800" fill="#4f46e5">A (Morning)</text>
-      <circle cx="270" cy="100" r="72" fill="rgba(245,158,11,0.20)" stroke="#f59e0b" stroke-width="2.5"/>
+      <circle class="venn-circle-anim" style="animation-delay:.1s" cx="270" cy="102" r="72" fill="rgba(245,158,11,0.20)" stroke="#f59e0b" stroke-width="2.5"/>
       <text x="270" y="48" text-anchor="middle" font-size="12" font-weight="800" fill="#d97706">B (Evening)</text>
-      <text x="190" y="104" text-anchor="middle" font-size="12" font-weight="900" fill="var(--txt2)">A ∩ B = ∅</text>
-      ${chip('Aarav', 88, 100, '#4f46e5')}
-      ${chip('Kabir', 132, 120, '#06b6d4')}
-      ${chip('Riya', 248, 100, '#f59e0b')}
-      ${chip('Meera', 292, 120, '#ec4899')}
+      <text x="190" y="106" text-anchor="middle" font-size="12" font-weight="900" fill="var(--txt2)">A ∩ B = ∅</text>
+      ${chip('Aarav', 88, 102, '#4f46e5')}
+      ${chip('Kabir', 132, 122, '#06b6d4')}
+      ${chip('Riya', 248, 102, '#f59e0b')}
+      ${chip('Meera', 292, 122, '#ec4899')}
     </svg>`;
   }
   stage.innerHTML = svg;
@@ -2673,6 +2753,7 @@ function runOOPCode() {
 
   oopSteps = steps;
   oopCurrent = -1;
+  recordActivityLog('OOP Lab', `${oopObjects.length} object(s) created`, `${steps.length} steps`);
   document.getElementById('oop-vis-controls').style.display = 'flex';
   oopStep(1);
 }
@@ -2785,120 +2866,283 @@ function resetOOP() {
 }
 
 /* ══════════════════════════════════════════════════════
-   QUIZ DATA
+   QUIZ DATA (100 Questions: 50 Sets + 50 OOP)
 ══════════════════════════════════════════════════════ */
 const QUIZ_DATA = {
   sets: [
-    { q: 'What is the result of {1, 2, 3} & {2, 3, 4}?',
-      opts: ['{1, 2, 3, 4}', '{2, 3}', '{1, 4}', '{1, 2, 3}'], ans: 1,
-      exp: 'The & operator gives intersection — items in both sets. {2,3} are common.' },
-    { q: 'Which operator gives the UNION of two sets in Python?',
-      opts: ['&', '+', '|', '^'], ans: 2,
-      exp: '| is the union operator. It combines all unique items from both sets.' },
-    { q: 'What is {1, 2, 3} - {2, 3, 4}?',
-      opts: ['{1}', '{4}', '{2, 3}', '{1, 4}'], ans: 0,
-      exp: 'A - B removes items of B from A. Only 1 remains in A that is not in B.' },
-    { q: 'Sets in Python are…',
-      opts: ['Ordered and indexed', 'Ordered with no index', 'Unordered with no index', 'Unordered and indexed'], ans: 2,
-      exp: 'Sets are unordered — items have no position/index. They only store unique values.' },
-    { q: 'What does {1, 2, 2, 3} give in Python?',
-      opts: ['{1, 2, 2, 3}', '{1, 2, 3}', 'Error', '{2}'], ans: 1,
-      exp: 'Sets automatically remove duplicates. So {1, 2, 2, 3} becomes {1, 2, 3}.' },
+    { q: 'What is the result of {1, 2, 3} & {2, 3, 4}?', opts: ['{1, 2, 3, 4}', '{2, 3}', '{1, 4}', '{1, 2, 3}'], ans: 1, exp: '& returns the intersection — items present in both sets.' },
+    { q: 'Which operator gives the UNION of two sets in Python?', opts: ['&', '+', '|', '^'], ans: 2, exp: '| combines all unique elements from both sets.' },
+    { q: 'What is {1, 2, 3} - {2, 3, 4}?', opts: ['{1}', '{4}', '{2, 3}', '{1, 4}'], ans: 0, exp: 'A - B keeps elements in A that are not in B.' },
+    { q: 'Sets in Python are…', opts: ['Ordered and indexed', 'Ordered with no index', 'Unordered with no index', 'Unordered and indexed'], ans: 2, exp: 'Sets are unordered collections of unique elements without indexing.' },
+    { q: 'What does {1, 2, 2, 3} evaluate to in Python?', opts: ['{1, 2, 2, 3}', '{1, 2, 3}', 'SyntaxError', '{2}'], ans: 1, exp: 'Sets automatically remove duplicate values.' },
+    { q: 'How do you create an empty set in Python?', opts: ['{}', 'set()', '[]', 'empty()'], ans: 1, exp: '{} creates an empty dict; set() creates an empty set.' },
+    { q: 'What is {1, 2, 3} ^ {2, 3, 4}?', opts: ['{2, 3}', '{1, 4}', '{1, 2, 3, 4}', '{1}'], ans: 1, exp: '^ is symmetric difference — elements in either set, but not both.' },
+    { q: 'Which collection is NOT well-defined as a mathematical set?', opts: ['Even numbers < 10', 'Students under 18', 'Intelligent students in class', 'Vowels in English'], ans: 2, exp: '"Intelligent" is subjective, so membership cannot be clearly decided.' },
+    { q: 'What form is A = {2, 4, 6, 8} written in?', opts: ['Set-builder form', 'Roster/Tabular form', 'Interval form', 'Power form'], ans: 1, exp: 'Roster form lists all elements explicitly inside braces.' },
+    { q: 'What form is {x | x is even and x < 10}?', opts: ['Roster form', 'Set-builder form', 'Tuple form', 'Universal form'], ans: 1, exp: 'Set-builder form describes elements using a rule or property.' },
+    { q: 'If 5 is a member of set A, how is it written?', opts: ['5 ⊆ A', '5 ∈ A', '5 ∉ A', '{5} ∈ A'], ans: 1, exp: '∈ means "belongs to" (element membership).' },
+    { q: 'If 9 is NOT in set A, which notation is correct?', opts: ['9 ∉ A', '9 ⊄ A', '9 ≠ A', '{9} ∉ A'], ans: 0, exp: '∉ means "does not belong to".' },
+    { q: 'What is the Python equivalent of x ∈ A?', opts: ['x.in(A)', 'x in A', 'A.has(x)', 'x == A'], ans: 1, exp: 'Python uses the "in" keyword to check membership.' },
+    { q: 'A set with zero elements is called a…', opts: ['Singleton set', 'Null / Empty set (∅)', 'Universal set', 'Infinite set'], ans: 1, exp: 'An empty set has cardinality 0 and is denoted by ∅.' },
+    { q: 'A set containing exactly one element, like {5}, is a…', opts: ['Null set', 'Singleton set', 'Disjoint set', 'Power set'], ans: 1, exp: 'A singleton set has exactly 1 element.' },
+    { q: 'Which pair of sets is EQUAL?', opts: ['{1, 2} and {1, 2, 3}', '{1, 2} and {2, 1}', '{1, 2} and {a, b}', '{1} and {2}'], ans: 1, exp: 'Equal sets have the exact same elements regardless of order.' },
+    { q: 'Which pair of sets is EQUIVALENT but NOT equal?', opts: ['{1, 2} and {2, 1}', '{1, 2} and {a, b}', '{1, 2} and {1, 2, 3}', '∅ and {0}'], ans: 1, exp: 'Equivalent sets have the same cardinality (both have 2 elements).' },
+    { q: 'Two sets A and B are disjoint when…', opts: ['A ∪ B = ∅', 'A ∩ B = ∅', 'A = B', 'A ⊆ B'], ans: 1, exp: 'Disjoint sets have zero common elements (A ∩ B = ∅).' },
+    { q: 'In Python, which method checks if A and B are disjoint?', opts: ['A.isdisjoint(B)', 'A.disjoint(B)', 'A & B == {}', 'A.no_common(B)'], ans: 0, exp: 'A.isdisjoint(B) returns True if A and B share no elements.' },
+    { q: 'If every element of A is also in B, then…', opts: ['A ∈ B', 'A ⊆ B', 'B ⊆ A', 'A ∩ B = ∅'], ans: 1, exp: 'A ⊆ B means A is a subset of B.' },
+    { q: 'When is A a PROPER subset (A ⊂ B) of B?', opts: ['A ⊆ B and A = B', 'A ⊆ B and A ≠ B', 'A ∩ B = ∅', '|A| > |B|'], ans: 1, exp: 'Proper subset requires A ⊆ B and at least one element in B not in A.' },
+    { q: 'In Python, how do you check A ⊆ B?', opts: ['A <= B', 'A < B', 'A == B', 'A | B'], ans: 0, exp: 'A <= B (or A.issubset(B)) checks subset; A < B checks proper subset.' },
+    { q: 'What is the Universal Set U?', opts: ['Always {0, 1}', 'All elements under discussion', 'Only empty sets', 'Only numbers'], ans: 1, exp: 'U contains every element considered in the current problem.' },
+    { q: 'How is the complement A\' defined?', opts: ['A - U', 'U - A', 'U ∪ A', 'U ∩ A'], ans: 1, exp: 'Complement A\' contains all elements in U that are not in A.' },
+    { q: 'If A has 3 elements, how many elements are in its Power Set P(A)?', opts: ['3', '6', '8', '9'], ans: 2, exp: '|P(A)| = 2ⁿ = 2³ = 8 subsets.' },
+    { q: 'Which is ALWAYS a member of any Power Set P(A)?', opts: ['0', '∅ (empty set)', 'U', '{0}'], ans: 1, exp: 'The empty set ∅ is a subset of every set.' },
+    { q: 'What is P({a, b})?', opts: ['{{a}, {b}}', '{∅, {a}, {b}, {a, b}}', '{a, b}', '{∅, {a, b}}'], ans: 1, exp: 'All 4 subsets of {a, b} are ∅, {a}, {b}, and {a, b}.' },
+    { q: 'Which law states A ∪ B = B ∪ A?', opts: ['Associative law', 'Commutative law', 'Distributive law', 'De Morgan\'s law'], ans: 1, exp: 'Swapping operands without changing the result is the Commutative law.' },
+    { q: 'Which is De Morgan\'s first law?', opts: ['(A ∪ B)\' = A\' ∪ B\'', '(A ∪ B)\' = A\' ∩ B\'', '(A ∩ B)\' = A\' ∩ B\'', 'A ∪ A\' = ∅'], ans: 1, exp: 'The complement of a union equals the intersection of complements.' },
+    { q: 'What is the formula for n(A ∪ B)?', opts: ['n(A) + n(B)', 'n(A) + n(B) − n(A ∩ B)', 'n(A) × n(B)', 'n(A) − n(B)'], ans: 1, exp: 'Subtract n(A ∩ B) once so overlapping items are not double-counted.' },
+    { q: 'If n(A) = 10, n(B) = 8, and n(A ∩ B) = 3, what is n(A ∪ B)?', opts: ['18', '15', '21', '13'], ans: 1, exp: '10 + 8 − 3 = 15.' },
+    { q: 'On a number line, [2, 5] means…', opts: ['2 and 5 excluded', '2 included, 5 excluded', 'Both 2 and 5 included', 'Only 3 and 4'], ans: 2, exp: 'Square brackets [ ] include both endpoints (filled dots).' },
+    { q: 'On a number line, (2, 5) uses…', opts: ['Two filled dots', 'Two hollow dots', 'One filled, one hollow', 'No dots'], ans: 1, exp: 'Round parentheses ( ) exclude both endpoints (hollow dots).' },
+    { q: 'For A = {1, 2} and B = {x, y}, how many pairs are in A × B?', opts: ['2', '4', '6', '8'], ans: 1, exp: '|A × B| = |A| × |B| = 2 × 2 = 4 ordered pairs.' },
+    { q: 'Is A × B always equal to B × A?', opts: ['Yes, always', 'No, order matters in pairs', 'Only for numbers', 'Only when A is empty'], ans: 1, exp: '(1, x) ≠ (x, 1), so generally A × B ≠ B × A.' },
+    { q: 'Which Python method adds a single item to a set?', opts: ['.append()', '.add()', '.insert()', '.push()'], ans: 1, exp: 'Sets use s.add(item) to insert an element.' },
+    { q: 'What happens if you call s.remove(99) when 99 is NOT in s?', opts: ['Nothing happens', 'Raises KeyError', 'Returns False', 'Clears the set'], ans: 1, exp: 'remove() raises KeyError if missing; discard() does not.' },
+    { q: 'Which method removes an item WITHOUT raising KeyError if missing?', opts: ['.remove()', '.discard()', '.pop()', '.delete()'], ans: 1, exp: 's.discard(x) safely ignores missing items.' },
+    { q: 'Can a Python set contain a list like {[1, 2], 3}?', opts: ['Yes', 'No, lists are unhashable', 'Only if sorted', 'Only in Python 2'], ans: 1, exp: 'Set elements must be immutable/hashable; lists raise TypeError.' },
+    { q: 'Can a Python set contain a tuple like {(1, 2), 3}?', opts: ['Yes, tuples of immutables are hashable', 'No, never', 'Raises SyntaxError', 'Only empty tuples'], ans: 0, exp: 'Tuples containing immutable items are hashable and allowed in sets.' },
+    { q: 'What is the average time complexity of `x in my_set` in Python?', opts: ['O(n)', 'O(log n)', 'O(1)', 'O(n²)'], ans: 2, exp: 'Python sets use hash tables, giving O(1) average lookup.' },
+    { q: 'What does `len({1, 1, 2, 3, 3})` return?', opts: ['5', '3', '2', 'Error'], ans: 1, exp: 'Unique elements are {1, 2, 3}, so length is 3.' },
+    { q: 'What is `frozenset` in Python?', opts: ['A sorted set', 'An immutable set', 'An empty list', 'A dictionary'], ans: 1, exp: 'frozenset is an immutable, hashable version of a set.' },
+    { q: 'What does `{1, 2, 3}.issuperset({1, 2})` return?', opts: ['True', 'False', 'None', '{3}'], ans: 0, exp: '{1, 2, 3} contains all elements of {1, 2}.' },
+    { q: 'What is `(A ∩ B) ∪ (A − B)` equal to?', opts: ['B', 'A', 'U', '∅'], ans: 1, exp: 'Overlap plus A-only reconstructs the entire set A.' },
+    { q: 'What is `A − A`?', opts: ['A', 'U', '∅ (empty set)', '{0}'], ans: 2, exp: 'Removing every element of A from A leaves ∅.' },
+    { q: 'What is `A ∪ ∅`?', opts: ['∅', 'A', 'U', 'Error'], ans: 1, exp: 'Union with empty set leaves A unchanged.' },
+    { q: 'What is `A ∩ ∅`?', opts: ['A', '∅', 'U', '{0}'], ans: 1, exp: 'Nothing is in common with an empty set, so result is ∅.' },
+    { q: 'What does `{x*2 for x in [1, 2, 2, 3]}` produce?', opts: ['[2, 4, 4, 6]', '{2, 4, 6}', '{1, 2, 3}', 'Error'], ans: 1, exp: 'Set comprehension doubles values and removes duplicates → {2, 4, 6}.' },
+    { q: 'What is the common mistake when confusing ∈ and ⊆?', opts: ['Using {} on single elements with ∈', 'Using ⊆ for sets', 'Using | for union', 'Using set()'], ans: 0, exp: '2 ∈ A checks element membership; {2} ⊆ A checks subset.' }
   ],
   oop: [
-    { q: 'What does the __init__ method do in a Python class?',
-      opts: ['Deletes the object', 'Runs when the object is created', 'Prints the object', 'Copies the class'], ans: 1,
-      exp: '__init__ is the constructor — it runs automatically when you create a new object.' },
-    { q: 'What does "self" refer to in a Python class?',
-      opts: ['The class itself', 'The current object (instance)', 'The parent class', 'None'], ans: 1,
-      exp: 'self refers to the specific object calling the method — each object uses it to store its own data.' },
-    { q: 'If class Student has self.name = name, then s1 = Student("Riya"), what is s1.name?',
-      opts: ['"Student"', '"name"', '"Riya"', 'Error'], ans: 2,
-      exp: 'self.name = name stores the passed-in argument. So s1.name = "Riya".' },
-    { q: 'A class is best described as…',
-      opts: ['A variable', 'A blueprint for creating objects', 'A function', 'A module'], ans: 1,
-      exp: 'A class defines the structure (blueprint); objects are the real instances made from it.' },
-    { q: 'Which line creates an object from a class?',
-      opts: ['class Student():', 'def Student():', 's = Student("Arjun")', 'self.Student()'], ans: 2,
-      exp: 'You create an object by calling the class name like a function: s = Student("Arjun").' },
+    { q: 'What does the __init__ method do in a Python class?', opts: ['Deletes the object', 'Initializes a new object when created', 'Prints the class', 'Imports modules'], ans: 1, exp: '__init__ is the constructor called automatically on instantiation.' },
+    { q: 'What does `self` refer to in a Python class method?', opts: ['The class blueprint', 'The current object instance', 'The parent class', 'Global scope'], ans: 1, exp: 'self points to the specific instance calling the method.' },
+    { q: 'If `s1 = Student("Aarav", "CSE")`, what is `s1.name`?', opts: ['"Student"', '"name"', '"Aarav"', 'Error'], ans: 2, exp: 'self.name stores the passed-in argument "Aarav".' },
+    { q: 'A class is best described as…', opts: ['A variable', 'A blueprint for creating objects', 'A loop', 'A module'], ans: 1, exp: 'A class defines structure and behavior; objects are instances built from it.' },
+    { q: 'Which line creates an object from class `Student`?', opts: ['class Student():', 'def Student():', 's = Student("Riya")', 'self.Student()'], ans: 2, exp: 'Calling ClassName(...) instantiates an object.' },
+    { q: 'If `s1` and `s2` are two `Student` objects, changing `s1.name`…', opts: ['Changes s2.name too', 'Only changes s1.name', 'Deletes s2', 'Raises TypeError'], ans: 1, exp: 'Each instance keeps its own separate instance attributes.' },
+    { q: 'What is the first parameter of an instance method in Python?', opts: ['this', 'self', 'cls', 'obj'], ans: 1, exp: 'By convention, Python instance methods take `self` as first parameter.' },
+    { q: 'What are data values stored on an object (like `self.roll`) called?', opts: ['Methods', 'Attributes', 'Loops', 'Imports'], ans: 1, exp: 'Variables attached to `self` are instance attributes.' },
+    { q: 'What are functions defined inside a class called?', opts: ['Attributes', 'Methods', 'Tuples', 'Decorators'], ans: 1, exp: 'Functions inside a class are called methods.' },
+    { q: 'Which keyword defines a class in Python?', opts: ['struct', 'object', 'class', 'def'], ans: 2, exp: 'Python uses the `class` keyword.' },
+    { q: 'What does `isinstance(s1, Student)` return?', opts: ['True', 'False', 'Student', 'None'], ans: 0, exp: 'isinstance() checks if an object is an instance of a class.' },
+    { q: 'What is Inheritance in OOP?', opts: ['Deleting attributes', 'A child class acquiring properties of a parent class', 'Copying files', 'Sorting lists'], ans: 1, exp: 'Inheritance lets a subclass reuse and extend a parent class.' },
+    { q: 'How does `class GradStudent(Student):` relate to `Student`?', opts: ['GradStudent is the parent', 'GradStudent inherits from Student', 'They are unrelated', 'SyntaxError'], ans: 1, exp: 'Parentheses after the class name specify the parent class.' },
+    { q: 'What does `super().__init__(...)` do in a child class?', opts: ['Stops execution', 'Calls the parent class __init__', 'Deletes self', 'Creates a static method'], ans: 1, exp: 'super() delegates initialization to the parent class.' },
+    { q: 'What is Encapsulation?', opts: ['Bundling data and methods together & hiding internals', 'Running code faster', 'Using global variables', 'Writing loops'], ans: 0, exp: 'Encapsulation groups data + methods and restricts direct access.' },
+    { q: 'In Python, a double underscore prefix `self.__pin` triggers…', opts: ['SyntaxError', 'Name mangling (private-like attribute)', 'Global export', 'TypeError'], ans: 1, exp: 'Python mangles `__pin` to `_ClassName__pin` to discourage direct access.' },
+    { q: 'What is Polymorphism in OOP?', opts: ['Having only 1 class', 'Different classes responding to the same method name', 'Deleting objects', 'Using sets'], ans: 1, exp: 'Polymorphism lets different objects implement the same method interface.' },
+    { q: 'Which dunder method controls what `print(obj)` displays?', opts: ['__init__', '__str__', '__len__', '__del__'], ans: 1, exp: '__str__ returns a human-readable string representation.' },
+    { q: 'Which dunder method controls `len(obj)`?', opts: ['__size__', '__count__', '__len__', '__str__'], ans: 2, exp: 'Defining __len__(self) lets built-in len(obj) work.' },
+    { q: 'Which decorator defines a method bound to the class rather than an instance?', opts: ['@staticmethod', '@classmethod', '@property', '@dataclass'], ans: 1, exp: '@classmethod receives `cls` as its first parameter.' },
+    { q: 'What does `@staticmethod` receive automatically?', opts: ['self', 'cls', 'Nothing automatically', 'args'], ans: 2, exp: 'A @staticmethod takes neither `self` nor `cls`.' },
+    { q: 'Which decorator lets a method be accessed like an attribute (`obj.area`)?', opts: ['@classmethod', '@property', '@staticmethod', '@setter'], ans: 1, exp: '@property turns a getter method into a computed attribute.' },
+    { q: 'What is a Class Attribute?', opts: ['Defined inside __init__ on self', 'Defined directly inside class body, shared by all instances', 'A local variable', 'A module'], ans: 1, exp: 'Class attributes live on the class and are shared unless overridden.' },
+    { q: 'What happens if you forget `self` in `def introduce():` inside a class and call `s1.introduce()`?', opts: ['Works fine', 'Raises TypeError (0 positional arguments expected, 1 given)', 'Returns None', 'Prints self'], ans: 1, exp: 'Python passes `s1` automatically as the first argument.' },
+    { q: 'What does `hasattr(s1, "branch")` return if `s1.branch = "CSE"`?', opts: ['"CSE"', 'True', 'False', 'None'], ans: 1, exp: 'hasattr() returns True if the attribute exists on the object.' },
+    { q: 'What does `getattr(s1, "roll", 0)` do if `roll` exists as 101?', opts: ['Returns 0', 'Returns 101', 'Raises KeyError', 'Deletes roll'], ans: 1, exp: 'getattr() retrieves the attribute value, or fallback default if missing.' },
+    { q: 'What does `setattr(s1, "semester", "4th")` do?', opts: ['Reads semester', 'Sets s1.semester = "4th"', 'Deletes semester', 'Creates a new class'], ans: 1, exp: 'setattr() dynamically assigns an attribute on an object.' },
+    { q: 'What does `type(s1)` return for `s1 = Student(...)`?', opts: ["<class 'dict'>", "<class '__main__.Student'>", "'Student'", 'None'], ans: 1, exp: 'type() returns the class of the instance.' },
+    { q: 'Which built-in checks if `GradStudent` is a subclass of `Student`?', opts: ['isinstance()', 'issubclass(GradStudent, Student)', 'isparent()', 'inherits()'], ans: 1, exp: 'issubclass(Child, Parent) checks class inheritance.' },
+    { q: 'Every class in Python 3 implicitly inherits from…', opts: ['int', 'object', 'dict', 'Base'], ans: 1, exp: 'All Python 3 classes inherit from `object` by default.' },
+    { q: 'What does `__repr__` aim to provide?', opts: ['An unambiguous developer representation', 'A random number', 'File path', 'Only integers'], ans: 0, exp: '__repr__ is used in debugging and interactive prompts.' },
+    { q: 'What is Method Overriding?', opts: ['Deleting a method', 'Redefining a parent method in a child class', 'Calling __init__ twice', 'Using @staticmethod'], ans: 1, exp: 'A subclass can provide its own implementation of a parent method.' },
+    { q: 'What does `del s1.roll` do?', opts: ['Deletes the Student class', 'Removes the `roll` attribute from s1', 'Sets roll to 0', 'Raises SyntaxError'], ans: 1, exp: 'del obj.attr removes that attribute from the instance.' },
+    { q: 'What is stored in `s1.__dict__`?', opts: ['All Python keywords', 'Instance attributes of s1 as a dictionary', 'Only methods', 'Nothing'], ans: 1, exp: '__dict__ holds an instance\'s writable attribute dictionary.' },
+    { q: 'Why should you avoid mutable defaults like `def __init__(self, courses=[]):`?', opts: ['SyntaxError', 'All instances would share the same list object', 'Too slow', 'Sets cannot be used'], ans: 1, exp: 'Default mutable arguments are evaluated once and shared across calls.' },
+    { q: 'How do you fix a mutable default parameter in `__init__`?', opts: ['Use `courses=None` and `self.courses = [] if courses is None else courses`', 'Use global list', 'Remove __init__', 'Use int'], ans: 0, exp: 'Creating a fresh list inside __init__ isolates each object.' },
+    { q: 'What does `s1 == s2` compare by default for custom classes?', opts: ['All attributes', 'Object identity (memory reference)', 'Class names', 'Strings'], ans: 1, exp: 'Without __eq__, `==` checks identity (`is`).' },
+    { q: 'Which dunder method customizes `s1 == s2`?', opts: ['__same__', '__eq__', '__cmp__', '__is__'], ans: 1, exp: '__eq__(self, other) defines custom equality comparison.' },
+    { q: 'Which dunder method lets two objects be added with `a + b`?', opts: ['__plus__', '__add__', '__sum__', '__concat__'], ans: 1, exp: '__add__(self, other) implements operator overloading for `+`.' },
+    { q: 'What is Composition ("has-a" relationship) in OOP?', opts: ['A class holding an instance of another class as an attribute', 'Inheriting from 2 parents', 'Writing one giant function', 'Deleting objects'], ans: 0, exp: 'Example: a Department object has a list of Student objects.' },
+    { q: 'What is Multiple Inheritance?', opts: ['Creating 2 objects', 'A class inheriting from more than one parent class', '2 __init__ methods', '2 files'], ans: 1, exp: 'Syntax: `class C(A, B):` inherits from both A and B.' },
+    { q: 'What does MRO stand for in Python OOP?', opts: ['Memory Read Order', 'Method Resolution Order', 'Module Run Output', 'Main Reference Object'], ans: 1, exp: 'MRO defines the order Python searches base classes for a method.' },
+    { q: 'How can you view a class\'s Method Resolution Order?', opts: ['Student.mro()', 'Student.order()', 'dir(Student)', 'help()'], ans: 0, exp: 'ClassName.mro() returns the C3 linearization list.' },
+    { q: 'What does `pass` inside `class Empty: pass` do?', opts: ['Skips the file', 'Acts as a null placeholder for an empty class body', 'Returns None', 'Raises Error'], ans: 1, exp: 'pass satisfies Python\'s indentation rule for an empty block.' },
+    { q: 'If `Student` has `__init__(self, name, branch, roll)`, how many arguments do you pass in `Student(...)`?', opts: ['4', '3 (self is passed automatically)', '2', '1'], ans: 1, exp: 'Python automatically supplies `self`, so you pass 3 arguments.' },
+    { q: 'What does `s1.introduce()` do when `introduce` returns an f-string?', opts: ['Prints automatically', 'Returns the formatted string to the caller', 'Modifies class', 'Deletes name'], ans: 1, exp: 'Returning a string lets the caller `print(s1.introduce())` or store it.' },
+    { q: 'In OOP, what is an "instance"?', opts: ['The class definition file', 'A concrete object created from a class', 'A comment', 'A loop counter'], ans: 1, exp: 'An instance is an individual object built from the class blueprint.' },
+    { q: 'Which module provides `@dataclass` to reduce `__init__` boilerplate?', opts: ['collections', 'dataclasses', 'typing', 'functools'], ans: 1, exp: 'from dataclasses import dataclass auto-generates __init__ and __repr__.' },
+    { q: 'What is Duck Typing in Python?', opts: ['Checking strict types', 'If it walks & quacks like a duck (has the required method), it works', 'Only using strings', 'A syntax error'], ans: 1, exp: 'Python cares about an object\'s methods/behavior rather than its explicit class.' },
+    { q: 'Which OOP principle helps keep `Student` code modular & reusable?', opts: ['Repeating code everywhere', 'Encapsulating student data & methods inside a single class', 'Using 100 global variables', 'Avoiding functions'], ans: 1, exp: 'Grouping attributes and methods in a class makes code clean and reusable.' }
   ]
 };
 
 /* ══════════════════════════════════════════════════════
-   QUIZ RENDERER
+   QUIZ & TEST LOGGING + CUSTOM QUIZ ENGINE
 ══════════════════════════════════════════════════════ */
-let activeQuizTopic = 'sets';
-let quizState = {}; /* {topic: {current, answers, marks, scores}} */
+const LOG_KEY = 'pyconcept_activity_logs';
 
-function initQuizPage(topic) {
-  activeQuizTopic = topic;
-  document.querySelectorAll('.ts-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('q-topic-'+topic).classList.add('active');
-  renderQuiz('quiz-container', topic);
+function getActivityLogs() {
+  try { return JSON.parse(localStorage.getItem(LOG_KEY) || '[]'); }
+  catch (e) { return []; }
 }
 
-function selectQuizTopic(topic) {
-  activeQuizTopic = topic;
-  document.querySelectorAll('.ts-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('q-topic-'+topic).classList.add('active');
-  renderQuiz('quiz-container', topic);
+function recordActivityLog(type, detail, meta = '') {
+  const logs = getActivityLogs();
+  logs.unshift({
+    id: Date.now(),
+    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+    date: new Date().toLocaleDateString(),
+    type,
+    detail,
+    meta
+  });
+  localStorage.setItem(LOG_KEY, JSON.stringify(logs.slice(0, 40)));
+  renderQuizLogs();
 }
 
-function renderInlineQuiz(containerId, topic) {
-  const el = document.getElementById(containerId);
-  el.innerHTML = `<div style="max-width:900px;margin:0 auto;padding:20px 24px 40px"><div style="font-size:1.2rem;font-weight:800;margin-bottom:16px">🎯 Quick Quiz — ${topic === 'sets' ? 'Sets' : 'OOP'}</div></div>`;
-  renderQuiz(containerId, topic, true);
+function clearQuizLogs() {
+  localStorage.removeItem(LOG_KEY);
+  renderQuizLogs();
 }
 
-function renderQuiz(containerId, topic, inline=false) {
-  if (!quizState[topic]) {
-    quizState[topic] = {current:0, answers:new Array(5).fill(-1), marks:new Array(5).fill('not-visited'), showScore:false};
-    quizState[topic].marks[0] = 'not-answered';
-  }
-  const qs = QUIZ_DATA[topic];
-  const state = quizState[topic];
-
-  if (state.showScore) {
-    renderScore(containerId, topic, inline);
+function renderQuizLogs() {
+  const box = document.getElementById('quiz-log-list');
+  if (!box) return;
+  const logs = getActivityLogs();
+  if (!logs.length) {
+    box.innerHTML = `<div style="font-size:.84rem;color:var(--txt2);padding:10px 0">No test or lab activity logged yet. Start a quiz or run code in a Lab!</div>`;
     return;
   }
+  box.innerHTML = logs.map(l => `
+    <div class="glass-sm" style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="s-badge">${escHtml(l.type)}</span>
+        <span style="font-weight:700;font-size:.86rem">${escHtml(l.detail)}</span>
+      </div>
+      <div style="font-size:.76rem;color:var(--txt2);font-family:monospace">${escHtml(l.meta)} · ${escHtml(l.date)} ${escHtml(l.time)}</div>
+    </div>
+  `).join('');
+}
 
-  const qi = state.current;
-  const q = qs[qi];
-  const topicLabel = topic === 'sets' ? 'Topic 14: Sets' : 'Topic 23: OOP';
+let activeQuizSession = null;
+let quizCountdownInterval = null;
+let inlineQuizState = {};
 
-  const html = `
-    <div class="${inline?'':'quiz-portal'}" style="${inline?'padding:0 24px 40px':''}">
+function shuffleArr(arr) {
+  const copy = [...arr];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+function initQuizPage() {
+  renderQuizLogs();
+  if (!activeQuizSession) showQuizSetup();
+}
+
+function showQuizSetup() {
+  clearInterval(quizCountdownInterval);
+  activeQuizSession = null;
+  document.getElementById('quiz-setup-panel').style.display = 'block';
+  document.getElementById('btn-back-setup').style.display = 'none';
+  document.getElementById('quiz-container').innerHTML = '';
+  renderQuizLogs();
+}
+
+function startCustomQuiz() {
+  const topic = document.getElementById('qs-topic').value;
+  const reqCount = parseInt(document.getElementById('qs-count').value, 10);
+  const timeSec = parseInt(document.getElementById('qs-time').value, 10);
+
+  const pool = topic === 'sets' ? QUIZ_DATA.sets
+    : topic === 'oop' ? QUIZ_DATA.oop
+    : [...QUIZ_DATA.sets, ...QUIZ_DATA.oop];
+
+  const questions = shuffleArr(pool).slice(0, Math.min(reqCount, pool.length));
+  activeQuizSession = {
+    topic,
+    questions,
+    current: 0,
+    answers: new Array(questions.length).fill(-1),
+    marks: new Array(questions.length).fill('not-visited'),
+    totalTimeSec: timeSec,
+    remainingSec: timeSec,
+    startedAt: Date.now(),
+    showScore: false
+  };
+  activeQuizSession.marks[0] = 'not-answered';
+
+  document.getElementById('quiz-setup-panel').style.display = 'none';
+  document.getElementById('btn-back-setup').style.display = 'inline-flex';
+
+  clearInterval(quizCountdownInterval);
+  if (timeSec > 0) {
+    quizCountdownInterval = setInterval(() => {
+      if (!activeQuizSession || activeQuizSession.showScore) {
+        clearInterval(quizCountdownInterval);
+        return;
+      }
+      activeQuizSession.remainingSec--;
+      const tEl = document.getElementById('q-timer-readout');
+      if (tEl) tEl.textContent = formatMMSS(activeQuizSession.remainingSec);
+      if (activeQuizSession.remainingSec <= 0) {
+        clearInterval(quizCountdownInterval);
+        submitCustomQuiz(true);
+      }
+    }, 1000);
+  }
+  renderCustomQuiz();
+}
+
+function formatMMSS(sec) {
+  const s = Math.max(0, sec);
+  const m = String(Math.floor(s / 60)).padStart(2, '0');
+  const r = String(s % 60).padStart(2, '0');
+  return `${m}:${r}`;
+}
+
+function renderCustomQuiz() {
+  const s = activeQuizSession;
+  if (!s) return;
+  if (s.showScore) { renderCustomScore(); return; }
+
+  const qi = s.current;
+  const q = s.questions[qi];
+  const topicLabel = s.topic === 'sets' ? 'Topic 14: Sets' : s.topic === 'oop' ? 'Topic 23: OOP' : 'Mixed: Sets + OOP';
+
+  document.getElementById('quiz-container').innerHTML = `
+    <div class="quiz-portal">
       <div class="q-main-col">
         <div class="glass q-header-bar">
           <span class="q-topic-badge">${topicLabel}</span>
-          <span class="q-num">Question ${qi+1} of ${qs.length}</span>
-          <button class="tts-read-btn" onclick="speakText(document.querySelector('#q-${containerId} .q-question-txt').textContent)">🔊</button>
+          <span class="q-num">Question ${qi + 1} of ${s.questions.length}</span>
+          ${s.totalTimeSec > 0 ? `<span class="q-timer" id="q-timer-readout">⏱ ${formatMMSS(s.remainingSec)}</span>` : `<span class="q-num">No Timer</span>`}
+          <button class="tts-read-btn" onclick="speakText(document.querySelector('#q-main-box .q-question-txt').textContent)">🔊</button>
         </div>
-        <div class="glass q-question-box" id="q-${containerId}">
-          <div class="q-question-txt">${q.q}</div>
-          <ul class="q-options-list" id="opts-${containerId}">
-            ${q.opts.map((o,i)=>`
-              <li class="option-card${state.answers[qi]===i?' selected':''}" onclick="selectAnswer('${containerId}','${topic}',${i})" id="opt-${containerId}-${i}">
-                <div class="opt-label">${String.fromCharCode(65+i)}</div>
-                <span>${o}</span>
+        <div class="glass q-question-box" id="q-main-box">
+          <div class="q-question-txt">${escHtml(q.q)}</div>
+          <ul class="q-options-list" id="opts-custom">
+            ${q.opts.map((o, i) => `
+              <li class="option-card${s.answers[qi] === i ? ' selected' : ''}" onclick="selectCustomAns(${i})">
+                <div class="opt-label">${String.fromCharCode(65 + i)}</div>
+                <span>${escHtml(o)}</span>
               </li>`).join('')}
           </ul>
         </div>
         <div class="q-action-bar">
-          <button class="q-btn primary" onclick="saveNext('${containerId}','${topic}')">SAVE &amp; NEXT →</button>
-          <button class="q-btn" onclick="markReview('${containerId}','${topic}')">🔖 MARK &amp; NEXT</button>
-          <button class="q-btn" onclick="clearResponse('${containerId}','${topic}')">✕ CLEAR</button>
-          ${qi > 0 ? `<button class="q-btn" onclick="goPrev('${containerId}','${topic}')">← BACK</button>` : ''}
-          ${qi === qs.length-1 ? `<button class="q-btn success" onclick="submitQuiz('${containerId}','${topic}')">🏆 SUBMIT</button>` : ''}
+          <button class="q-btn primary" onclick="customSaveNext()">SAVE &amp; NEXT →</button>
+          <button class="q-btn" onclick="customMarkNext()">🔖 MARK &amp; NEXT</button>
+          <button class="q-btn" onclick="customClearAns()">✕ CLEAR</button>
+          ${qi > 0 ? `<button class="q-btn" onclick="customPrev()">← BACK</button>` : ''}
+          <button class="q-btn success" onclick="submitCustomQuiz(false)">🏆 SUBMIT TEST</button>
         </div>
       </div>
-      ${inline ? '' : `
       <div class="q-palette-col">
         <div class="glass palette-card">
-          <div class="palette-title">QUESTION PALETTE</div>
-          <div class="palette-grid">
-            ${state.marks.map((m,i)=>`<button class="pal-btn ${m}${i===qi?' current':''}" onclick="goToQ('${containerId}','${topic}',${i})">${i+1}</button>`).join('')}
+          <div class="palette-title">QUESTION PALETTE (${s.questions.length})</div>
+          <div class="palette-grid" style="max-height:260px;overflow-y:auto;padding-right:4px">
+            ${s.marks.map((m, i) => `<button class="pal-btn ${m}${i === qi ? ' current' : ''}" onclick="customGoTo(${i})">${i + 1}</button>`).join('')}
           </div>
           <div class="palette-legend">
             <div class="leg-row"><div class="leg-dot" style="background:var(--glass-bg);border:1.5px solid var(--glass-border)"></div>Not Visited</div>
@@ -2907,98 +3151,133 @@ function renderQuiz(containerId, topic, inline=false) {
             <div class="leg-row"><div class="leg-dot" style="background:rgba(108,99,255,.3);border:1px solid var(--accent1)"></div>Marked</div>
           </div>
         </div>
-      </div>`}
+      </div>
     </div>`;
-  document.getElementById(containerId).innerHTML = html;
 }
 
-function selectAnswer(cid, topic, optIdx) {
-  const state = quizState[topic];
-  state.answers[state.current] = optIdx;
-  document.querySelectorAll(`#opts-${cid} .option-card`).forEach((el,i)=>{
-    el.classList.toggle('selected', i===optIdx);
-  });
+function selectCustomAns(i) {
+  if (!activeQuizSession) return;
+  activeQuizSession.answers[activeQuizSession.current] = i;
+  document.querySelectorAll('#opts-custom .option-card').forEach((el, idx) => el.classList.toggle('selected', idx === i));
 }
-
-function saveNext(cid, topic) {
-  const state = quizState[topic];
-  const qi = state.current;
-  if (state.answers[qi] !== -1) state.marks[qi] = 'answered';
-  else state.marks[qi] = 'not-answered';
-  if (qi < QUIZ_DATA[topic].length - 1) {
-    state.current++;
-    if (state.marks[state.current] === 'not-visited') state.marks[state.current] = 'not-answered';
+function customSaveNext() {
+  const s = activeQuizSession;
+  s.marks[s.current] = s.answers[s.current] !== -1 ? 'answered' : 'not-answered';
+  if (s.current < s.questions.length - 1) {
+    s.current++;
+    if (s.marks[s.current] === 'not-visited') s.marks[s.current] = 'not-answered';
   }
-  renderQuiz(cid, topic, cid !== 'quiz-container');
+  renderCustomQuiz();
 }
-
-function markReview(cid, topic) {
-  const state = quizState[topic];
-  state.marks[state.current] = 'marked';
-  if (state.current < QUIZ_DATA[topic].length-1) {
-    state.current++;
-    if (state.marks[state.current] === 'not-visited') state.marks[state.current] = 'not-answered';
+function customMarkNext() {
+  const s = activeQuizSession;
+  s.marks[s.current] = 'marked';
+  if (s.current < s.questions.length - 1) {
+    s.current++;
+    if (s.marks[s.current] === 'not-visited') s.marks[s.current] = 'not-answered';
   }
-  renderQuiz(cid, topic, cid !== 'quiz-container');
+  renderCustomQuiz();
+}
+function customClearAns() {
+  const s = activeQuizSession;
+  s.answers[s.current] = -1;
+  s.marks[s.current] = 'not-answered';
+  renderCustomQuiz();
+}
+function customPrev() {
+  if (activeQuizSession.current > 0) activeQuizSession.current--;
+  renderCustomQuiz();
+}
+function customGoTo(i) {
+  activeQuizSession.current = i;
+  if (activeQuizSession.marks[i] === 'not-visited') activeQuizSession.marks[i] = 'not-answered';
+  renderCustomQuiz();
+}
+function submitCustomQuiz(autoTimeout) {
+  clearInterval(quizCountdownInterval);
+  const s = activeQuizSession;
+  if (!s || s.showScore) return;
+  s.showScore = true;
+  s.autoTimeout = !!autoTimeout;
+  s.elapsedSec = Math.round((Date.now() - s.startedAt) / 1000);
+  renderCustomScore();
 }
 
-function clearResponse(cid, topic) {
-  const state = quizState[topic];
-  state.answers[state.current] = -1;
-  state.marks[state.current] = 'not-answered';
-  renderQuiz(cid, topic, cid !== 'quiz-container');
-}
-
-function goPrev(cid, topic) {
-  const state = quizState[topic];
-  if (state.current > 0) state.current--;
-  renderQuiz(cid, topic, cid !== 'quiz-container');
-}
-
-function goToQ(cid, topic, idx) {
-  quizState[topic].current = idx;
-  renderQuiz(cid, topic, cid !== 'quiz-container');
-}
-
-function submitQuiz(cid, topic) {
-  const state = quizState[topic];
-  state.showScore = true;
-  renderScore(cid, topic, cid !== 'quiz-container');
-}
-
-function renderScore(cid, topic, inline) {
-  const state = quizState[topic];
-  const qs = QUIZ_DATA[topic];
+function renderCustomScore() {
+  const s = activeQuizSession;
   let correct = 0;
-  qs.forEach((q,i)=>{ if(state.answers[i]===q.ans) correct++; });
-
-  const pct = Math.round(correct/qs.length*100);
+  s.questions.forEach((q, i) => { if (s.answers[i] === q.ans) correct++; });
+  const pct = Math.round((correct / s.questions.length) * 100);
   const emoji = pct === 100 ? '🏆' : pct >= 60 ? '👏' : '📚';
-
   if (pct >= 60) launchSparkles();
 
-  const breakdown = qs.map((q,i)=>`
+  const topicLabel = s.topic === 'sets' ? 'Sets' : s.topic === 'oop' ? 'OOP' : 'Mixed';
+  recordActivityLog('Quiz Test', `${topicLabel} · ${correct}/${s.questions.length} (${pct}%)`, `Time: ${formatMMSS(s.elapsedSec)}`);
+
+  const breakdown = s.questions.map((q, i) => `
     <div class="review-item">
-      <span class="ri-status">${state.answers[i]===q.ans?'✅':'❌'}</span>
+      <span class="ri-status">${s.answers[i] === q.ans ? '✅' : '❌'}</span>
       <div style="flex:1">
-        <div class="ri-q">${q.q}</div>
-        <div class="ri-ans">Your answer: ${state.answers[i]===-1?'Not answered':q.opts[state.answers[i]]} • Correct: ${q.opts[q.ans]}</div>
-        <div class="ri-ans" style="color:var(--accent2);margin-top:3px">${q.exp}</div>
+        <div class="ri-q">${i + 1}. ${escHtml(q.q)}</div>
+        <div class="ri-ans">Your answer: ${s.answers[i] === -1 ? 'Not answered' : escHtml(q.opts[s.answers[i]])} • Correct: ${escHtml(q.opts[q.ans])}</div>
+        <div class="ri-ans" style="color:var(--accent2);margin-top:3px">${escHtml(q.exp)}</div>
       </div>
     </div>`).join('');
 
-  document.getElementById(cid).innerHTML = `
-    <div style="display:flex;flex-direction:column;align-items:center;gap:24px;padding:50px 24px;text-align:center">
-      <div class="score-circle"><div class="score-num">${correct}/${qs.length}</div><div class="score-label">${pct}%</div></div>
-      <div style="font-size:1.6rem;font-weight:900">${emoji} ${pct===100?'Perfect Score!':pct>=60?'Great job!':'Keep practising!'}</div>
-      <div class="score-breakdown">${breakdown}</div>
-      <button class="tc-btn" style="--grad:linear-gradient(135deg,var(--accent1),#9d50ff)" onclick="retakeQuiz('${cid}','${topic}',${inline})">🔄 Retake Quiz</button>
+  document.getElementById('quiz-container').innerHTML = `
+    <div style="display:flex;flex-direction:column;align-items:center;gap:22px;padding:30px 24px 50px;text-align:center">
+      ${s.autoTimeout ? `<div class="s-badge" style="color:#ec4899;border-color:#ec4899">⏱ Time Up — Auto Submitted</div>` : ''}
+      <div class="score-circle"><div class="score-num">${correct}/${s.questions.length}</div><div class="score-label">${pct}%</div></div>
+      <div style="font-size:1.6rem;font-weight:900">${emoji} ${pct === 100 ? 'Perfect Score!' : pct >= 60 ? 'Great job!' : 'Keep practising!'}</div>
+      <div style="font-size:.85rem;color:var(--txt2)">Completed in <strong>${formatMMSS(s.elapsedSec)}</strong></div>
+      <div class="score-breakdown" style="max-height:420px;overflow-y:auto;padding-right:6px">${breakdown}</div>
+      <div style="display:flex;gap:12px">
+        <button class="tc-btn" style="--grad:linear-gradient(135deg,var(--accent1),var(--accent5))" onclick="startCustomQuiz()">🔄 Retake Test</button>
+        <button class="vis-btn" onclick="showQuizSetup()">⚙ Change Settings</button>
+      </div>
     </div>`;
 }
 
-function retakeQuiz(cid, topic, inline) {
-  quizState[topic] = null;
-  renderQuiz(cid, topic, inline);
+/* Inline 5-Q Quick Quiz inside Sets / OOP tabs */
+function renderInlineQuiz(containerId, topic) {
+  if (!inlineQuizState[topic]) {
+    const qs = shuffleArr(QUIZ_DATA[topic]).slice(0, 5);
+    inlineQuizState[topic] = { qs, current: 0, answers: new Array(5).fill(-1), showScore: false };
+  }
+  const st = inlineQuizState[topic];
+  if (st.showScore) {
+    let correct = 0;
+    st.qs.forEach((q, i) => { if (st.answers[i] === q.ans) correct++; });
+    const pct = Math.round((correct / st.qs.length) * 100);
+    if (pct >= 60) launchSparkles();
+    recordActivityLog('Quick Quiz', `${topic.toUpperCase()} · ${correct}/5 (${pct}%)`, '5 Qs');
+    document.getElementById(containerId).innerHTML = `
+      <div style="display:flex;flex-direction:column;align-items:center;gap:18px;padding:36px 24px;text-align:center">
+        <div class="score-circle"><div class="score-num">${correct}/5</div><div class="score-label">${pct}%</div></div>
+        <div style="font-size:1.3rem;font-weight:900">${pct >= 60 ? '👏 Great job!' : '📚 Keep practising!'}</div>
+        <button class="tc-btn" style="--grad:linear-gradient(135deg,var(--accent1),var(--accent5))" onclick="inlineQuizState['${topic}']=null;renderInlineQuiz('${containerId}','${topic}')">🔄 Retake Quick Quiz</button>
+      </div>`;
+    return;
+  }
+  const q = st.qs[st.current];
+  document.getElementById(containerId).innerHTML = `
+    <div style="max-width:780px;margin:0 auto;padding:20px 24px 40px">
+      <div class="glass q-header-bar" style="margin-bottom:14px">
+        <span class="q-topic-badge">${topic === 'sets' ? 'Quick Quiz: Sets' : 'Quick Quiz: OOP'}</span>
+        <span class="q-num">Question ${st.current + 1} of 5</span>
+        <button class="tts-read-btn" onclick="speakText('${escHtml(q.q).replace(/'/g,'')}')">🔊</button>
+      </div>
+      <div class="glass q-question-box">
+        <div class="q-question-txt">${escHtml(q.q)}</div>
+        <ul class="q-options-list">
+          ${q.opts.map((o, i) => `<li class="option-card${st.answers[st.current]===i?' selected':''}" onclick="inlineQuizState['${topic}'].answers[${st.current}]=${i};renderInlineQuiz('${containerId}','${topic}')"><div class="opt-label">${String.fromCharCode(65+i)}</div><span>${escHtml(o)}</span></li>`).join('')}
+        </ul>
+      </div>
+      <div class="q-action-bar">
+        ${st.current > 0 ? `<button class="q-btn" onclick="inlineQuizState['${topic}'].current--;renderInlineQuiz('${containerId}','${topic}')">← BACK</button>` : ''}
+        ${st.current < 4 ? `<button class="q-btn primary" onclick="inlineQuizState['${topic}'].current++;renderInlineQuiz('${containerId}','${topic}')">NEXT →</button>` : `<button class="q-btn success" onclick="inlineQuizState['${topic}'].showScore=true;renderInlineQuiz('${containerId}','${topic}')">🏆 SUBMIT</button>`}
+      </div>
+    </div>`;
 }
 
 /* ══════════════════════════════════════════════════════
