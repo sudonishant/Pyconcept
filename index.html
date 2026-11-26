@@ -938,6 +938,22 @@ header .icon-btn{
   border-bottom:none !important;border-color:var(--ink) !important;
 }
 
+
+/* Phase 6: 360px Grid Overflow Fix + Visualizer Stepper Progress Bar */
+.oop-lab-grid > *, .sets-sim-grid > *, .oop-intro-grid > *, .intro-grid > *, .glass-sm{
+  min-width:0;max-width:100%;
+}
+.code-panel{max-height:250px;overflow:auto;max-width:100%}
+#oop-editor,#sim-editor{max-width:100%}
+#oop-intro pre{max-width:100%;overflow-x:auto}
+.step-prog-bar{
+  flex-basis:100%;width:100%;height:7px;border-radius:99px;
+  background:var(--paper);border:1.5px solid var(--ink);overflow:hidden;margin-top:4px;
+}
+.step-prog-fill{height:100%;width:0%;background:var(--red);transition:width .28s var(--spring)}
+.code-line.hl{background:rgba(206,5,5,0.28) !important;border-left:4px solid #c7c911 !important;font-weight:700}
+.code-line.hl-out{background:rgba(21,128,61,0.28) !important;border-left:4px solid #34c759 !important}
+
 </style>
 </head>
 <body>
@@ -1150,11 +1166,11 @@ header .icon-btn{
         <div class="sim-input-col">
           <div>
             <div class="sim-label">Set A (comma separated)</div>
-            <input class="sim-input" id="sim-set-a" value="⚡ Aarav, 🎧 Kabir, 🎨 Diya" placeholder="e.g. ⚡ Aarav, 🎧 Kabir, 🎨 Diya"/>
+            <input class="sim-input" id="sim-set-a" oninput="syncSetsEditorFromInputs();renderLabVenn();if(setsLabMode==='3d')updateSets3D()" value="⚡ Aarav, 🎧 Kabir, 🎨 Diya" placeholder="e.g. ⚡ Aarav, 🎧 Kabir, 🎨 Diya"/>
           </div>
           <div>
             <div class="sim-label">Set B (comma separated)</div>
-            <input class="sim-input" id="sim-set-b" value="🎨 Diya, 🚀 Riya, 🤖 Meera" placeholder="e.g. 🎨 Diya, 🚀 Riya, 🤖 Meera"/>
+            <input class="sim-input" id="sim-set-b" oninput="syncSetsEditorFromInputs();renderLabVenn();if(setsLabMode==='3d')updateSets3D()" value="🎨 Diya, 🚀 Riya, 🤖 Meera" placeholder="e.g. 🎨 Diya, 🚀 Riya, 🤖 Meera"/>
           </div>
           <div>
             <div class="sim-label">Operation</div>
@@ -1205,6 +1221,7 @@ header .icon-btn{
         <div class="step-info" id="sim-step-info">Step 0 / 0</div>
         <div class="speed-wrap">Speed<input type="range" id="sim-speed" min="300" max="2000" value="900" step="100">Auto</div>
         <button class="icon-btn tts-read-btn" aria-label="Read Output Aloud" title="Read aloud" onclick="speakText(document.getElementById('sim-output').textContent)">🔊</button>
+      <div class="step-prog-bar"><div class="step-prog-fill" id="sim-step-prog"></div></div>
       </div>
       <!-- How Sets Work Under The Hood (CPython Execution Mechanics) -->
       <div id="sim-how-it-works-panel" style="margin:0 24px 20px;padding:20px;border-radius:18px;background:rgba(255,255,255,0.06);border:1.5px solid var(--glass-border);display:none">
@@ -1394,7 +1411,7 @@ for p in [s1, mentor1]: print(p.introduce())</pre>
       </div>
     </div>
 
-    <div style="display:flex;gap:14px;margin-top:28px">
+    <div style="display:flex;gap:14px;margin-top:28px;flex-wrap:wrap">
       <button class="tc-btn" style="--grad:linear-gradient(135deg,#f7971e,#f953c6)" onclick="showTopicTab('oop','lab')">Open Lab ⚗️</button>
       <button class="tc-btn" style="--grad:linear-gradient(135deg,#f953c6,#c850c0)" onclick="showTopicTab('oop','quiz-oop')">Take Quiz 🎯</button>
     </div>
@@ -1407,7 +1424,7 @@ for p in [s1, mentor1]: print(p.introduce())</pre>
         <div style="font-size:1.3rem;font-weight:800;margin-bottom:4px">⚗️ OOP Code Lab</div>
         <p style="color:var(--txt2);font-size:.9rem">Edit the Python code below, then run it step-by-step to see OOP in action.</p>
       </div>
-      <div style="display:flex;gap:8px;align-items:center">
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;max-width:100%">
         <div class="view-toggle" id="oop-lab-view-toggle">
           <button class="vt-btn active" onclick="setOOPLabView('2d',this)">2D Cards</button>
           <button class="vt-btn" onclick="setOOPLabView('3d',this)">3D Glass</button>
@@ -1508,6 +1525,7 @@ CSE
       <div class="step-info" id="oop-step-info">Step 0 / 0</div>
       <div class="speed-wrap">Speed<input type="range" id="oop-speed" min="300" max="2000" value="900" step="100">Auto</div>
       <button class="icon-btn tts-read-btn" aria-label="Read OOP Output Aloud" onclick="speakText(document.getElementById('oop-output').textContent)">🔊</button>
+    <div class="step-prog-bar"><div class="step-prog-fill" id="oop-step-prog"></div></div>
     </div>
     <!-- How OOP Works Under The Hood (CPython Heap & Stack Mechanics) -->
     <div id="oop-how-it-works-panel" class="glass" style="margin-top:16px;padding:22px;border-radius:20px;display:none">
@@ -2276,13 +2294,40 @@ function initSetsSim() {
   else if (ed) renderSimCode(ed.value.split('\n'));
 }
 
+
+function highlightPyLine(raw) {
+  let comment = '', code = raw;
+  const hashIdx = raw.indexOf('#');
+  // Avoid splitting # inside quotes
+  let inQ = null;
+  for (let i = 0; i < raw.length; i++) {
+    const ch = raw[i];
+    if (inQ) { if (ch === inQ && raw[i-1] !== '\\') inQ = null; }
+    else if (ch === '"' || ch === "'") inQ = ch;
+    else if (ch === '#') { code = raw.slice(0, i); comment = raw.slice(i); break; }
+  }
+  let esc = escHtml(code);
+  esc = esc.replace(/(f?&quot;.*?&quot;|f?&#39;.*?&#39;)/g, '<span class="st">$1</span>');
+  esc = esc.replace(/\b(class|def|return|for|in|if|else|elif|import|from|as|True|False|None)\b/g, '<span class="kw">$1</span>');
+  esc = esc.replace(/\b(print|input|len|set|int|list|split|strip|super)\b/g, '<span class="fn">$1</span>');
+  esc = esc.replace(/\b(self)\b/g, '<span style="color:#ff9f0a;font-weight:700">$1</span>');
+  if (comment) esc += `<span class="cm">${escHtml(comment)}</span>`;
+  return esc;
+}
+
 function renderSimCode(lines, hlLines=[], isFinal=false) {
   const panel = document.getElementById('sim-code-panel');
   if (!panel) return;
   panel.innerHTML = lines.map((l,i)=>{
     const cls = hlLines.includes(i) ? (isFinal ? ' hl-out' : ' hl') : '';
-    return `<div class="code-line${cls}" id="scl-${i}"><span class="line-num">${i+1}</span>${escHtml(l)}</div>`;
+    return `<div class="code-line${cls}" id="scl-${i}"><span class="line-num">${i+1}</span>${highlightPyLine(l)}</div>`;
   }).join('');
+  if (hlLines.length) {
+    const active = document.getElementById('scl-' + hlLines[0]);
+    if (active && panel.scrollHeight > panel.clientHeight) {
+      panel.scrollTo({ top: Math.max(0, active.offsetTop - panel.clientHeight / 2), behavior: 'smooth' });
+    }
+  }
 }
 
 function parseSetLiteral(expr) {
@@ -2674,12 +2719,25 @@ function simStep(dir) {
   renderSimStep();
 }
 
+function getActiveSetsData() {
+  const A = parseSet(document.getElementById('sim-set-a')?.value || '⚡ Aarav, 🎧 Kabir, 🎨 Diya').map(String);
+  const B = parseSet(document.getElementById('sim-set-b')?.value || '🎨 Diya, 🚀 Riya, 🤖 Meera').map(String);
+  const onlyA = A.filter(x => !B.includes(x));
+  const both = A.filter(x => B.includes(x));
+  const onlyB = B.filter(x => !A.includes(x));
+  const res = computeOp(A, B, simOp).map(String);
+  return { A, B, onlyA, both, onlyB, res };
+}
+
 function renderSimStep() {
   const step = simSteps[simCurrent];
   const lines = document.getElementById('sim-editor').value.split('\n');
   renderSimCode(lines, step.lines, simCurrent === simSteps.length - 1);
   document.getElementById('sim-output').textContent = step.msg;
   document.getElementById('sim-step-info').textContent = `Step ${simCurrent+1} / ${simSteps.length}`;
+  const prog = document.getElementById('sim-step-prog');
+  if (prog) prog.style.width = `${Math.round(((simCurrent + 1) / Math.max(1, simSteps.length)) * 100)}%`;
+
   document.getElementById('sim-btn-prev').disabled = simCurrent === 0;
   document.getElementById('sim-btn-next').disabled = simCurrent === simSteps.length-1;
 
@@ -2696,6 +2754,10 @@ function renderSimStep() {
       hiwPanel.style.display = 'none';
     }
   }
+
+  // Sync 2D Venn & 3D Sets Stage with live inputs + step phase
+  renderLabVenn();
+  if (setsLabMode === '3d') updateSets3D();
 
   if (simCurrent === simSteps.length-1) {
     clearInterval(simTimer); simPlaying = false;
@@ -3127,16 +3189,38 @@ function updateSets3D() {
     addHoloRing(1.9, 0, 1.65, 0xff9500);
   }
 
-  const coords = labVennType === 'three'
-    ? [['Aarav', -1.5, -0.8], ['Diya', 0, -0.2], ['Riya', 1.5, -0.8], ['Kabir', -0.7, 0.9], ['Meera', 0.7, 0.9], ['Neha', 0, 1.6]]
-    : labVennType === 'subset'
-    ? [['Aarav', -0.7, 0.1], ['Kabir', -0.1, 0.4], ['Diya', 1.1, -0.3], ['Riya', 1.2, 0.6]]
-    : labVennType === 'disjoint'
-    ? [['Aarav', -2.2, -0.2], ['Kabir', -1.5, 0.3], ['Riya', 1.6, -0.2], ['Meera', 2.2, 0.3]]
-    : [['Aarav', -1.8, -0.3], ['Kabir', -1.6, 0.6], ['Diya', 0, 0.1], ['Riya', 1.7, -0.3], ['Meera', 1.6, 0.6], ['Neha', 3.4, 1.2]];
+  const { onlyA, both, onlyB, res } = getActiveSetsData();
+  let tokenList = [];
+  if (labVennType === 'two') {
+    const aPos = [[-1.9, -0.35], [-1.75, 0.65], [-2.55, 0.25], [-1.35, -1.05]];
+    const abPos = [[0.0, 0.0], [0.0, -0.85], [0.0, 0.85], [0.55, 0.15]];
+    const bPos = [[1.9, -0.35], [1.75, 0.65], [2.55, 0.25], [1.35, -1.05]];
+    onlyA.slice(0, 4).forEach((name, i) => tokenList.push({ name, x: aPos[i][0], z: aPos[i][1], inA: true, inB: false }));
+    both.slice(0, 4).forEach((name, i) => tokenList.push({ name, x: abPos[i][0], z: abPos[i][1], inA: true, inB: true }));
+    onlyB.slice(0, 4).forEach((name, i) => tokenList.push({ name, x: bPos[i][0], z: bPos[i][1], inA: false, inB: true }));
+  } else {
+    const coords = labVennType === 'three'
+      ? [['Aarav', -1.5, -0.8], ['Diya', 0, -0.2], ['Riya', 1.5, -0.8], ['Kabir', -0.7, 0.9], ['Meera', 0.7, 0.9], ['Neha', 0, 1.6]]
+      : labVennType === 'subset'
+      ? [['Aarav', -0.7, 0.1], ['Kabir', -0.1, 0.4], ['Diya', 1.1, -0.3], ['Riya', 1.2, 0.6]]
+      : [['Aarav', -2.2, -0.2], ['Kabir', -1.5, 0.3], ['Riya', 1.6, -0.2], ['Meera', 2.2, 0.3]];
+    coords.forEach(([name, x, z]) => tokenList.push({ name, x, z, inA: true, inB: labVennType !== 'disjoint' }));
+  }
 
-  const inA = ['Aarav', 'Kabir', 'Diya'];
-  const inB = ['Diya', 'Riya', 'Meera'];
+  // 3D Floating Result Plaque at front of arena (anim3d-web-studio plaque)
+  const opStr = { union: 'A | B (UNION)', intersection: 'A & B (INTERSECTION)', difference: 'A - B (DIFF)', symdiff: 'A ^ B (SYM DIFF)' }[simOp] || 'RESULT';
+  const plaqueTex = makeLabelTex(opStr, `${res.length} items: ${res.slice(0,3).join(', ')}${res.length>3?'…':''}`, '#11100f', '#c7c911');
+  const plaque = new THREE.Mesh(
+    new THREE.BoxGeometry(3.6, 0.72, 0.12),
+    [
+      new THREE.MeshStandardMaterial({ color: 0x334155 }), new THREE.MeshStandardMaterial({ color: 0x334155 }),
+      new THREE.MeshStandardMaterial({ color: 0xc7c911 }), new THREE.MeshStandardMaterial({ color: 0x1e293b }),
+      new THREE.MeshStandardMaterial({ map: plaqueTex }), new THREE.MeshStandardMaterial({ color: 0x11100f })
+    ]
+  );
+  plaque.position.set(0, 0.12, 2.55);
+  plaque.rotation.x = -0.35;
+  root.add(plaque);
 
   const brushedRoughness = createBrushedMetalRoughnessMap();
   const tokenBaseRingGeo = new THREE.CylinderGeometry(0.46, 0.5, 0.1, 28);
@@ -3147,11 +3231,10 @@ function updateSets3D() {
   const tokenHaloGeo = new THREE.TorusGeometry(0.54, 0.032, 12, 36);
   tokenHaloGeo.rotateX(Math.PI / 2);
 
-  coords.forEach(([name, x, z]) => {
-    const s = STUDENT_PROFILES[name] || { emoji: '⚡', color: '#2563EB' };
+  tokenList.forEach(({ name, x, z, inA: aHas, inB: bHas }) => {
+    const clean = String(name).replace(/^[^a-zA-Z0-9]+/, '').trim();
+    const s = STUDENT_PROFILES[clean] || { emoji: '🔹', color: '#2563EB' };
     const isSel = selectedLabStudent === name;
-    const aHas = inA.includes(name);
-    const bHas = inB.includes(name);
     let inOpResult = false;
     if (simOp === 'union') inOpResult = aHas || bHas;
     else if (simOp === 'intersection') inOpResult = aHas && bHas;
@@ -3199,7 +3282,8 @@ function updateSets3D() {
     );
     displayPivot.add(frameMesh);
 
-    const faceTex = createTokenCapTexture(`${s.emoji || '⚡'} ${name}`, accentHex, inOpResult || isSel, subLabel);
+    const tokLabel = (STUDENT_PROFILES[clean] && !String(name).includes(s.emoji)) ? `${s.emoji} ${name}` : String(name);
+    const faceTex = createTokenCapTexture(tokLabel, accentHex, inOpResult || isSel, subLabel);
     const faceMesh = new THREE.Mesh(
       tokenDisplayFaceGeo,
       new THREE.MeshStandardMaterial({ map: faceTex, roughness: 0.25, metalness: 0.05 })
@@ -3652,77 +3736,90 @@ function renderLabVenn() {
   const stage = document.getElementById('sets-lab-venn-stage');
   if (!stage) return;
   let chipIdx = 0;
-  const chip = (name, x, y, fill) => {
-    const active = selectedLabStudent === name;
-    const delay = (chipIdx++) * 0.07;
-    const s = STUDENT_PROFILES[name];
-    const display = s ? `${s.emoji} ${name}` : name;
-    return `<g style="cursor:pointer" onclick="selectLabStudent('${name}')">
+  const chip = (label, x, y, fill, highlighted=true) => {
+    const clean = String(label).replace(/^[^a-zA-Z0-9]+/, '').trim();
+    const s = STUDENT_PROFILES[clean];
+    const display = (s && !String(label).includes(s.emoji)) ? `${s.emoji} ${clean}` : String(label);
+    const shortTxt = display.length > 10 ? display.slice(0, 9) + '…' : display;
+    const delay = (chipIdx++) * 0.06;
+    return `<g style="cursor:pointer" opacity="${highlighted ? 1 : 0.42}">
       <g class="chip-anim" style="animation-delay:${delay}s;transform-origin:${x}px ${y}px">
-        <circle class="${active?'pulse-ring':''}" cx="${x}" cy="${y}" r="${active?24:20}" fill="${fill}" stroke="#fff" stroke-width="${active?3.2:2}"/>
-        <text x="${x}" y="${y+4}" text-anchor="middle" font-size="10" font-weight="900" fill="#fff">${display}</text>
+        <rect x="${x-30}" y="${y-13}" width="60" height="26" rx="13" fill="${fill}" stroke="#11100f" stroke-width="${highlighted?2.2:1.2}"/>
+        <text x="${x}" y="${y+3.5}" text-anchor="middle" font-size="9.5" font-weight="900" fill="#fff">${escHtml(shortTxt)}</text>
       </g>
     </g>`;
   };
 
   let svg = '';
+  let summaryHTML = '';
   if (labVennType === 'two') {
-    svg = `<svg viewBox="0 0 380 214" style="width:100%;max-height:224px">
-      <defs><clipPath id="lv-clip-a"><circle cx="140" cy="110" r="74"/></clipPath></defs>
-      <rect x="6" y="6" width="368" height="202" rx="16" fill="rgba(148,163,184,0.12)" stroke="#94a3b8" stroke-width="1.5"/>
-      <text x="18" y="25" font-size="11" font-weight="800" fill="var(--txt2)">U (All Students)</text>
-      <circle class="venn-circle-anim" cx="140" cy="110" r="74" fill="rgba(79,70,229,0.20)" stroke="#4f46e5" stroke-width="2.5"/>
-      <circle class="venn-circle-anim" style="animation-delay:.08s" cx="240" cy="110" r="74" fill="rgba(245,158,11,0.20)" stroke="#f59e0b" stroke-width="2.5"/>
-      <circle cx="240" cy="110" r="74" fill="rgba(139,92,246,0.34)" clip-path="url(#lv-clip-a)"/>
-      <text x="102" y="54" font-size="12" font-weight="800" fill="#4f46e5">A (Cricket)</text>
-      <text x="234" y="54" font-size="12" font-weight="800" fill="#d97706">B (Music)</text>
-      ${chip('Aarav', 102, 95, '#4f46e5')}
-      ${chip('Kabir', 106, 142, '#06b6d4')}
-      ${chip('Diya', 190, 114, '#8b5cf6')}
-      ${chip('Riya', 274, 95, '#f59e0b')}
-      ${chip('Meera', 270, 142, '#ec4899')}
-      ${chip('Neha', 338, 176, '#10b981')}
+    const { A, B, onlyA, both, onlyB, res } = getActiveSetsData();
+    const shadeA = (simOp === 'union' || simOp === 'difference' || simOp === 'symdiff');
+    const shadeB = (simOp === 'union' || simOp === 'symdiff');
+    const shadeAB = (simOp === 'union' || simOp === 'intersection');
+    const opSymbols = { union: 'A ∪ B', intersection: 'A ∩ B', difference: 'A − B', symdiff: 'A ⊕ B' };
+
+    const ptsA = [[95, 86], [95, 126], [125, 158], [66, 152]];
+    const ptsAB = [[190, 96], [190, 134], [190, 166], [190, 68]];
+    const ptsB = [[285, 86], [285, 126], [255, 158], [314, 152]];
+
+    svg = `<svg viewBox="0 0 380 218" style="width:100%;max-height:245px">
+      <defs><clipPath id="lv-clip-a"><circle cx="140" cy="112" r="78"/></clipPath></defs>
+      <rect x="6" y="6" width="368" height="206" rx="14" fill="rgba(148,163,184,0.10)" stroke="#11100f" stroke-width="1.8"/>
+      <text x="18" y="24" font-size="10.5" font-weight="800" fill="var(--txt2)">U (Universal) · Active Op: ${opSymbols[simOp] || 'A ∪ B'}</text>
+      <circle class="venn-circle-anim ${shadeA?'dash-flow':''}" cx="140" cy="112" r="78" fill="${shadeA?'rgba(0,122,255,0.24)':'rgba(0,122,255,0.06)'}" stroke="#007aff" stroke-width="${shadeA?3:1.8}"/>
+      <circle class="venn-circle-anim ${shadeB?'dash-flow':''}" style="animation-delay:.08s" cx="240" cy="112" r="78" fill="${shadeB?'rgba(255,149,0,0.24)':'rgba(255,149,0,0.06)'}" stroke="#ff9500" stroke-width="${shadeB?3:1.8}"/>
+      <circle cx="240" cy="112" r="78" fill="${shadeAB?'rgba(199,201,17,0.48)':'rgba(17,16,15,0.06)'}" clip-path="url(#lv-clip-a)"/>
+      <text x="96" y="50" font-size="11.5" font-weight="900" fill="#007aff">Set A (${A.length})</text>
+      <text x="244" y="50" font-size="11.5" font-weight="900" fill="#d97706">Set B (${B.length})</text>
+      ${onlyA.slice(0,4).map((el, i) => chip(el, ptsA[i][0], ptsA[i][1], '#007aff', res.includes(el))).join('')}
+      ${both.slice(0,4).map((el, i) => chip(el, ptsAB[i][0], ptsAB[i][1], '#ce0505', res.includes(el))).join('')}
+      ${onlyB.slice(0,4).map((el, i) => chip(el, ptsB[i][0], ptsB[i][1], '#ff9500', res.includes(el))).join('')}
     </svg>`;
+    summaryHTML = `<div style="margin-top:10px;padding:10px 14px;border-radius:10px;background:var(--paper);border:1.5px solid var(--ink);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;font-family:'JetBrains Mono',monospace;font-size:.78rem">
+      <span><strong>${opSymbols[simOp]}:</strong> ${escHtml(formatPySet(res))}</span>
+      <span class="s-badge" style="background:var(--lime);color:#11100f">n(result) = ${res.length}</span>
+    </div>`;
   } else if (labVennType === 'three') {
     svg = `<svg viewBox="0 0 380 236" style="width:100%;max-height:240px">
-      <circle class="venn-circle-anim" cx="145" cy="92" r="62" fill="rgba(79,70,229,0.20)" stroke="#4f46e5" stroke-width="2.2"/>
-      <circle class="venn-circle-anim" style="animation-delay:.08s" cx="235" cy="92" r="62" fill="rgba(245,158,11,0.20)" stroke="#f59e0b" stroke-width="2.2"/>
-      <circle class="venn-circle-anim" style="animation-delay:.16s" cx="190" cy="150" r="62" fill="rgba(16,185,129,0.20)" stroke="#10b981" stroke-width="2.2"/>
-      <text x="72" y="24" font-size="11.5" font-weight="800" fill="#4f46e5">A Cricket</text>
-      <text x="256" y="24" font-size="11.5" font-weight="800" fill="#d97706">B Music</text>
-      <text x="190" y="228" text-anchor="middle" font-size="11.5" font-weight="800" fill="#059669">C Robotics</text>
-      ${chip('Aarav', 112, 82, '#4f46e5')}
-      ${chip('Diya', 190, 112, '#8b5cf6')}
-      ${chip('Riya', 268, 82, '#f59e0b')}
-      ${chip('Kabir', 146, 142, '#06b6d4')}
-      ${chip('Meera', 234, 142, '#ec4899')}
-      ${chip('Neha', 190, 182, '#10b981')}
+      <circle class="venn-circle-anim" cx="145" cy="92" r="62" fill="rgba(0,122,255,0.20)" stroke="#007aff" stroke-width="2.2"/>
+      <circle class="venn-circle-anim" style="animation-delay:.08s" cx="235" cy="92" r="62" fill="rgba(255,149,0,0.20)" stroke="#ff9500" stroke-width="2.2"/>
+      <circle class="venn-circle-anim" style="animation-delay:.16s" cx="190" cy="150" r="62" fill="rgba(52,199,89,0.20)" stroke="#34c759" stroke-width="2.2"/>
+      <text x="72" y="24" font-size="11.5" font-weight="800" fill="#007aff">Set A</text>
+      <text x="256" y="24" font-size="11.5" font-weight="800" fill="#d97706">Set B</text>
+      <text x="190" y="228" text-anchor="middle" font-size="11.5" font-weight="800" fill="#15803d">Set C</text>
+      ${chip('⚡ Aarav', 112, 82, '#007aff', true)}
+      ${chip('🎨 Diya', 190, 112, '#ce0505', true)}
+      ${chip('🚀 Riya', 268, 82, '#ff9500', true)}
+      ${chip('🎧 Kabir', 146, 142, '#06b6d4', true)}
+      ${chip('🤖 Meera', 234, 142, '#ec4899', true)}
+      ${chip('🌿 Neha', 190, 182, '#34c759', true)}
     </svg>`;
   } else if (labVennType === 'subset') {
     svg = `<svg viewBox="0 0 380 214" style="width:100%;max-height:224px">
-      <circle class="venn-circle-anim" cx="190" cy="107" r="90" fill="rgba(245,158,11,0.16)" stroke="#f59e0b" stroke-width="2.5"/>
-      <text x="190" y="34" text-anchor="middle" font-size="12" font-weight="800" fill="#d97706">B = All Club Members</text>
-      <circle class="venn-circle-anim" style="animation-delay:.1s" cx="166" cy="118" r="54" fill="rgba(79,70,229,0.22)" stroke="#4f46e5" stroke-width="2.5"/>
-      <text x="166" y="82" text-anchor="middle" font-size="11.5" font-weight="800" fill="#4f46e5">A ⊂ B (CSE)</text>
-      ${chip('Aarav', 145, 120, '#4f46e5')}
-      ${chip('Kabir', 188, 134, '#06b6d4')}
-      ${chip('Diya', 248, 94, '#8b5cf6')}
-      ${chip('Riya', 248, 144, '#f59e0b')}
+      <circle class="venn-circle-anim" cx="190" cy="107" r="90" fill="rgba(255,149,0,0.16)" stroke="#ff9500" stroke-width="2.5"/>
+      <text x="190" y="34" text-anchor="middle" font-size="12" font-weight="800" fill="#d97706">Superset B</text>
+      <circle class="venn-circle-anim" style="animation-delay:.1s" cx="166" cy="118" r="54" fill="rgba(0,122,255,0.22)" stroke="#007aff" stroke-width="2.5"/>
+      <text x="166" y="82" text-anchor="middle" font-size="11.5" font-weight="800" fill="#007aff">A ⊂ B</text>
+      ${chip('⚡ Aarav', 145, 114, '#007aff', true)}
+      ${chip('🎧 Kabir', 180, 144, '#06b6d4', true)}
+      ${chip('🎨 Diya', 248, 94, '#ce0505', true)}
+      ${chip('🚀 Riya', 248, 144, '#ff9500', true)}
     </svg>`;
   } else {
     svg = `<svg viewBox="0 0 380 204" style="width:100%;max-height:214px">
-      <circle class="venn-circle-anim" cx="110" cy="102" r="72" fill="rgba(79,70,229,0.20)" stroke="#4f46e5" stroke-width="2.5"/>
-      <text x="110" y="48" text-anchor="middle" font-size="12" font-weight="800" fill="#4f46e5">A (Morning)</text>
-      <circle class="venn-circle-anim" style="animation-delay:.1s" cx="270" cy="102" r="72" fill="rgba(245,158,11,0.20)" stroke="#f59e0b" stroke-width="2.5"/>
-      <text x="270" y="48" text-anchor="middle" font-size="12" font-weight="800" fill="#d97706">B (Evening)</text>
+      <circle class="venn-circle-anim" cx="110" cy="102" r="72" fill="rgba(0,122,255,0.20)" stroke="#007aff" stroke-width="2.5"/>
+      <text x="110" y="48" text-anchor="middle" font-size="12" font-weight="800" fill="#007aff">Set A</text>
+      <circle class="venn-circle-anim" style="animation-delay:.1s" cx="270" cy="102" r="72" fill="rgba(255,149,0,0.20)" stroke="#ff9500" stroke-width="2.5"/>
+      <text x="270" y="48" text-anchor="middle" font-size="12" font-weight="800" fill="#d97706">Set B</text>
       <text x="190" y="106" text-anchor="middle" font-size="12" font-weight="900" fill="var(--txt2)">A ∩ B = ∅</text>
-      ${chip('Aarav', 88, 102, '#4f46e5')}
-      ${chip('Kabir', 132, 122, '#06b6d4')}
-      ${chip('Riya', 248, 102, '#f59e0b')}
-      ${chip('Meera', 292, 122, '#ec4899')}
+      ${chip('⚡ Aarav', 88, 96, '#007aff', true)}
+      ${chip('🎧 Kabir', 124, 132, '#06b6d4', true)}
+      ${chip('🚀 Riya', 248, 96, '#ff9500', true)}
+      ${chip('🤖 Meera', 284, 132, '#ec4899', true)}
     </svg>`;
   }
-  stage.innerHTML = svg;
+  stage.innerHTML = svg + summaryHTML;
 }
 
 /* ══════════════════════════════════════════════════════
@@ -3873,8 +3970,14 @@ function renderOOPCode(hlLines=[], isFinal=false) {
   if (!panel) return;
   panel.innerHTML = oopCodeLines.map((l,i)=>{
     const cls = hlLines.includes(i) ? (isFinal ? ' hl-out' : ' hl') : '';
-    return `<div class="code-line${cls}" id="ocl-${i}"><span class="line-num">${i+1}</span>${escHtml(l)}</div>`;
+    return `<div class="code-line${cls}" id="ocl-${i}"><span class="line-num">${i+1}</span>${highlightPyLine(l)}</div>`;
   }).join('');
+  if (hlLines.length) {
+    const active = document.getElementById('ocl-' + hlLines[0]);
+    if (active && panel.scrollHeight > panel.clientHeight) {
+      panel.scrollTo({ top: Math.max(0, active.offsetTop - panel.clientHeight / 2), behavior: 'smooth' });
+    }
+  }
 }
 
 function parsePyArgs(argStr) {
@@ -3996,6 +4099,10 @@ function runOOPCode() {
   const steps = [];
   const outputs = [];
 
+  const cloneObjs = () => oopObjects.map(o => ({
+    varName: o.varName, className: o.className, _heapAddr: o._heapAddr,
+    attrs: { ...o.attrs }, lastMethodOut: o._lastMethodOut || ''
+  }));
   const mainSnapshot = () => {
     const snap = {};
     for (const [k, v] of Object.entries(mainVars)) {
@@ -4013,6 +4120,8 @@ function runOOPCode() {
         mainVars: mainSnapshot(),
         initShow: false,
         frameTitle: '',
+        objectsSnapshot: cloneObjs(),
+        bpPulse: true,
         frameVars: {},
         hiw: {
           opcode: 'LOAD_BUILD_CLASS (0x47)',
@@ -4044,6 +4153,7 @@ function runOOPCode() {
         mainVars: Object.fromEntries(Object.entries(mainVars).map(([k,v]) => [k, v.isScalar ? formatPyVal(v.value) : `<${v.className}>`])),
         initShow: false,
         frameTitle: '',
+        objectsSnapshot: cloneObjs(),
         frameVars: {},
         hiw: {
           opcode: isInt ? 'CALL_FUNCTION (int(input))' : 'CALL_FUNCTION (input)',
@@ -4080,6 +4190,8 @@ function runOOPCode() {
         mainVars: mainSnapshot(),
         initShow: false,
         frameTitle: '',
+        objectsSnapshot: cloneObjs(),
+        stampTrigger: true,
         frameVars: {},
         hiw: {
           opcode: 'CALL_FUNCTION (0x83)',
@@ -4101,6 +4213,7 @@ function runOOPCode() {
           mainVars: mainSnapshot(),
           initShow: true,
           frameTitle: `⚙️ ${clsName}.__init__(${initM.params.join(', ')})`,
+          objectsSnapshot: cloneObjs(),
           frameVars: { ...locals },
           hiw: {
             opcode: 'CALL_METHOD (0xA1)',
@@ -4127,6 +4240,8 @@ function runOOPCode() {
               mainVars: mainSnapshot(),
               initShow: true,
               frameTitle: `⚙️ ${clsName}.__init__(${initM.params.join(', ')})`,
+              objectsSnapshot: cloneObjs(),
+              highlightAttr: attrName,
               frameVars: { ...locals },
               hiw: {
                 opcode: 'STORE_ATTR (0x5F)',
@@ -4167,8 +4282,11 @@ function runOOPCode() {
           const retMatch = b.text.match(/^return\s+(.+)$/);
           if (retMatch) retVal = evalFString(retMatch[1], obj);
         }
+        obj._lastMethodOut = retVal;
         outputs.push(retVal);
         steps.push({
+          objectsSnapshot: cloneObjs(),
+          methodTargetVar: varName,
           lines: [item.line, method.line, ...(method.body.map(b=>b.line))],
           msg: `Calling ${varName}.${methodName}() → "${retVal}"\n\nOutput:\n${outputs.join('\n')}`,
           cf: 'init',
@@ -4251,6 +4369,22 @@ function renderOOPStep() {
   renderOOPCode(step.lines, oopCurrent === oopSteps.length - 1);
   document.getElementById('oop-output').textContent = step.msg;
   document.getElementById('oop-step-info').textContent = `Step ${oopCurrent+1} / ${oopSteps.length}`;
+  const prog = document.getElementById('oop-step-prog');
+  if (prog) prog.style.width = `${Math.round(((oopCurrent + 1) / Math.max(1, oopSteps.length)) * 100)}%`;
+
+  if (step.objectsSnapshot) {
+    oopObjects = step.objectsSnapshot.map(o => ({ ...o, attrs: { ...o.attrs } }));
+    updateOOPPanel(step.highlightAttr, step.methodTargetVar);
+  }
+  if (step.stampTrigger && oop3D && oop3D.state) {
+    oop3D.state.stampAnim = { active: true, progress: 0, dir: 1 };
+  }
+  if (step.methodTargetVar && oop3D && oop3D.state && oop3D.state.cards) {
+    oop3D.state.cards.forEach((c, idx) => {
+      const match = oopObjects[idx] && oopObjects[idx].varName === step.methodTargetVar;
+      c.userData.targetRotY = match ? Math.PI : 0;
+    });
+  }
 
   const hiwPanel = document.getElementById('oop-how-it-works-panel');
   if (hiwPanel) {
@@ -4307,7 +4441,7 @@ function renderOOPStep() {
   if (oopCurrent === oopSteps.length-1) { clearInterval(oopTimer); oopPlaying=false; document.getElementById('oop-btn-play').textContent='▶ Play'; }
 }
 
-function updateOOPPanel() {
+function updateOOPPanel(highlightAttr = '', methodTargetVar = '') {
   const panel = document.getElementById('oop-obj-panel');
   if (!panel) return;
   if (oopObjects.length === 0) {
@@ -4344,16 +4478,18 @@ function updateOOPPanel() {
             ${escHtml(displayName)}
           </div>
           <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px">
-            ${attrEntries.map(([k, v]) => `
-              <div style="padding:4px 8px;border-radius:6px;background:var(--paper);border:1px solid var(--line);font-size:11px;line-height:1.3">
-                <span style="display:block;font:800 8.5px/1 'JetBrains Mono',monospace;text-transform:uppercase;color:var(--brown)">${escHtml(k)}</span>
+            ${attrEntries.length ? attrEntries.map(([k, v]) => {
+              const isNew = highlightAttr === k;
+              return `<div style="padding:4px 8px;border-radius:6px;background:${isNew?'rgba(199,201,17,0.35)':'var(--paper)'};border:${isNew?'2px solid #ce0505':'1px solid var(--line)'};font-size:11px;line-height:1.3">
+                <span style="display:block;font:800 8.5px/1 'JetBrains Mono',monospace;text-transform:uppercase;color:${isNew?'#ce0505':'var(--brown)'}">${escHtml(k)}</span>
                 <strong style="color:var(--ink);font-weight:800">${escHtml(String(v))}</strong>
-              </div>
-            `).join('')}
+              </div>`;
+            }).join('') : '<span style="grid-column:1/-1;font-size:11px;color:var(--muted);font-style:italic">Allocating memory in __init__…</span>'}
           </div>
         </div>
       </div>
 
+      ${(methodTargetVar === o.varName && o.lastMethodOut) ? `<div style="margin:0 14px 10px;padding:7px 10px;border-radius:8px;background:#11100f;color:#c7c911;font:700 11px/1.3 'JetBrains Mono',monospace">💬 ${escHtml(o.varName)}.introduce() → "${escHtml(o.lastMethodOut)}"</div>` : ''}
       <!-- ID Card Footer Barcode Strip -->
       <div style="display:flex;align-items:center;justify-content:space-between;padding:5px 12px;background:var(--paper);border-top:1.5px solid var(--ink);font:800 9.5px/1.2 'JetBrains Mono',monospace;color:var(--muted)">
         <span>HEAP: ${escHtml(heapAddr)}</span>
