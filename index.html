@@ -333,7 +333,29 @@ input[type=range]{accent-color:var(--accent1)}
   padding:14px 16px;border-radius:12px;background:var(--glass-bg);backdrop-filter:blur(8px);
   border:1.5px solid var(--glass-border);animation:objPop .4s var(--spring);
 }
-@keyframes objPop{from{opacity:0;transform:scale(.8) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes objPop{0%{opacity:0;transform:scale(.72) translateY(22px) rotateX(18deg)}65%{transform:scale(1.04) translateY(-3px) rotateX(0)}100%{opacity:1;transform:scale(1) translateY(0) rotateX(0)}}
+@keyframes jtrPop{0%{opacity:0;transform:scale(.92) translateY(14px)}100%{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes chipBounce{0%{opacity:0;transform:scale(.4) translateY(10px)}70%{transform:scale(1.1) translateY(-2px)}100%{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes dashFlow{to{stroke-dashoffset:-24}}
+@keyframes pulseRing{0%,100%{transform:scale(1);opacity:.95}50%{transform:scale(1.06);opacity:1}}
+@keyframes filterFly{0%{opacity:0;transform:translateX(-28px) scale(.6)}60%{opacity:1;transform:translateX(4px) scale(1.12)}100%{opacity:1;transform:translateX(0) scale(1)}}
+@keyframes stampFlash{0%{box-shadow:0 0 0 0 rgba(247,151,30,.7);transform:scale(1)}40%{box-shadow:0 0 0 18px rgba(247,151,30,0);transform:scale(.97)}100%{box-shadow:var(--glass-shadow);transform:scale(1)}}
+@keyframes floatSlow{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.jtr-pop{animation:jtrPop .38s var(--spring) both}
+.chip-anim{animation:chipBounce .42s var(--spring) both}
+.filter-fly{animation:filterFly .48s var(--spring) both}
+.dash-flow{stroke-dasharray:6,4;animation:dashFlow 1s linear infinite}
+.pulse-ring{transform-origin:center;animation:pulseRing 2s ease-in-out infinite}
+.bp-stamping{animation:stampFlash .55s var(--spring)}
+.float-slow{animation:floatSlow 3.6s ease-in-out infinite}
+.topic-card::after{
+  content:'';position:absolute;top:-50%;left:-60%;width:45%;height:200%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.28),transparent);
+  transform:rotate(24deg);transition:left .65s ease;pointer-events:none;
+}
+.topic-card:hover::after{left:130%}
+.option-card.selected{animation:chipBounce .32s var(--spring)}
+.score-circle{animation:chipBounce .55s var(--spring), pulseRing 2.6s ease-in-out infinite .6s}
 .obj-instance .oi-title{font-weight:800;font-size:.9rem;margin-bottom:8px;color:var(--accent1)}
 .obj-instance .oi-attr{font-family:monospace;font-size:.82rem;color:var(--txt2)}
 /* call frames panel */
@@ -702,8 +724,11 @@ input[type=range]{accent-color:var(--accent1)}
 
     <!-- Blueprint + Object cards -->
     <div class="oop-intro-grid">
-      <div class="glass blueprint-card">
-        <div class="bp-title">🏛️ The Blueprint (Class)</div>
+      <div class="glass blueprint-card" id="oop-bp-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+          <div class="bp-title" style="margin-bottom:0">🏛️ The Blueprint (Class)</div>
+          <button class="vis-btn primary" style="padding:5px 12px;font-size:.75rem" onclick="stampOOPCard()">✨ Stamp Object</button>
+        </div>
         <div class="bp-class-box">
           <div class="bp-class-name">Student</div>
           <div style="margin-top:16px">
@@ -723,7 +748,7 @@ input[type=range]{accent-color:var(--accent1)}
       <!-- Flip cards -->
       <div class="glass" style="padding:28px">
         <div style="font-size:.72rem;font-weight:700;letter-spacing:1.3px;text-transform:uppercase;color:var(--accent3);margin-bottom:16px">Objects (Hover to Reveal Attributes)</div>
-        <div class="obj-cards-row">
+        <div class="obj-cards-row" id="oop-cards-row">
           <div class="flip-card">
             <div class="flip-inner">
               <div class="flip-face"><span class="fi-icon">🎓</span><span class="fi-name">Rohan</span><span style="font-size:.75rem;color:var(--txt2)">click to flip</span></div>
@@ -1084,7 +1109,7 @@ function renderSetConcept() {
             <span style="font-size:.78rem;font-weight:700">Input: {1..9} →</span>
             <span style="padding:4px 10px;border-radius:8px;background:#8b5cf6;color:#fff;font-size:.75rem;font-weight:700">Filter: Even &amp; &lt;10</span>
             <span style="font-size:.78rem;font-weight:700">→</span>
-            <span style="font-weight:800;color:${ran?'#16a34a':'var(--txt2)'}">${ran ? '{2, 4, 6, 8} ✅' : '(click Run Filter)'}</span>
+            <span style="font-weight:800;color:${ran?'#16a34a':'var(--txt2)'}">${ran ? [2,4,6,8].map((n,idx)=>`<span class="filter-fly" style="display:inline-flex;width:26px;height:26px;border-radius:50%;background:#16a34a;color:#fff;align-items:center;justify-content:center;font-size:.78rem;margin:0 2px;animation-delay:${idx*0.1}s">${n}</span>`).join('') + ' ✅' : '(click Run Filter)'}</span>
           </div>
         </div>
       </div>`;
@@ -1106,7 +1131,7 @@ function renderSetConcept() {
           ${inside.map((s,i)=>{
             const pts = [[118,95],[188,95],[153,142]][i];
             const active = sel === s;
-            return `<circle cx="${pts[0]}" cy="${pts[1]}" r="${active?22:18}" fill="${active?'#7c3aed':'#3b82f6'}" stroke="#fff" stroke-width="2"/><text x="${pts[0]}" y="${pts[1]+4}" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">${s}</text>`;
+            return `<circle class="${active?'pulse-ring':''}" cx="${pts[0]}" cy="${pts[1]}" r="${active?22:18}" fill="${active?'#7c3aed':'#3b82f6'}" stroke="#fff" stroke-width="2"/><text x="${pts[0]}" y="${pts[1]+4}" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">${s}</text>`;
           }).join('')}
           ${['Riya','Meera'].map((s,i)=>{
             const pts = [[295,75],[295,135]][i];
@@ -1213,7 +1238,7 @@ function renderSetConcept() {
         <strong>Decision Tree Rule:</strong> 2 choices for each element (<em>include</em> or <em>exclude</em>). Total = <strong>|P(A)| = 2<sup>${elems.length}</sup> = ${subsets.length}</strong>
       </div>
       <div style="display:flex;flex-wrap:wrap;gap:10px">
-        ${subsets.map(s => `<span style="padding:8px 14px;border-radius:12px;background:rgba(139,92,246,.16);border:1.5px solid rgba(139,92,246,.45);font-family:monospace;font-weight:800;font-size:.9rem">${s.length ? '{'+s.join(', ')+'}' : '∅'}</span>`).join('')}
+        ${subsets.map((s,idx) => `<span class="chip-anim" style="animation-delay:${idx*0.06}s;padding:8px 14px;border-radius:12px;background:rgba(139,92,246,.16);border:1.5px solid rgba(139,92,246,.45);font-family:monospace;font-weight:800;font-size:.9rem">${s.length ? '{'+s.join(', ')+'}' : '∅'}</span>`).join('')}
       </div>`;
   } else if (curSetConcept === 7) {
     const op = scState.vennOp;
@@ -1237,9 +1262,9 @@ function renderSetConcept() {
           <defs><clipPath id="sc-clip-a"><circle cx="145" cy="110" r="70"/></clipPath></defs>
           <rect x="8" y="8" width="364" height="198" rx="16" fill="${uBg}" stroke="#64748b" stroke-width="2"/>
           <text x="22" y="28" font-size="12" font-weight="800" fill="var(--txt)">U</text>
-          <circle cx="145" cy="110" r="70" fill="${op==='complement'?'rgba(255,255,255,0.85)':aFill}" stroke="#3b82f6" stroke-width="2.5"/>
-          <circle cx="235" cy="110" r="70" fill="${bFill}" stroke="#f97316" stroke-width="2.5"/>
-          <circle cx="235" cy="110" r="70" fill="${interFill}" clip-path="url(#sc-clip-a)"/>
+          <circle class="${(op==='union'||op==='difference')?'dash-flow':''}" cx="145" cy="110" r="70" fill="${op==='complement'?'rgba(255,255,255,0.85)':aFill}" stroke="#3b82f6" stroke-width="2.5"/>
+          <circle class="${op==='union'?'dash-flow':''}" cx="235" cy="110" r="70" fill="${bFill}" stroke="#f97316" stroke-width="2.5"/>
+          <circle class="${(op==='union'||op==='intersection')?'pulse-ring':''}" cx="235" cy="110" r="70" fill="${interFill}" clip-path="url(#sc-clip-a)"/>
           <text x="108" y="64" font-weight="800" font-size="13" fill="#2563eb">A Cricket</text>
           <text x="235" y="64" font-weight="800" font-size="13" fill="#ea580c">B Music</text>
           <text x="110" y="114" font-size="11" font-weight="700" text-anchor="middle" fill="var(--txt)">Aarav, Kabir</text>
@@ -1348,13 +1373,16 @@ function renderSetConcept() {
       <div style="display:grid;grid-template-columns:auto 1fr 1fr;gap:8px;max-width:440px;margin:0 auto">
         <div style="padding:10px;font-weight:800;color:var(--accent1)">${swap?'B \\ A':'A \\ B'}</div>
         ${cols.map(c => `<div class="glass-sm" style="padding:10px;text-align:center;font-weight:800;color:#ea580c">${c}</div>`).join('')}
-        ${rows.map(r => `
+        ${rows.map((r,ri) => `
           <div class="glass-sm" style="padding:10px;text-align:center;font-weight:800;color:#2563eb">${r}</div>
-          ${cols.map(c => `<div style="padding:12px;text-align:center;border-radius:12px;background:rgba(139,92,246,.16);border:1.5px solid rgba(139,92,246,.4);font-family:monospace;font-weight:800">(${r}, ${c})</div>`).join('')}
+          ${cols.map((c,ci) => `<div class="chip-anim" style="animation-delay:${(ri*2+ci)*0.08}s;padding:12px;text-align:center;border-radius:12px;background:rgba(139,92,246,.16);border:1.5px solid rgba(139,92,246,.4);font-family:monospace;font-weight:800">(${r}, ${c})</div>`).join('')}
         `).join('')}
       </div>`;
   }
 
+  stage.classList.remove('jtr-pop');
+  void stage.offsetWidth;
+  stage.classList.add('jtr-pop');
   stage.innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px;flex-wrap:wrap">
       <div>
@@ -1627,6 +1655,37 @@ function initOOPSim() {
   updateLineNums('oop-editor', 'oop-line-nums');
   oopCodeLines = (ed ? ed.value : DEFAULT_OOP_CODE).split('\n');
   renderOOPCode();
+}
+
+const STAMP_SAMPLES = [
+  { name: 'Aarav', course: 'B.Tech' },
+  { name: 'Diya', course: 'B.Sc CS' },
+  { name: 'Kabir', course: 'BCA' },
+  { name: 'Meera', course: 'MCA' }
+];
+let stampIdx = 0;
+
+function stampOOPCard() {
+  const bp = document.getElementById('oop-bp-card');
+  const row = document.getElementById('oop-cards-row');
+  if (!bp || !row) return;
+  bp.classList.remove('bp-stamping');
+  void bp.offsetWidth;
+  bp.classList.add('bp-stamping');
+
+  const sample = STAMP_SAMPLES[stampIdx % STAMP_SAMPLES.length];
+  stampIdx++;
+  const card = document.createElement('div');
+  card.className = 'flip-card chip-anim';
+  card.innerHTML = `
+    <div class="flip-inner">
+      <div class="flip-face"><span class="fi-icon">🎓</span><span class="fi-name">${sample.name}</span><span style="font-size:.75rem;color:var(--txt2)">click to flip</span></div>
+      <div class="flip-face flip-back"><span class="fi-attr">name = "${sample.name}"<br>course = "${sample.course}"<br>introduce() → "Hi, I'm ${sample.name}…"</span></div>
+    </div>`;
+  card.addEventListener('click', () => card.classList.toggle('flipped'));
+  const placeholder = document.getElementById('flip-new');
+  if (placeholder) row.insertBefore(card, placeholder);
+  else row.appendChild(card);
 }
 
 function resetOOPCode() {
@@ -1987,7 +2046,7 @@ function renderOOPStep() {
       const y2 = ir.top - pr.top;
       const path = `M${x1},${y1} C${x1+30},${(y1+y2)/2} ${x2-30},${(y1+y2)/2} ${x2},${y2}`;
       svg.innerHTML = `<defs><marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#82aaff"/></marker></defs>
-        <path d="${path}" fill="none" stroke="#82aaff" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrowhead)"/>`;
+        <path class="dash-flow" d="${path}" fill="none" stroke="#82aaff" stroke-width="2.2" marker-end="url(#arrowhead)"/>`;
     }
   }
 
