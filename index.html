@@ -2125,6 +2125,104 @@ function getSetOpChips(opKey, setA, setB, res) {
 /* ══════════════════════════════════════════════════════
    REAL PYTHON 3 COMPILER (/api/run-python)
 ══════════════════════════════════════════════════════ */
+let _pyodideInstance = null;
+let _pyodideLoadingPromise = null;
+
+async function loadPyodideEngine(outEl) {
+  if (_pyodideInstance) return _pyodideInstance;
+  if (_pyodideLoadingPromise) return _pyodideLoadingPromise;
+  _pyodideLoadingPromise = (async () => {
+    if (outEl) outEl.textContent = '⏳ Loading Python 3 in browser (Pyodide)... (~5-10s first time)';
+    if (typeof loadPyodide === 'undefined') {
+      await new Promise((resolve, reject) => {
+        const sc = document.createElement('script');
+        sc.src = 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js';
+        sc.onload = resolve;
+        sc.onerror = () => reject(new Error('Failed to load Pyodide CDN'));
+        document.head.appendChild(sc);
+      });
+    }
+    _pyodideInstance = await loadPyodide({ indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/' });
+    return _pyodideInstance;
+  })();
+  try {
+    return await _pyodideLoadingPromise;
+  } catch (err) {
+    _pyodideLoadingPromise = null;
+    throw err;
+  }
+}
+
+async function runPyodideFallback(code, stdinText, outEl, errEl) {
+  try {
+    const pyodide = await loadPyodideEngine(outEl);
+    if (outEl) outEl.textContent = '⏳ Running Python 3 in browser (Pyodide)...';
+    const t0 = performance.now();
+    const lines = (stdinText || '').replace(/\r\n/g, '\n').split('\n');
+
+    pyodide.globals.set('__pyconcept_code__', code);
+    pyodide.globals.set('__pyconcept_stdin__', lines);
+
+    const runner = `
+import sys, io, builtins, traceback
+_buf_out = io.StringIO()
+_old_out, _old_in = sys.stdout, builtins.input
+_stdin_list = list(__pyconcept_stdin__)
+_stdin_idx = 0
+def _custom_input(prompt=""):
+    global _stdin_idx
+    if prompt:
+        _buf_out.write(str(prompt))
+    if _stdin_idx < len(_stdin_list):
+        v = _stdin_list[_stdin_idx]
+        _stdin_idx += 1
+        return v
+    raise EOFError("EOF when reading input() — add more lines in Standard Input (stdin)")
+sys.stdout = _buf_out
+builtins.input = _custom_input
+_err_msg = ""
+try:
+    _compiled = compile(__pyconcept_code__, "<editor.py>", "exec")
+    exec(_compiled, {"__name__": "__main__"})
+except Exception as _exc:
+    _err_msg = traceback.format_exc()
+finally:
+    sys.stdout = _old_out
+    builtins.input = _old_in
+(_buf_out.getvalue(), _err_msg)
+`;
+
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('TimeoutError: Execution timed out after 5.0 seconds.')), 5000)
+    );
+    const resProxy = await Promise.race([pyodide.runPythonAsync(runner), timeoutPromise]);
+    const [stdoutStr, stderrStr] = resProxy.toJs();
+    resProxy.destroy();
+    const elapsedMs = (performance.now() - t0).toFixed(2);
+
+    if (stderrStr) {
+      if (errEl) {
+        errEl.textContent = stderrStr;
+        errEl.style.display = 'block';
+      }
+      if (outEl) outEl.textContent = `❌ Python Error (Pyodide · ${elapsedMs} ms):\n${stderrStr}`;
+      return { ok: false, stdout: stdoutStr, stderr: stderrStr, elapsed_ms: Number(elapsedMs) };
+    }
+    if (outEl) {
+      outEl.textContent = `🐍 Python 3 (Pyodide · ${elapsedMs} ms):\n${stdoutStr || '(No stdout)'}`;
+    }
+    return { ok: true, stdout: stdoutStr, stderr: '', elapsed_ms: Number(elapsedMs) };
+  } catch (err) {
+    const msg = err.message || String(err);
+    if (errEl) {
+      errEl.textContent = msg;
+      errEl.style.display = 'block';
+    }
+    if (outEl) outEl.textContent = `❌ ${msg}`;
+    return { ok: false, stdout: '', stderr: msg, elapsed_ms: 0 };
+  }
+}
+
 async function executeRealPython(code, stdinText, outElId, errElId) {
   const outEl = document.getElementById(outElId);
   const errEl = document.getElementById(errElId);
@@ -2136,6 +2234,9 @@ async function executeRealPython(code, stdinText, outElId, errElId) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ code, stdin: stdinText || '' })
     });
+    if (!resp.ok) {
+      return await runPyodideFallback(code, stdinText, outEl, errEl);
+    }
     const data = await resp.json();
     if (!data.ok) {
       if (errEl) {
@@ -2150,8 +2251,7 @@ async function executeRealPython(code, stdinText, outElId, errElId) {
     }
     return data;
   } catch (e) {
-    if (outEl) outEl.textContent = '⚠️ Backend compiler unavailable: ' + e.message;
-    return null;
+    return await runPyodideFallback(code, stdinText, outEl, errEl);
   }
 }
 
