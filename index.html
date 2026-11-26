@@ -2056,12 +2056,31 @@ function parseSet(str) {
 }
 
 function syncSetsEditorFromInputs() {
-  const A = parseSet(document.getElementById('sim-set-a').value);
-  const B = parseSet(document.getElementById('sim-set-b').value);
+  const rawA = (document.getElementById('sim-set-a').value || '⚡ Aarav, 🎧 Kabir, 🎨 Diya').trim();
+  const rawB = (document.getElementById('sim-set-b').value || '🎨 Diya, 🚀 Riya, 🤖 Meera').trim();
   const opMap = {union:'|', intersection:'&', difference:'-', symdiff:'^'};
   const sym = opMap[simOp];
-  const fmt = arr => arr.map(v => typeof v === 'string' ? `"${v}"` : v).join(', ');
-  const code = `A = {${fmt(A)}}\nB = {${fmt(B)}}\n\nresult = A ${sym} B\nprint(result)`;
+  const code = [
+    '# ── STEP 1: Taking User Input (Simulated from Left Input Boxes) ──',
+    '# input() reads comma-separated text from the user as a string',
+    `raw_a = input("Enter Set A elements: ")  # -> "${rawA}"`,
+    `raw_b = input("Enter Set B elements: ")  # -> "${rawB}"`,
+    '',
+    '# ── STEP 2: Splitting Text & Creating Unique Sets ──',
+    '# .split(",") turns text into a list; set() hashes & removes duplicates',
+    'A = set([x.strip() for x in raw_a.split(",")])',
+    'B = set([x.strip() for x in raw_b.split(",")])',
+    '',
+    '# ── STEP 3: Performing Set Operation ──',
+    '# Operators: Union (|), Intersection (&), Difference (-), SymDiff (^)',
+    `result = A ${sym} B`,
+    '',
+    '# ── STEP 4: Checking Cardinality (Count) & Printing Result ──',
+    'print("Set A:", A)',
+    'print("Set B:", B)',
+    'print("Result:", result)',
+    'print("Total Elements:", len(result))'
+  ].join('\n');
   const ed = document.getElementById('sim-editor');
   if (ed) {
     ed.value = code;
@@ -2155,6 +2174,7 @@ function startSimSets() {
   renderSimCode(lines);
 
   const env = {};
+  const strEnv = {};
   const steps = [];
   const outputs = [];
 
@@ -2174,6 +2194,51 @@ function startSimSets() {
       return;
     }
 
+    // 1. Handle input(): raw_a = input("...")
+    const inputMatch = line.match(/^([A-Za-z_]\w*)\s*=\s*input\((.*)\)$/);
+    if (inputMatch) {
+      const [, varName, promptTxt] = inputMatch;
+      const val = varName.toLowerCase().includes('b')
+        ? (document.getElementById('sim-set-b').value || '🎨 Diya, 🚀 Riya, 🤖 Meera')
+        : (document.getElementById('sim-set-a').value || '⚡ Aarav, 🎧 Kabir, 🎨 Diya');
+      strEnv[varName] = val;
+      steps.push({
+        lines: [i],
+        msg: `Read input into ${varName} = "${val}"`,
+        hiw: {
+          opcode: 'CALL_FUNCTION (input)',
+          complexity: 'Time: O(len(string))',
+          stage: `Step ${i+1}: Reading User Input into String '${varName}'`,
+          explanation: `Python calls <code>input(${promptTxt})</code> which pauses and reads raw text from the user. Everything returned by <code>input()</code> is initially a single <code>str</code> before we split it into individual items.`,
+          chips: `<span class="s-badge">type(${varName}) = str</span> <span class="s-badge">"${escHtml(val)}"</span>`
+        }
+      });
+      continue;
+    }
+
+    // 2. Handle set comprehension from split: A = set([x.strip() for x in raw_a.split(",")])
+    const splitSetMatch = line.match(/^([A-Za-z_]\w*)\s*=\s*set\(.*?([A-Za-z_]\w*)\.split\(.*?\).*\)$/);
+    if (splitSetMatch) {
+      const [, targetVar, srcVar] = splitSetMatch;
+      const rawStr = strEnv[srcVar] || '';
+      const val = parseSet(rawStr);
+      env[targetVar] = val;
+      const chips = val.map(v => `<span class="s-badge" style="background:rgba(0,122,255,0.12);color:var(--accent1)">hash("${v}") → bucket</span>`).join(' ');
+      steps.push({
+        lines: [i],
+        msg: `Split '${srcVar}' & built Set ${targetVar} = ${formatPySet(val)}`,
+        hiw: {
+          opcode: 'LIST_COMPREHENSION → BUILD_SET',
+          complexity: `Time: O(${val.length})`,
+          stage: `Step ${i+1}: Splitting String & Building Hash Set '${targetVar}'`,
+          explanation: `1. <code>${srcVar}.split(",")</code> splits the raw string at commas.<br>2. <code>x.strip()</code> trims extra spaces around each name.<br>3. <code>set(...)</code> computes <code>hash(x)</code> for each item and stores unique elements in hash buckets.`,
+          chips: chips || '<span class="s-badge">Empty set()</span>'
+        }
+      });
+      continue;
+    }
+
+    // 3. Handle literal set: A = {"a", "b"}
     const assignSet = line.match(/^([A-Za-z_]\w*)\s*=\s*(\{.*\})$/);
     if (assignSet) {
       const val = parseSetLiteral(assignSet[2]);
@@ -2198,6 +2263,7 @@ function startSimSets() {
       continue;
     }
 
+    // 4. Handle Set operations: result = A | B
     const assignOp = line.match(/^([A-Za-z_]\w*)\s*=\s*([A-Za-z_]\w*)\s*([|&\-\^])\s*([A-Za-z_]\w*)$/);
     if (assignOp) {
       const [, target, left, op, right] = assignOp;
@@ -2225,28 +2291,34 @@ function startSimSets() {
       continue;
     }
 
+    // 5. Handle print(...) with multiple args, len(), or single expr
     const printMatch = line.match(/^print\((.+)\)$/);
     if (printMatch) {
-      const expr = printMatch[1].trim();
-      let printed = '';
-      const inlineOp = expr.match(/^([A-Za-z_]\w*)\s*([|&\-\^])\s*([A-Za-z_]\w*)$/);
-      if (inlineOp && (inlineOp[1] in env) && (inlineOp[3] in env)) {
-        const opKey = {'|':'union','&':'intersection','-':'difference','^':'symdiff'}[inlineOp[2]];
-        printed = formatPySet(computeOp(env[inlineOp[1]], env[inlineOp[3]], opKey));
-      } else if (expr in env) {
-        printed = formatPySet(env[expr]);
-      } else {
-        printed = expr.replace(/^["']|["']$/g, '');
-      }
+      const rawArgs = printMatch[1].trim();
+      const parts = parsePyArgs(rawArgs);
+      const renderedParts = parts.map(p => {
+        const s = String(p).trim();
+        const lenM = s.match(/^len\(([A-Za-z_]\w*)\)$/);
+        if (lenM && (lenM[1] in env)) return String(env[lenM[1]].length);
+        const inlineOp = s.match(/^([A-Za-z_]\w*)\s*([|&\-\^])\s*([A-Za-z_]\w*)$/);
+        if (inlineOp && (inlineOp[1] in env) && (inlineOp[3] in env)) {
+          const opKey = {'|':'union','&':'intersection','-':'difference','^':'symdiff'}[inlineOp[2]];
+          return formatPySet(computeOp(env[inlineOp[1]], env[inlineOp[3]], opKey));
+        }
+        if (s in env) return formatPySet(env[s]);
+        if (s in strEnv) return strEnv[s];
+        return s;
+      });
+      const printed = renderedParts.join(' ');
       outputs.push(printed);
       steps.push({
         lines: [i],
-        msg: `Output: ${outputs.join('\n')}`,
+        msg: `Output:\n${outputs.join('\n')}`,
         hiw: {
-          opcode: 'CALL_FUNCTION (0x83) → PRINT',
+          opcode: 'CALL_FUNCTION (print)',
           complexity: 'Time: O(N) linear traversal',
-          stage: `Step ${i+1}: Output Formatting & Streaming to Console`,
-          explanation: `CPython traverses the active hash table buckets, formats each element with curly braces, and emits the string representation to standard output.`,
+          stage: `Step ${i+1}: Formatting & Streaming Output to Console`,
+          explanation: `CPython evaluates each argument inside <code>print()</code> (calling <code>len()</code> in O(1) from the set header or formatting set buckets) and prints the result to stdout.`,
           chips: `<span class="s-badge" style="background:rgba(52,199,89,0.15);color:var(--accent2)">stdout: ${escHtml(printed)}</span>`
         }
       });
@@ -3111,20 +3183,37 @@ function renderLabVenn() {
 /* ══════════════════════════════════════════════════════
    OOP SIMULATOR (Editable Code + Tracer)
 ══════════════════════════════════════════════════════ */
-const DEFAULT_OOP_CODE = `class Student:
-    def __init__(self, name, branch, roll, semester, session):
-        self.name = name
-        self.branch = branch
-        self.roll = roll
-        self.semester = semester
-        self.session = session
+const DEFAULT_OOP_CODE = `# ══════════════════════════════════════════════════════
+# OBJECT-ORIENTED PROGRAMMING: STUDENT BLUEPRINT & INPUT
+# ══════════════════════════════════════════════════════
 
+# 1. Define the Class (The Blueprint for all Student objects)
+class Student:
+    # __init__ runs automatically when a new Student object is created
+    def __init__(self, name, branch, roll, semester, session):
+        # 'self' binds attributes directly to this instance's __dict__
+        self.name = name          # Student display name with emoji
+        self.branch = branch      # Department (e.g. CSE, ECE)
+        self.roll = roll          # Unique Roll Number
+        self.semester = semester  # Current Semester
+        self.session = session    # Academic Session
+
+    # Method: Behavior shared by all Student instances
     def introduce(self):
         return f"{self.name} ({self.branch}, Roll {self.roll}, Sem {self.semester}, {self.session})"
 
-s1 = Student("⚡ Aarav", "CSE", 101, "3rd", "2025-26")
+# 2. Taking User Input to Create Dynamic Objects
+# input() reads text from the user before passing values into the constructor
+user_name = input("Enter Student Name: ")        # -> "⚡ Aarav"
+user_branch = input("Enter Branch: ")            # -> "CSE"
+user_roll = int(input("Enter Roll Number: "))    # -> 101
+
+# 3. Instantiating Objects (Allocating Memory on the Heap)
+s1 = Student(user_name, user_branch, user_roll, "3rd", "2025-26")
 s2 = Student("🎨 Diya", "ECE", 104, "3rd", "2025-26")
 s3 = Student("🎧 Kabir", "CSE", 109, "5th", "2024-25")
+
+# 4. Calling Methods & Inspecting Output
 print(s1.introduce())
 print(s2.introduce())
 print(s3.introduce())`;
@@ -3315,7 +3404,7 @@ function runOOPCode() {
   const mainSnapshot = () => {
     const snap = {};
     for (const [k, v] of Object.entries(mainVars)) {
-      snap[k] = `<${v.className}: ${Object.values(v.attrs)[0] ?? k}>`;
+      snap[k] = v.isScalar ? formatPyVal(v.value) : `<${v.className}: ${Object.values(v.attrs)[0] ?? k}>`;
     }
     return snap;
   };
@@ -3342,6 +3431,36 @@ function runOOPCode() {
     }
 
     const stmt = item.text;
+
+    // Handle input() assignments: user_name = input("...") or user_roll = int(input("..."))
+    const oopInputMatch = stmt.match(/^([A-Za-z_]\w*)\s*=\s*(int\()?input\((.*)\)\)?$/);
+    if (oopInputMatch) {
+      const [, varName, isInt, promptStr] = oopInputMatch;
+      let val = '⚡ Aarav';
+      if (varName.includes('branch')) val = 'CSE';
+      else if (varName.includes('roll') || isInt) val = 101;
+      else if (varName.includes('sem')) val = '3rd';
+      else if (varName.includes('session')) val = '2025-26';
+      mainVars[varName] = { isScalar: true, value: val };
+      steps.push({
+        lines: [item.line],
+        msg: `Read input: ${varName} = ${formatPyVal(val)}`,
+        cf: 'main',
+        mainVars: Object.fromEntries(Object.entries(mainVars).map(([k,v]) => [k, v.isScalar ? formatPyVal(v.value) : `<${v.className}>`])),
+        initShow: false,
+        frameTitle: '',
+        frameVars: {},
+        hiw: {
+          opcode: isInt ? 'CALL_FUNCTION (int(input))' : 'CALL_FUNCTION (input)',
+          mem: `Stack Frame: main() -> ${varName}`,
+          stage: `Input Step: Reading User Input into '${varName}'`,
+          explanation: `Python calls <code>input(${promptStr})</code> to capture user text${isInt ? ' and converts it to an integer using <code>int(...)</code>' : ''}. This variable will be passed as an argument to the <code>Student</code> constructor.`,
+          chips: `<span class="s-badge">${varName} = ${formatPyVal(val)}</span>`
+        }
+      });
+      continue;
+    }
+
     // Instantiation: var = ClassName(args)
     const instMatch = stmt.match(/^([A-Za-z_]\w*)\s*=\s*([A-Za-z_]\w*)\((.*)\)$/);
     if (instMatch) {
@@ -3352,7 +3471,7 @@ function runOOPCode() {
         errBox.style.display = 'block';
         return;
       }
-      const args = parsePyArgs(argStr);
+      const args = parsePyArgs(argStr).map(a => (typeof a === 'string' && mainVars[a] && mainVars[a].isScalar) ? mainVars[a].value : a);
       const obj = { varName, className: clsName, attrs: {} };
       mainVars[varName] = obj;
       oopObjects.push(obj);
