@@ -15,6 +15,45 @@ import urllib.request
 
 ROOT = Path(__file__).resolve().parent
 
+import time
+
+def run_python_code(code: str, stdin_data: str = "") -> dict:
+    """Execute user Python code in an isolated subprocess like an Online Python Compiler."""
+    t0 = time.perf_counter()
+    try:
+        proc = subprocess.run(
+            [sys.executable, "-I", "-c", code],
+            input=stdin_data,
+            capture_output=True,
+            text=True,
+            timeout=5,
+        )
+        elapsed_ms = round((time.perf_counter() - t0) * 1000, 2)
+        return {
+            "ok": proc.returncode == 0,
+            "stdout": proc.stdout,
+            "stderr": proc.stderr,
+            "returncode": proc.returncode,
+            "elapsed_ms": elapsed_ms,
+        }
+    except subprocess.TimeoutExpired:
+        return {
+            "ok": False,
+            "stdout": "",
+            "stderr": "TimeoutError: Execution timed out after 5.0 seconds.",
+            "returncode": 124,
+            "elapsed_ms": 5000.0,
+        }
+    except Exception as exc:
+        return {
+            "ok": False,
+            "stdout": "",
+            "stderr": str(exc),
+            "returncode": 1,
+            "elapsed_ms": 0.0,
+        }
+
+
 
 def get_openrouter_key() -> str:
     """Return OpenRouter API key from environment or local .env file."""
@@ -139,6 +178,25 @@ class StudioHandler(SimpleHTTPRequestHandler):
 
     def do_POST(self):
         parsed = urlparse(self.path)
+        if parsed.path == "/api/run-python":
+            length = int(self.headers.get("Content-Length", "0"))
+            raw = self.rfile.read(length) if length > 0 else b"{}"
+            try:
+                body = json.loads(raw.decode("utf-8"))
+            except Exception:
+                self.send_error(400, "Invalid JSON")
+                return
+            code = body.get("code", "")
+            stdin_data = body.get("stdin", "")
+            res = run_python_code(code, stdin_data)
+            out = json.dumps(res).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(out)))
+            self.end_headers()
+            self.wfile.write(out)
+            return
+
         if parsed.path != "/api/chat":
             self.send_error(404, "Not found")
             return
