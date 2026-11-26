@@ -2,30 +2,30 @@
   "version": 2,
   "builds": [
     {
-      "src": "Pyconcept/api/chat.py",
+      "src": "api/chat.py",
       "use": "@vercel/python"
     },
     {
-      "src": "Pyconcept/api/run-python.py",
+      "src": "api/run-python.py",
       "use": "@vercel/python"
     },
     {
-      "src": "Pyconcept/index.html",
+      "src": "index.html",
       "use": "@vercel/static"
     }
   ],
   "routes": [
     {
       "src": "/api/chat",
-      "dest": "Pyconcept/api/chat.py"
+      "dest": "api/chat.py"
     },
     {
       "src": "/api/run-python",
-      "dest": "Pyconcept/api/run-python.py"
+      "dest": "api/run-python.py"
     },
     {
       "src": "/(.*)",
-      "dest": "Pyconcept/$1"
+      "dest": "/$1"
     }
   ]
 }

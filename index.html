@@ -6,6 +6,7 @@
 <title>Python Sets &amp; OOP Visual Lab | Free Python 3 Compiler + 100 Quiz</title>
 <meta name="description" content="Master Python Sets (Venn diagrams) and OOP with 2D/3D visualizers, a free in-browser Python 3 compiler, and 100 interactive quiz questions."/>
 <meta name="keywords" content="Python Sets, Python OOP, Venn Diagram Visualizer, Python 3 Online Compiler, Pyodide, Object Oriented Programming, Python Quiz"/>
+<meta name="author" content="Nishant Kumar · CSEAI"/>
 <meta name="robots" content="index, follow"/>
 <meta name="theme-color" content="#f4f1e9"/>
 <link rel="canonical" href="https://pyconcept.neeshant.in/"/>
@@ -1033,6 +1034,8 @@ header .icon-btn{
 }
 
 </style>
+<link rel="stylesheet" href="learning-guide.css">
+<script src="learning-guide.js" defer></script>
 </head>
 <body>
 
@@ -1070,12 +1073,16 @@ header .icon-btn{
         PYTHON <span class="accent">VISUAL</span> CONCEPT BUREAU.
       </h1>
       <p style="color:var(--muted);font-size:16px;line-height:1.65;max-width:540px;margin:0 auto 28px">
-        Clean 2D &amp; 3D visualizers, a real <strong>Python 3 Online Compiler</strong>, and a <strong>100-Question Quiz</strong>.
+        Two separate learning paths: <strong>Topic 14 — Sets</strong> and <strong>Topic 23 — OOP</strong>. Start with a guided example, then explore the 2D/3D labs, optional Python interpreter and quiz.
       </p>
       <div style="display:flex;justify-content:center;flex-wrap:wrap;gap:12px">
         <button class="tc-btn mb-btn-red" onclick="showPage('sets')">🚀 Open Sets Studio</button>
         <button class="tc-btn mb-btn-outline" onclick="showPage('oop')">⚙️ Open OOP 3D Lab</button>
         <button class="tc-btn mb-btn-outline" onclick="showPage('quiz')">🎯 Quiz (100 Qs)</button>
+      </div>
+      <div class="guide-home-cta" aria-label="Separate guided lessons">
+        <button type="button" onclick="openGuidedLesson('sets')">Start 2-minute Sets lesson →</button>
+        <button type="button" onclick="openGuidedLesson('oop')">Start 2-minute OOP lesson →</button>
       </div>
     </div>
 
@@ -1258,6 +1265,7 @@ fs = frozenset([1, 2])  # immutable set</pre>
       </div>
     </div>
 
+    <p class="lab-mode-note"><strong>Sets only · choose your mode.</strong> Start Visualizer uses a bounded teaching parser for the supported set examples; its diagram is illustrative. Run Python 3 executes the editor with the interpreter. Set display order may differ between the two. Unsupported custom syntax can switch to interpreter mode.</p>
     <!-- Multi-Venn + Student Profiles Interactive Card -->
     <div class="glass" style="padding:22px;margin-bottom:20px">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px">
@@ -1358,7 +1366,7 @@ fs = frozenset([1, 2])  # immutable set</pre>
       <div id="sim-how-it-works-panel" style="margin:0 24px 20px;padding:20px;border-radius:18px;background:rgba(255,255,255,0.06);border:1.5px solid var(--glass-border);display:none">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
           <div style="display:flex;align-items:center;gap:8px">
-            <span class="nomonkey-sticker" style="transform:none">🔍 How Python Executes This Under The Hood</span>
+            <span class="nomonkey-sticker" style="transform:none">🔍 Teaching model · illustrative, not measured bytecode</span>
             <span id="sim-hiw-opcode" class="nomonkey-terminal" style="font-size:.7rem;padding:3px 10px">CPython Opcode</span>
           </div>
           <span id="sim-hiw-complexity" class="s-badge" style="background:rgba(52,199,89,0.15);color:var(--accent2);border-color:rgba(52,199,89,0.3)">Time: O(N)</span>
@@ -1605,6 +1613,7 @@ class Course:
 
   <!-- OOP LAB TAB -->
   <div class="tp-section" id="oop-lab" style="max-width:1100px;margin:0 auto;padding:40px 24px">
+    <p class="lab-mode-note"><strong>OOP only · teaching trace vs interpreter.</strong> Run &amp; Visualize models a supported subset of classes/instances. Demo object IDs, heap/stack drawings and execution labels are illustrations, not measured addresses or actual bytecode. Use Run Python 3 for interpreter execution of edited code.</p>
     <div style="margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
       <div>
         <div style="font-size:1.3rem;font-weight:800;margin-bottom:4px">⚗️ OOP Code Lab</div>
@@ -1816,7 +1825,7 @@ CSE
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px">
       <div class="glass-sm faq-item" data-faq-topic="sets" style="padding:14px">
         <div style="font-weight:800;font-size:.9rem;margin-bottom:4px">1. What are Python Sets?</div>
-        <div style="font-size:.82rem;color:var(--txt2);line-height:1.55">A Set is an unordered collection of unique, hashable items supporting O(1) membership checks and math operations like Union (<code>|</code>), Intersection (<code>&amp;</code>), and Difference (<code>-</code>).</div>
+        <div style="font-size:.82rem;color:var(--txt2);line-height:1.55">A Set is an unordered collection of unique, hashable items supporting average-case O(1) membership checks and math operations like Union (<code>|</code>), Intersection (<code>&amp;</code>), and Difference (<code>-</code>).</div>
       </div>
       <div class="glass-sm faq-item" data-faq-topic="oop" style="padding:14px">
         <div style="font-weight:800;font-size:.9rem;margin-bottom:4px">2. What is OOP in Python?</div>
@@ -1824,11 +1833,11 @@ CSE
       </div>
       <div class="glass-sm faq-item" data-faq-topic="all" style="padding:14px">
         <div style="font-weight:800;font-size:.9rem;margin-bottom:4px">3. How does the Python 3 Compiler work live?</div>
-        <div style="font-size:.82rem;color:var(--txt2);line-height:1.55">On localhost it uses the Python 3 backend; on static hosting (Vercel) it automatically falls back to Pyodide (CPython WebAssembly) inside your browser with full <code>input()</code> support.</div>
+        <div style="font-size:.82rem;color:var(--txt2);line-height:1.55">When the optional backend is available, it runs Python 3 there; otherwise static hosting uses Pyodide (CPython WebAssembly) in your browser, including <code>input()</code> support.</div>
       </div>
       <div class="glass-sm faq-item" data-faq-topic="oop" style="padding:14px">
         <div style="font-weight:800;font-size:.9rem;margin-bottom:4px">4. What is the difference between self and __init__?</div>
-        <div style="font-size:.82rem;color:var(--txt2);line-height:1.55"><code>__init__</code> is the constructor method invoked on object creation, while <code>self</code> refers to the newly allocated object instance so attributes are stored privately in <code>self.__dict__</code>.</div>
+        <div style="font-size:.82rem;color:var(--txt2);line-height:1.55"><code>self</code> refers to the current instance. <code>__new__</code> creates an instance; <code>__init__</code> initializes it. Ordinary instance attributes are not automatically private. Many user-defined instances store attributes in <code>__dict__</code>, but this is not universal (for example, some classes use <code>__slots__</code>).</div>
       </div>
       <div class="glass-sm faq-item" data-faq-topic="all" style="padding:14px">
         <div style="font-weight:800;font-size:.9rem;margin-bottom:4px">5. Is the 100-question Quiz free?</div>
@@ -1838,6 +1847,7 @@ CSE
   </section>
   <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;font:800 11px/1.4 'JetBrains Mono',monospace;color:var(--txt2)">
     <span>PYCONCEPT BUREAU // TOPIC 14 (SETS) &amp; TOPIC 23 (OOP)</span>
+    <span>Created by <strong>Nishant Kumar</strong> · <strong>CSEAI</strong></span>
     <span><a href="https://github.com/sudonishant/Pyconcept" target="_blank" rel="noopener">GitHub Repository ↗</a></span>
   </div>
 </footer>
@@ -1877,6 +1887,7 @@ CSE
 <!-- ═══════════════════════════════════════════════════════
      JAVASCRIPT
 ═══════════════════════════════════════════════════════ -->
+<script src="learning-core.js"></script>
 <script>
 /* ─── TTS ─── */
 let ttsMode = 'browser';
@@ -1919,6 +1930,8 @@ function toggleTheme() {
 
 /* ─── PAGE ROUTER ─── */
 function showPage(name) {
+  if (window.pauseGuidedLessons) window.pauseGuidedLessons();
+  if (window.pauseLabPlayback) window.pauseLabPlayback();
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
@@ -1940,6 +1953,7 @@ function showPage(name) {
 
 /* ─── TOPIC TAB ROUTER ─── */
 function showTopicTab(topic, tab) {
+  if (window.pauseLabPlayback) window.pauseLabPlayback();
   const page = document.getElementById('page-'+topic);
   page.querySelectorAll('.tp-section').forEach(s=>s.classList.remove('active'));
   page.querySelectorAll('.tp-tab').forEach(t=>t.classList.remove('active'));
@@ -2436,12 +2450,12 @@ function selectSimOp(el) {
 }
 
 function parseSet(str) {
-  return [...new Set(str.split(',').map(s=>s.trim()).filter(s=>s).map(s=>isNaN(s)?s:Number(s)))];
+  return PyLearningCore.splitTextSet(str);
 }
 
 function syncSetsEditorFromInputs() {
-  const rawA = (document.getElementById('sim-set-a').value || '⚡ Aarav, 🎧 Kabir, 🎨 Diya').trim();
-  const rawB = (document.getElementById('sim-set-b').value || '🎨 Diya, 🚀 Riya, 🤖 Meera').trim();
+  const rawA = (document.getElementById('sim-set-a').value ?? '').trim();
+  const rawB = (document.getElementById('sim-set-b').value ?? '').trim();
   const opMap = {union:'|', intersection:'&', difference:'-', symdiff:'^'};
   const sym = opMap[simOp];
   const code = [
@@ -2452,8 +2466,8 @@ function syncSetsEditorFromInputs() {
     '',
     '# ── STEP 2: Splitting Text & Creating Unique Sets ──',
     '# .split(",") turns text into a list; set() hashes & removes duplicates',
-    'A = set([x.strip() for x in raw_a.split(",")])',
-    'B = set([x.strip() for x in raw_b.split(",")])',
+    'A = set([x.strip() for x in raw_a.split(",") if x.strip()])',
+    'B = set([x.strip() for x in raw_b.split(",") if x.strip()])',
     '',
     '# ── STEP 3: Performing Set Operation ──',
     '# Operators: Union (|), Intersection (&), Difference (-), SymDiff (^)',
@@ -2481,23 +2495,7 @@ function initSetsSim() {
 
 
 function highlightPyLine(raw) {
-  let comment = '', code = raw;
-  const hashIdx = raw.indexOf('#');
-  // Avoid splitting # inside quotes
-  let inQ = null;
-  for (let i = 0; i < raw.length; i++) {
-    const ch = raw[i];
-    if (inQ) { if (ch === inQ && raw[i-1] !== '\\') inQ = null; }
-    else if (ch === '"' || ch === "'") inQ = ch;
-    else if (ch === '#') { code = raw.slice(0, i); comment = raw.slice(i); break; }
-  }
-  let esc = escHtml(code);
-  esc = esc.replace(/(f?&quot;.*?&quot;|f?&#39;.*?&#39;)/g, '<span class="st">$1</span>');
-  esc = esc.replace(/\b(class|def|return|for|in|if|else|elif|import|from|as|True|False|None)\b/g, '<span class="kw">$1</span>');
-  esc = esc.replace(/\b(print|input|len|set|int|list|split|strip|super)\b/g, '<span class="fn">$1</span>');
-  esc = esc.replace(/\b(self)\b/g, '<span style="color:#ff9f0a;font-weight:700">$1</span>');
-  if (comment) esc += `<span class="cm">${escHtml(comment)}</span>`;
-  return esc;
+  return PyLearningCore.highlightPython(raw);
 }
 
 function renderSimCode(lines, hlLines=[], isFinal=false) {
@@ -2516,19 +2514,12 @@ function renderSimCode(lines, hlLines=[], isFinal=false) {
 }
 
 function parseSetLiteral(expr) {
-  const m = expr.trim().match(/^\{(.*)\}$/);
-  if (!m) return null;
-  if (!m[1].trim()) return [];
-  return [...new Set(m[1].split(',').map(x => {
-    const t = x.trim();
-    if ((t.startsWith('"') && t.endsWith('"')) || (t.startsWith("'") && t.endsWith("'"))) return t.slice(1, -1);
-    return isNaN(t) ? t : Number(t);
-  }).filter(x => x !== ''))];
+  return PyLearningCore.parseSetLiteral(expr);
 }
 
 function formatPySet(arr) {
   if (!arr.length) return 'set()';
-  return '{' + arr.map(v => typeof v === 'string' ? `"${v}"` : v).join(', ') + '}';
+  return '{' + arr.map(v => typeof v === 'string' ? JSON.stringify(v) : v).join(', ') + '}';
 }
 
 function getSetOpExplanation(opKey, left, right, setA, setB, res) {
@@ -2709,7 +2700,9 @@ async function executeRealPython(code, stdinText, outElId, errElId) {
 }
 
 function startSimSets() {
-  clearInterval(simTimer); simPlaying = false;
+  clearInterval(simTimer); simPlaying = false; simSteps = []; simCurrent = -1;
+  document.getElementById('sim-btn-play').textContent = '▶ Play';
+  document.getElementById('sim-vis-controls').style.display = 'none';
   const ed = document.getElementById('sim-editor');
   const errBox = document.getElementById('sim-syntax-err');
   errBox.style.display = 'none';
@@ -2718,20 +2711,18 @@ function startSimSets() {
   const lines = code.split('\n');
   renderSimCode(lines);
 
-  const env = {};
-  const strEnv = {};
+  const env = Object.create(null);
+  const strEnv = Object.create(null);
   const steps = [];
   const outputs = [];
 
   for (let i = 0; i < lines.length; i++) {
     const raw = lines[i];
-    const line = raw.replace(/#.*$/, '').trim();
+    const line = PyLearningCore.stripComment(raw).trim();
     if (!line) continue;
 
     // Check balanced braces/parens
-    const opens = (line.match(/[\{\(\[]/g) || []).length;
-    const closes = (line.match(/[\}\)\]]/g) || []).length;
-    if (opens !== closes) {
+    if (!PyLearningCore.balanced(line)) {
       errBox.textContent = `SyntaxError (line ${i+1}): Unmatched bracket/brace in "${line}"`;
       errBox.style.display = 'block';
       document.getElementById('sim-output').textContent = `❌ SyntaxError on line ${i+1}`;
@@ -2744,8 +2735,8 @@ function startSimSets() {
     if (inputMatch) {
       const [, varName, promptTxt] = inputMatch;
       const val = varName.toLowerCase().includes('b')
-        ? (document.getElementById('sim-set-b').value || '🎨 Diya, 🚀 Riya, 🤖 Meera')
-        : (document.getElementById('sim-set-a').value || '⚡ Aarav, 🎧 Kabir, 🎨 Diya');
+        ? (document.getElementById('sim-set-b').value ?? '')
+        : (document.getElementById('sim-set-a').value ?? '');
       strEnv[varName] = val;
       steps.push({
         lines: [i],
@@ -2754,7 +2745,7 @@ function startSimSets() {
           opcode: 'CALL_FUNCTION (input)',
           complexity: 'Time: O(len(string))',
           stage: `Step ${i+1}: Reading User Input into String '${varName}'`,
-          explanation: `Python calls <code>input(${promptTxt})</code> which pauses and reads raw text from the user. Everything returned by <code>input()</code> is initially a single <code>str</code> before we split it into individual items.`,
+          explanation: `Python calls <code>input(${escHtml(promptTxt)})</code> which pauses and reads raw text from the user. Everything returned by <code>input()</code> is initially a single <code>str</code> before we split it into individual items.`,
           chips: `<span class="s-badge">type(${varName}) = str</span> <span class="s-badge">"${escHtml(val)}"</span>`
         }
       });
@@ -2762,13 +2753,19 @@ function startSimSets() {
     }
 
     // 2. Handle set comprehension from split: A = set([x.strip() for x in raw_a.split(",")])
-    const splitSetMatch = line.match(/^([A-Za-z_]\w*)\s*=\s*set\(.*?([A-Za-z_]\w*)\.split\(.*?\).*\)$/);
+    const splitSetMatch = line.match(/^([A-Za-z_]\w*)\s*=\s*set\(\[x\.strip\(\)\s+for\s+x\s+in\s+([A-Za-z_]\w*)\.split\((["']),\3\)(\s+if\s+x\.strip\(\))?\]\)$/);
     if (splitSetMatch) {
       const [, targetVar, srcVar] = splitSetMatch;
-      const rawStr = strEnv[srcVar] || '';
-      const val = parseSet(rawStr);
+      if (!(srcVar in strEnv)) {
+        errBox.textContent = `NameError: ${srcVar} is not defined`;
+        errBox.style.display = 'block';
+        return;
+      }
+      const rawStr = strEnv[srcVar];
+      const items = rawStr.split(',').map(x => x.trim());
+      const val = [...new Set(splitSetMatch[4] ? items.filter(Boolean) : items)];
       env[targetVar] = val;
-      const chips = val.map(v => `<span class="s-badge" style="background:rgba(0,122,255,0.12);color:var(--accent1)">hash("${v}") → bucket</span>`).join(' ');
+      const chips = val.map(v => `<span class="s-badge" style="background:rgba(0,122,255,0.12);color:var(--accent1)">hash(${escHtml(JSON.stringify(v))}) → illustrative bucket</span>`).join(' ');
       steps.push({
         lines: [i],
         msg: `Split '${srcVar}' & built Set ${targetVar} = ${formatPySet(val)}`,
@@ -2784,24 +2781,24 @@ function startSimSets() {
     }
 
     // 3. Handle literal set: A = {"a", "b"}
-    const assignSet = line.match(/^([A-Za-z_]\w*)\s*=\s*(\{.*\})$/);
+    const assignSet = line.match(/^([A-Za-z_]\w*)\s*=\s*(\{.*\}|set\(\s*\))$/);
     if (assignSet) {
       const val = parseSetLiteral(assignSet[2]);
       if (val === null) {
-        errBox.textContent = `SyntaxError (line ${i+1}): Invalid set literal`;
+        errBox.textContent = `Visualizer limitation (line ${i+1}): use set() for an empty set, or a nonempty literal of numbers/quoted strings. {} is a dict. Use Run Python 3 for other syntax.`;
         errBox.style.display = 'block';
         return;
       }
       env[assignSet[1]] = val;
-      const chips = val.map(v => `<span class="s-badge" style="background:rgba(0,122,255,0.12);color:var(--accent1)">hash("${v}") → bucket</span>`).join(' ');
+      const chips = val.map(v => `<span class="s-badge" style="background:rgba(0,122,255,0.12);color:var(--accent1)">hash(${escHtml(JSON.stringify(v))}) → illustrative bucket</span>`).join(' ');
       steps.push({
         lines: [i],
         msg: `Defining ${assignSet[1]} = ${formatPySet(val)}`,
         hiw: {
-          opcode: 'BUILD_SET (0x68)',
+          opcode: 'Create a set · illustrative action',
           complexity: `Time: O(${val.length}) · Space: O(${val.length})`,
           stage: `Step ${i+1}: Allocating Hash Table for Set '${assignSet[1]}'`,
-          explanation: `CPython creates an empty hash table array. It evaluates each element, invokes CPython's internal <code>hash()</code> function, and inserts elements into hash buckets while discarding duplicate collisions in O(1) time.`,
+          explanation: `CPython creates an empty hash table array. It evaluates each element, invokes CPython's internal <code>hash()</code> function, and inserts elements into hash buckets while checking equality to distinguish duplicates from hash collisions (average O(1) insertion).`,
           chips: chips || '<span class="s-badge">Empty set()</span>'
         }
       });
@@ -2820,7 +2817,7 @@ function startSimSets() {
       const opKey = {'|':'union','&':'intersection','-':'difference','^':'symdiff'}[op];
       const res = computeOp(env[left], env[right], opKey);
       env[target] = res;
-      const opcodes = {'|':'BINARY_OR (0x42)','&':'BINARY_AND (0x40)','-':'BINARY_SUBTRACT (0x18)','^':'BINARY_XOR (0x41)'};
+      const opcodes = {'|':'BINARY_OR · union (illustrative)','&':'BINARY_AND · intersection (illustrative)','-':'BINARY_SUBTRACT · difference (illustrative)','^':'BINARY_XOR · symmetric difference (illustrative)'};
       const complexMap = {'&':'Time: O(min(len(A), len(B)))','|':'Time: O(len(A) + len(B))','-':'Time: O(len(A))','^':'Time: O(len(A) + len(B))'};
       steps.push({
         lines: [i],
@@ -2840,7 +2837,12 @@ function startSimSets() {
     const printMatch = line.match(/^print\((.+)\)$/);
     if (printMatch) {
       const rawArgs = printMatch[1].trim();
-      const parts = parsePyArgs(rawArgs);
+      const parts = PyLearningCore.splitPythonArguments(rawArgs);
+      if (!parts) {
+        errBox.textContent = 'Visualizer limitation: unsupported print arguments. Use Run Python 3.';
+        errBox.style.display = 'block';
+        return;
+      }
       const renderedParts = parts.map(p => {
         const s = String(p).trim();
         const lenM = s.match(/^len\(([A-Za-z_]\w*)\)$/);
@@ -2851,9 +2853,17 @@ function startSimSets() {
           return formatPySet(computeOp(env[inlineOp[1]], env[inlineOp[3]], opKey));
         }
         if (s in env) return formatPySet(env[s]);
+        const literalString = PyLearningCore.stringValue(s);
+        if (literalString !== null) return literalString;
         if (s in strEnv) return strEnv[s];
-        return s;
+        if (/^[-+]?\d+(?:\.\d+)?$/.test(s)) return String(Number(s));
+        return null;
       });
+      if (renderedParts.includes(null)) {
+        errBox.textContent = 'Visualizer limitation: unsupported print expression. Use Run Python 3 for this code.';
+        errBox.style.display = 'block';
+        return;
+      }
       const printed = renderedParts.join(' ');
       outputs.push(printed);
       steps.push({
@@ -2879,7 +2889,7 @@ function startSimSets() {
       document.getElementById('sim-hiw-opcode').textContent = 'CPython 3 Runtime';
       document.getElementById('sim-hiw-complexity').textContent = 'Real Compiler Mode';
       document.getElementById('sim-hiw-stage-title').textContent = 'Executing Custom Python 3 Code';
-      document.getElementById('sim-hiw-explanation').innerHTML = 'Running your full script directly on the backend <strong>Python 3 interpreter</strong> with standard input (<code>stdin</code>).';
+      document.getElementById('sim-hiw-explanation').innerHTML = 'Running your full script using the available <strong>Python 3 interpreter</strong> (optional backend or browser Pyodide) with standard input (<code>stdin</code>).';
       document.getElementById('sim-hiw-breakdown-grid').innerHTML = '<span class="s-badge">✓ Full Python 3 Syntax Supported</span>';
     }
     executeRealPython(code, stdinText, 'sim-output', 'sim-syntax-err');
@@ -2900,13 +2910,14 @@ function startSimSets() {
 }
 
 function simStep(dir) {
+  if (!simSteps.length) return;
   simCurrent = Math.max(0, Math.min(simSteps.length-1, simCurrent + dir));
   renderSimStep();
 }
 
 function getActiveSetsData() {
-  const A = parseSet(document.getElementById('sim-set-a')?.value || '⚡ Aarav, 🎧 Kabir, 🎨 Diya').map(String);
-  const B = parseSet(document.getElementById('sim-set-b')?.value || '🎨 Diya, 🚀 Riya, 🤖 Meera').map(String);
+  const A = parseSet(document.getElementById('sim-set-a')?.value ?? '').map(String);
+  const B = parseSet(document.getElementById('sim-set-b')?.value ?? '').map(String);
   const onlyA = A.filter(x => !B.includes(x));
   const both = A.filter(x => B.includes(x));
   const onlyB = B.filter(x => !A.includes(x));
@@ -2915,6 +2926,7 @@ function getActiveSetsData() {
 }
 
 function renderSimStep() {
+  if (!simSteps.length || simCurrent < 0) return;
   const step = simSteps[simCurrent];
   const lines = document.getElementById('sim-editor').value.split('\n');
   renderSimCode(lines, step.lines, simCurrent === simSteps.length - 1);
@@ -2951,6 +2963,7 @@ function renderSimStep() {
 }
 
 function simTogglePlay() {
+  if (!simSteps.length) return;
   if (simPlaying) {
     clearInterval(simTimer); simPlaying = false;
     document.getElementById('sim-btn-play').textContent = '▶ Play';
@@ -2963,7 +2976,7 @@ function simTogglePlay() {
 
 function resetSim() {
   clearInterval(simTimer); simPlaying = false;
-  simCurrent = -1;
+  simCurrent = -1; simSteps = [];
   const lines = document.getElementById('sim-editor').value.split('\n');
   renderSimCode(lines);
   document.getElementById('sim-output').textContent = '▶ Click "Start Visualizer" to run…';
@@ -4209,7 +4222,7 @@ function evalFString(expr, obj) {
 }
 
 function runOOPCode() {
-  clearInterval(oopTimer); oopPlaying = false;
+  resetOOP();
   const ed = document.getElementById('oop-editor');
   const errBox = document.getElementById('oop-syntax-err');
   const pill = document.getElementById('oop-exec-pill');
@@ -4227,13 +4240,11 @@ function runOOPCode() {
 
   for (let i = 0; i < oopCodeLines.length; i++) {
     const raw = oopCodeLines[i];
-    const clean = raw.replace(/#.*$/, '');
+    const clean = PyLearningCore.stripComment(raw);
     const trimmed = clean.trim();
     if (!trimmed) continue;
 
-    const opens = (trimmed.match(/\(/g) || []).length;
-    const closes = (trimmed.match(/\)/g) || []).length;
-    if (opens !== closes) {
+    if (!PyLearningCore.balanced(trimmed)) {
       errBox.textContent = `SyntaxError (line ${i+1}): Unmatched parentheses in "${trimmed}"`;
       errBox.style.display = 'block';
       document.getElementById('oop-output').textContent = `❌ SyntaxError on line ${i+1}`;
@@ -4344,7 +4355,7 @@ function runOOPCode() {
           opcode: isInt ? 'CALL_FUNCTION (int(input))' : 'CALL_FUNCTION (input)',
           mem: `Stack Frame: main() -> ${varName}`,
           stage: `Input Step: Reading User Input into '${varName}'`,
-          explanation: `Python calls <code>input(${promptStr})</code> to capture user text${isInt ? ' and converts it to an integer using <code>int(...)</code>' : ''}. This variable will be passed as an argument to the <code>Student</code> constructor.`,
+          explanation: `In real Python, <code>input(${escHtml(promptStr)})</code> captures user text. This teaching trace substitutes preset demo values${isInt ? ' and converts it to an integer using <code>int(...)</code>' : ''}. This variable will be passed as an argument to the <code>Student</code> constructor.`,
           chips: `<span class="s-badge">${varName} = ${formatPyVal(val)}</span>`
         }
       });
@@ -4382,7 +4393,7 @@ function runOOPCode() {
           opcode: 'CALL_FUNCTION (0x83)',
           mem: `Heap: ${heapAddr}`,
           stage: `Stage 2: Allocating Instance on Heap (${clsName}.__new__)`,
-          explanation: `CPython executes <code>${clsName}.__new__()</code> to allocate an uninitialized instance at address <code>${heapAddr}</code> on the Heap. Stack variable <code>${varName}</code> receives this 64-bit reference pointer.`,
+          explanation: `Object creation calls <code>__new__</code>, then initializes through <code>__init__</code>. <code>${heapAddr}</code> is a generated demo ID, not a real address. The variable <code>${varName}</code> is bound after the initialization call returns; the simplified diagram previews that reference.`,
           chips: `<span class="s-badge">Stack Ref: ${varName}</span> <span class="s-badge">Heap Addr: ${heapAddr}</span>`
         }
       });
@@ -4403,7 +4414,7 @@ function runOOPCode() {
           hiw: {
             opcode: 'CALL_METHOD (0xA1)',
             mem: `Frame: __init__ at ${obj._heapAddr || '0x7ffd9a'}`,
-            stage: `Stage 3: Entering Constructor & Binding 'self'`,
+            stage: `Stage 3: Entering Initializer & Binding 'self'`,
             explanation: `CPython pushes a new Stack Frame for <code>__init__</code>. The newly allocated heap block is passed explicitly as the first argument <code>self</code> to bind instance attributes.`,
             chips: `<span class="s-badge">self: ${varName}</span> <span class="s-badge">Params: ${initM.params.slice(1).join(', ')}</span>`
           }
@@ -4432,8 +4443,8 @@ function runOOPCode() {
                 opcode: 'STORE_ATTR (0x5F)',
                 mem: `Instance __dict__`,
                 stage: `Stage 4: Populating ${varName}.__dict__['${attrName}']`,
-                explanation: `CPython binds the attribute into the instance dictionary: <code>${varName}.__dict__['${attrName}'] = ${formatPyVal(val)}</code>. This guarantees ${varName} has its own private state isolated from other student instances.`,
-                chips: `<span class="s-badge">${attrName} = ${formatPyVal(val)}</span>`
+                explanation: `CPython binds the attribute into the instance dictionary: <code>${varName}.__dict__['${attrName}'] = ${escHtml(formatPyVal(val))}</code>. This gives ${varName} has its own instance attributes in this example. These attributes are not automatically private; shared mutable attributes can still share state.`,
+                chips: `<span class="s-badge">${attrName} = ${escHtml(formatPyVal(val))}</span>`
               }
             });
           }
@@ -4484,7 +4495,7 @@ function runOOPCode() {
             mem: `Heap Dispatch: ${obj.className}.${methodName}`,
             stage: `Stage 5: Method Dispatch with Implicit 'self'`,
             explanation: `Writing <code>${varName}.${methodName}()</code> causes CPython to retrieve function <code>${obj.className}.${methodName}</code> from the class dictionary, binding instance <code>${varName}</code> as the first argument <code>self</code>.`,
-            chips: `<span class="s-badge">self: ${varName}</span> <span class="s-badge">Returned: "${retVal}"</span>`
+            chips: `<span class="s-badge">self: ${varName}</span> <span class="s-badge">Returned: "${escHtml(retVal)}"</span>`
           }
         });
         continue;
@@ -4506,7 +4517,13 @@ function runOOPCode() {
         continue;
       }
 
-      outputs.push(expr.replace(/^["']|["']$/g, ''));
+      const literalOutput = PyLearningCore.stringValue(expr);
+      if (literalOutput === null) {
+        errBox.textContent = 'Visualizer limitation: unsupported print expression. Use Run Python 3.';
+        errBox.style.display = 'block';
+        return;
+      }
+      outputs.push(literalOutput);
       steps.push({
         lines: [item.line],
         msg: `Output:\n${outputs.join('\n')}`,
@@ -4518,6 +4535,9 @@ function runOOPCode() {
       });
       continue;
     }
+    errBox.textContent = `Visualizer limitation (line ${item.line+1}): unsupported statement. Use Run Python 3 for edited code outside this teaching subset.`;
+    errBox.style.display = 'block';
+    return;
   }
 
   if (!steps.length) {
@@ -4527,14 +4547,14 @@ function runOOPCode() {
   }
 
   // Show verified output first, then allow stepping
-  pill.textContent = '✓ Verified';
+  pill.textContent = 'Teaching trace · not interpreter-verified';
   pill.style.display = 'inline-block';
   updateOOPPanel();
   if (oopObjects.length > 0) {
     const last = oopObjects[oopObjects.length - 1];
     document.getElementById('flip-new').style.opacity = '1';
     document.querySelector('#flip-new .fi-name').textContent = last.attrs.name || last.varName;
-    document.querySelector('#flip-new .fi-attr').innerHTML = Object.entries(last.attrs).map(([k,v]) => `${k} = ${formatPyVal(v)}`).join('<br>');
+    document.querySelector('#flip-new .fi-attr').innerHTML = Object.entries(last.attrs).map(([k,v]) => `${escHtml(k)} = ${escHtml(formatPyVal(v))}`).join('<br>');
   }
 
   oopSteps = steps;
@@ -4545,12 +4565,14 @@ function runOOPCode() {
 }
 
 function oopStep(dir) {
+  if (!oopSteps.length) return;
   oopCurrent = Math.max(0, Math.min(oopSteps.length-1, oopCurrent + dir));
   renderOOPStep();
 }
 
 function renderOOPStep() {
   const step = oopSteps[oopCurrent];
+  if (!step) return;
   renderOOPCode(step.lines, oopCurrent === oopSteps.length - 1);
   document.getElementById('oop-output').textContent = step.msg;
   document.getElementById('oop-step-info').textContent = `Step ${oopCurrent+1} / ${oopSteps.length}`;
@@ -4669,7 +4691,7 @@ function updateOOPPanel(highlightAttr = '', methodTargetVar = '') {
                 <span style="display:block;font:800 8.5px/1 'JetBrains Mono',monospace;text-transform:uppercase;color:${isNew?'#ce0505':'var(--brown)'}">${escHtml(k)}</span>
                 <strong style="color:var(--ink);font-weight:800">${escHtml(String(v))}</strong>
               </div>`;
-            }).join('') : '<span style="grid-column:1/-1;font-size:11px;color:var(--muted);font-style:italic">Allocating memory in __init__…</span>'}
+            }).join('') : '<span style="grid-column:1/-1;font-size:11px;color:var(--muted);font-style:italic">Initializing instance attributes…</span>'}
           </div>
         </div>
       </div>
@@ -4677,7 +4699,7 @@ function updateOOPPanel(highlightAttr = '', methodTargetVar = '') {
       ${(methodTargetVar === o.varName && o.lastMethodOut) ? `<div style="margin:0 14px 10px;padding:7px 10px;border-radius:8px;background:#11100f;color:#c7c911;font:700 11px/1.3 'JetBrains Mono',monospace">💬 ${escHtml(o.varName)}.introduce() → "${escHtml(o.lastMethodOut)}"</div>` : ''}
       <!-- ID Card Footer Barcode Strip -->
       <div style="display:flex;align-items:center;justify-content:space-between;padding:5px 12px;background:var(--paper);border-top:1.5px solid var(--ink);font:800 9.5px/1.2 'JetBrains Mono',monospace;color:var(--muted)">
-        <span>HEAP: ${escHtml(heapAddr)}</span>
+        <span>DEMO ID: ${escHtml(heapAddr)}</span>
         <span>${escHtml(o.varName)}.__dict__ (${attrEntries.length} attrs)</span>
       </div>
     </div>`;
@@ -4686,6 +4708,7 @@ function updateOOPPanel(highlightAttr = '', methodTargetVar = '') {
 }
 
 function oopTogglePlay() {
+  if (!oopSteps.length) return;
   if (oopPlaying) {
     clearInterval(oopTimer); oopPlaying=false; document.getElementById('oop-btn-play').textContent='▶ Play';
   } else {
@@ -4771,7 +4794,7 @@ const QUIZ_DATA = {
     { q: 'What is the common mistake when confusing ∈ and ⊆?', opts: ['Using {} on single elements with ∈', 'Using ⊆ for sets', 'Using | for union', 'Using set()'], ans: 0, exp: '2 ∈ A checks element membership; {2} ⊆ A checks subset.' }
   ],
   oop: [
-    { q: 'What does the __init__ method do in a Python class?', opts: ['Deletes the object', 'Initializes a new object when created', 'Prints the class', 'Imports modules'], ans: 1, exp: '__init__ is the constructor called automatically on instantiation.' },
+    { q: 'What does the __init__ method do in a Python class?', opts: ['Deletes the object', 'Initializes a new object when created', 'Prints the class', 'Imports modules'], ans: 1, exp: '__init__ initializes an instance after __new__ creates it; it does not create or return the instance.' },
     { q: 'What does `self` refer to in a Python class method?', opts: ['The class blueprint', 'The current object instance', 'The parent class', 'Global scope'], ans: 1, exp: 'self points to the specific instance calling the method.' },
     { q: 'If `s1 = Student("Aarav", "CSE")`, what is `s1.name`?', opts: ['"Student"', '"name"', '"Aarav"', 'Error'], ans: 2, exp: 'self.name stores the passed-in argument "Aarav".' },
     { q: 'A class is best described as…', opts: ['A variable', 'A blueprint for creating objects', 'A loop', 'A module'], ans: 1, exp: 'A class defines structure and behavior; objects are instances built from it.' },
@@ -5325,6 +5348,21 @@ document.addEventListener('DOMContentLoaded', () => {
     tick();
   }
 });
+
+// Pause hidden labs and apply speed changes immediately, without sharing topic state.
+window.pauseLabPlayback = function () {
+  clearInterval(simTimer); simTimer = null; simPlaying = false;
+  clearInterval(oopTimer); oopTimer = null; oopPlaying = false;
+  document.getElementById('sim-btn-play').textContent = '▶ Play';
+  document.getElementById('oop-btn-play').textContent = '▶ Play';
+};
+for (const [speedId, playing, restart] of [
+  ['sim-speed', () => simPlaying, () => { clearInterval(simTimer); simPlaying = false; simTogglePlay(); }],
+  ['oop-speed', () => oopPlaying, () => { clearInterval(oopTimer); oopPlaying = false; oopTogglePlay(); }]
+]) document.getElementById(speedId)?.addEventListener('input', () => { if (playing()) restart(); });
+document.getElementById('sim-editor')?.addEventListener('input', resetSim);
+document.getElementById('oop-editor')?.addEventListener('input', resetOOP);
+document.addEventListener('visibilitychange', () => { if (document.hidden) window.pauseLabPlayback(); });
 </script>
 </body>
 </html>

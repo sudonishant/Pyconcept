@@ -1,5 +1,8 @@
-NAME NISHNAT KUMAR 
-ROLL 26CSEAI42
+**Author:** Nishant Kumar
+
+**Branch:** CSEAI
+
+**Roll:** 26CSEAI42
 
 
 
@@ -19,6 +22,32 @@ An interactive **2D + 3D WebGL visual learning studio** and **live Python 3 onli
 > **Repository:** [https://github.com/sudonishant/Pyconcept](https://github.com/sudonishant/Pyconcept)
 
 ---
+
+## Start with one topic (event presentation)
+
+Use **Start 2-minute Sets lesson** or **Start 2-minute OOP lesson** on Home.
+Each has an independent prediction, code/state/output trace, Back/Next/Play/Reset,
+step-delay slider and focus view. Neither requires a Python runtime download or API.
+The full editable labs remain separate and available after the guided example.
+
+- `learning-core.js`: bounded parser, safe syntax rendering and pure set helpers.
+- `learning-guide.js` / `.css`: independent, prepared teaching traces and responsive styling.
+- Visual traces model a supported subset; they are **not Python interpreters**.
+  Demo IDs and opcode-style labels are illustrative, not measured memory or bytecode.
+- **Run Python 3** is the separate interpreter route for general edited code.
+- See [event checklist and honest test scope](EVALUATION.md).
+
+### Run locally and test
+
+```sh
+python3 -m http.server 8050 --bind 0.0.0.0
+# Open http://localhost:8050 in a browser
+node --test tests/learning.test.cjs
+```
+
+The test command needs Node.js 20+ and Python 3. It checks parsing, escaping,
+independent lesson fixtures, inline script syntax and real-Python lesson outputs.
+The static server does not enable the optional backend APIs.
 
 ## Architecture Overview (Hybrid Execution)
 
@@ -53,7 +82,7 @@ flowchart LR
   11. Number Line Intervals (`[ ]` vs `( )`)
   12. Cartesian Product (`A × B`)
 - **2D SVG & 3D WebGL Multi-Venn Diagrams:** Switch between `2-Set Venn`, `3-Set Venn`, `Subset`, and `Disjoint` views. In `2-Set` mode, elements entered in `#sim-set-a` and `#sim-set-b` sync directly onto the **2D SVG Venn diagram** (with operation shading) and **5-part sculptural 3D data block tokens** with a floating 3D result plaque.
-- **Step-by-Step CPython Hash Tracer:** Displays syntax-highlighted code lines, live progress bar, CPython opcodes (`BUILD_SET`, `BINARY_OR`, `BINARY_AND`, `BINARY_SUBTRACT`, `BINARY_XOR`), Time Complexity (`O(min(len(A), len(B)))`), and element-by-element hash bucket evaluation.
+- **Illustrative Step-by-Step Set Tracer:** Displays syntax-highlighted code lines, live progress bar, CPython opcodes (`BUILD_SET`, `BINARY_OR`, `BINARY_AND`, `BINARY_SUBTRACT`, `BINARY_XOR`), Time Complexity (`O(min(len(A), len(B)))`), and element-by-element hash bucket evaluation.
 
 ### 2. Topic 23 — Object-Oriented Programming (`#page-oop`)
 - **Blueprint Stamp Press (3 Modes):**
