@@ -10,8 +10,24 @@ import subprocess
 import sys
 import tempfile
 import threading
+import urllib.error
+import urllib.request
 
 ROOT = Path(__file__).resolve().parent
+
+
+def get_openrouter_key() -> str:
+    """Return OpenRouter API key from environment or local .env file."""
+    env_key = os.environ.get("OPENROUTER_API_KEY", "").strip()
+    if env_key:
+        return env_key
+    env_file = ROOT / ".env"
+    if env_file.exists():
+        for line in env_file.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if line.startswith("OPENROUTER_API_KEY="):
+                return line.split("=", 1)[1].strip().strip('"').strip("'")
+    return ""
 TTS_LOCK = threading.Lock()
 TTS_CACHE: dict[tuple[str, str], bytes] = {}
 
@@ -86,6 +102,7 @@ class StudioHandler(SimpleHTTPRequestHandler):
                 "ok": True,
                 "tts": "pyttsx3",
                 "voices": list(VOICE_MAP.keys()),
+                "ai": bool(get_openrouter_key()),
             }).encode("utf-8")
             self.send_response(200)
             self.send_header("Content-Type", "application/json")
@@ -119,6 +136,86 @@ class StudioHandler(SimpleHTTPRequestHandler):
             return
 
         super().do_GET()
+
+    def do_POST(self):
+        parsed = urlparse(self.path)
+        if parsed.path != "/api/chat":
+            self.send_error(404, "Not found")
+            return
+
+        length = int(self.headers.get("Content-Length", "0"))
+        raw = self.rfile.read(length) if length > 0 else b"{}"
+        try:
+            body = json.loads(raw.decode("utf-8"))
+        except Exception:
+            self.send_error(400, "Invalid JSON")
+            return
+
+        api_key = get_openrouter_key() or self.headers.get("X-OpenRouter-Key", "").strip()
+        if not api_key:
+            msg = json.dumps({"error": "OPENROUTER_API_KEY is not configured."}).encode("utf-8")
+            self.send_response(401)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(msg)))
+            self.end_headers()
+            self.wfile.write(msg)
+            return
+
+        topic = body.get("topic", "Python")
+        code = (body.get("code") or "")[:1500]
+        messages = body.get("messages") or []
+        sys_prompt = (
+            f"You are PyBot, a friendly, concise Python tutor inside PyConcept Explorer (currently viewing: {topic}). "
+            "Explain Sets (Venn diagrams, union, intersection, difference, subsets, power set, cardinality, intervals, Cartesian product) "
+            "and Object-Oriented Programming (classes, blueprints, __init__, self, objects) clearly in plain English. "
+            "Keep answers short, practical, and include small Python snippets when helpful."
+        )
+        if code.strip():
+            sys_prompt += f"\n\nCurrent code in the user's editor:\n```python\n{code}\n```"
+
+        req_payload = json.dumps({
+            "model": body.get("model") or "openrouter/free",
+            "messages": [{"role": "system", "content": sys_prompt}, *messages[-8:]],
+            "max_tokens": 420,
+            "temperature": 0.6,
+        }).encode("utf-8")
+
+        req = urllib.request.Request(
+            "https://openrouter.ai/api/v1/chat/completions",
+            data=req_payload,
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+                "HTTP-Referer": "http://127.0.0.1:8095/",
+                "X-Title": "PyConcept Explorer",
+            },
+            method="POST",
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=25) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+                reply = data["choices"][0]["message"]["content"]
+                out = json.dumps({"reply": reply, "model": data.get("model", "openrouter")}).encode("utf-8")
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Content-Length", str(len(out)))
+                self.end_headers()
+                self.wfile.write(out)
+        except urllib.error.HTTPError as exc:
+            err_body = exc.read().decode("utf-8", errors="ignore")
+            out = json.dumps({"error": f"OpenRouter HTTP {exc.code}: {err_body[:220]}"}).encode("utf-8")
+            self.send_response(exc.code)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(out)))
+            self.end_headers()
+            self.wfile.write(out)
+        except Exception as exc:
+            out = json.dumps({"error": str(exc)}).encode("utf-8")
+            self.send_response(500)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(out)))
+            self.end_headers()
+            self.wfile.write(out)
 
     def log_message(self, format, *args):
         return
