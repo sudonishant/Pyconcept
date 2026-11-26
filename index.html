@@ -1140,9 +1140,22 @@ nav{
     <!-- Blueprint + Object cards -->
     <div class="oop-intro-grid">
       <div class="glass blueprint-card" id="oop-bp-card">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px">
           <div class="bp-title" style="margin-bottom:0">🏛️ The Blueprint (Class)</div>
-          <button class="vis-btn primary" style="padding:5px 12px;font-size:.75rem" onclick="stampOOPCard()">✨ Stamp Object</button>
+          <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+            <div class="view-toggle" id="oop-stamp-mode-toggle" style="padding:2px">
+              <button class="vt-btn active" style="padding:4px 10px;font-size:.7rem" onclick="setOOPStampMode('custom',this)">✍️ Custom</button>
+              <button class="vt-btn" style="padding:4px 10px;font-size:.7rem" onclick="setOOPStampMode('auto',this)">⚡ Auto</button>
+              <button class="vt-btn" style="padding:4px 10px;font-size:.7rem" onclick="setOOPStampMode('code',this)">💻 From Code</button>
+            </div>
+            <button class="vis-btn primary" style="padding:5px 12px;font-size:.75rem" onclick="stampOOPCard()">✨ Stamp Object</button>
+          </div>
+        </div>
+        <!-- Custom Stamp Inputs (visible in Custom mode) -->
+        <div id="oop-custom-stamp-inputs" style="display:grid;grid-template-columns:1.2fr 1fr .8fr;gap:8px;margin-bottom:12px">
+          <input class="sim-input" id="stamp-custom-name" value="⚡ Nishant" placeholder="Name (e.g. ⚡ Nishant)" style="padding:7px 10px;font-size:.78rem"/>
+          <input class="sim-input" id="stamp-custom-branch" value="CSE" placeholder="Branch / Course" style="padding:7px 10px;font-size:.78rem"/>
+          <input class="sim-input" id="stamp-custom-roll" value="105" placeholder="Roll #" style="padding:7px 10px;font-size:.78rem"/>
         </div>
         <div class="bp-class-box">
           <div class="bp-class-name">Student</div>
@@ -3229,28 +3242,78 @@ const STAMP_SAMPLES = [
   { name: '🌿 Neha', course: 'B.Tech ME' }
 ];
 let stampIdx = 0;
+let oopStampMode = 'custom';
+
+function setOOPStampMode(mode, btn) {
+  oopStampMode = mode;
+  document.querySelectorAll('#oop-stamp-mode-toggle .vt-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  const box = document.getElementById('oop-custom-stamp-inputs');
+  if (box) box.style.display = mode === 'custom' ? 'grid' : 'none';
+}
 
 function stampOOPCard() {
   const bp = document.getElementById('oop-bp-card');
   const row = document.getElementById('oop-cards-row');
-  if (!bp || !row) return;
-  bp.classList.remove('bp-stamping');
-  void bp.offsetWidth;
-  bp.classList.add('bp-stamping');
+  if (bp) {
+    bp.classList.remove('bp-stamping');
+    void bp.offsetWidth;
+    bp.classList.add('bp-stamping');
+  }
 
-  const sample = STAMP_SAMPLES[stampIdx % STAMP_SAMPLES.length];
-  stampIdx++;
-  const card = document.createElement('div');
-  card.className = 'flip-card chip-anim';
-  card.innerHTML = `
-    <div class="flip-inner">
-      <div class="flip-face"><span class="fi-icon">🎓</span><span class="fi-name">${sample.name}</span><span style="font-size:.75rem;color:var(--txt2)">click to flip</span></div>
-      <div class="flip-face flip-back"><span class="fi-attr">name = "${sample.name}"<br>course = "${sample.course}"<br>introduce() → "Hi, I'm ${sample.name}…"</span></div>
-    </div>`;
-  card.addEventListener('click', () => card.classList.toggle('flipped'));
-  const placeholder = document.getElementById('flip-new');
-  if (placeholder) row.insertBefore(card, placeholder);
-  else row.appendChild(card);
+  let sample;
+  if (oopStampMode === 'custom') {
+    const cName = (document.getElementById('stamp-custom-name')?.value || '⚡ Student').trim();
+    const cBranch = (document.getElementById('stamp-custom-branch')?.value || 'CSE').trim();
+    const cRoll = (document.getElementById('stamp-custom-roll')?.value || String(101 + stampIdx)).trim();
+    sample = { name: cName, course: cBranch, roll: cRoll };
+    // Also add to oopObjects for 3D Heap visualization
+    oopObjects.push({
+      varName: 's' + (oopObjects.length + 1),
+      className: 'Student',
+      attrs: { name: cName, branch: cBranch, roll: cRoll, semester: '3rd', session: '2025-26' },
+      _heapAddr: '0x7ffd' + Math.floor(Math.random()*89999 + 10000).toString(16)
+    });
+  } else if (oopStampMode === 'code') {
+    if (!oopObjects.length) runOOPCode();
+    if (oopObjects.length) {
+      const obj = oopObjects[stampIdx % oopObjects.length];
+      sample = {
+        name: String(obj.attrs.name || obj.varName),
+        course: String(obj.attrs.branch || 'CSE'),
+        roll: String(obj.attrs.roll || (101 + stampIdx))
+      };
+    } else {
+      sample = STAMP_SAMPLES[stampIdx % STAMP_SAMPLES.length];
+    }
+    stampIdx++;
+  } else {
+    sample = STAMP_SAMPLES[stampIdx % STAMP_SAMPLES.length];
+    stampIdx++;
+    oopObjects.push({
+      varName: 's' + (oopObjects.length + 1),
+      className: 'Student',
+      attrs: { name: sample.name, branch: sample.course, roll: 100 + stampIdx, semester: '3rd', session: '2025-26' },
+      _heapAddr: '0x7ffd' + Math.floor(Math.random()*89999 + 10000).toString(16)
+    });
+  }
+
+  if (row) {
+    const card = document.createElement('div');
+    card.className = 'flip-card chip-anim';
+    card.innerHTML = `
+      <div class="flip-inner">
+        <div class="flip-face"><span class="fi-icon">🎓</span><span class="fi-name">${escHtml(sample.name)}</span><span style="font-size:.75rem;color:var(--txt2)">click to flip</span></div>
+        <div class="flip-face flip-back"><span class="fi-attr">name = "${escHtml(sample.name)}"<br>branch = "${escHtml(sample.course)}"${sample.roll ? '<br>roll = ' + escHtml(sample.roll) : ''}<br>introduce() → "Hi, I\'m ${escHtml(sample.name)}…"</span></div>
+      </div>`;
+    card.addEventListener('click', () => card.classList.toggle('flipped'));
+    const placeholder = document.getElementById('flip-new');
+    if (placeholder) row.insertBefore(card, placeholder);
+    else row.appendChild(card);
+  }
+
+  updateOOPPanel();
+  if (oopLabMode === '3d') updateOOP3D();
 }
 
 function resetOOPCode() {
