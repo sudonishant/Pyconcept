@@ -1098,10 +1098,9 @@ header .icon-btn{
           <button class="op-btn" style="padding:6px 14px;font-size:.8rem" onclick="setLabVennType('subset',this)">Subset (A ⊂ B)</button>
           <button class="op-btn" style="padding:6px 14px;font-size:.8rem" onclick="setLabVennType('disjoint',this)">Disjoint (A ∩ B = ∅)</button>
         </div>
-        <span style="font-size:.76rem;color:var(--txt2);font-weight:600">Click any element inside the Venn to inspect Set Membership (∈ / ∉)</span>
+        <span style="font-size:.76rem;color:var(--txt2);font-weight:600">Switch between 2D SVG and 3D Glass Venn Diagrams</span>
       </div>
-      <div class="responsive-2col">
-        <div>
+      <div>
           <div class="stage-3d-shell" id="sets-lab-3d-shell">
             <div class="stage-3d-inner" id="sets-lab-venn-stage"></div>
           </div>
@@ -1120,8 +1119,6 @@ header .icon-btn{
               🖱 Drag to orbit 3D · Highlighted blocks match active operation · Click block for membership
             </div>
           </div>
-        </div>
-        <div id="sets-student-card"></div>
       </div>
     </div>
 
@@ -3615,67 +3612,7 @@ function selectLabStudent(name) {
 }
 
 function renderStudentIDCard(name) {
-  const box = document.getElementById('sets-student-card');
-  if (!box) return;
-  const cleanName = String(name || 'Aarav').replace(/^[^a-zA-Z0-9]+/, '').trim();
-  const s = STUDENT_PROFILES[cleanName] || { name: cleanName, emoji: '⚡', displayName: '⚡ ' + cleanName, color: '#007aff' };
-  const display = s.displayName || (s.emoji + ' ' + s.name);
-
-  // Determine pure Set Membership based on current labVennType
-  let memberships = [];
-  if (labVennType === 'two') {
-    const inA = ['Aarav', 'Kabir', 'Diya'].includes(cleanName);
-    const inB = ['Diya', 'Riya', 'Meera'].includes(cleanName);
-    memberships = [
-      { label: `Set A (Cricket)`, isIn: inA },
-      { label: `Set B (Music)`, isIn: inB },
-      { label: `A ∩ B (Both)`, isIn: inA && inB },
-      { label: `U (Universal)`, isIn: true }
-    ];
-  } else if (labVennType === 'three') {
-    const inA = ['Aarav', 'Diya', 'Kabir'].includes(cleanName);
-    const inB = ['Diya', 'Riya', 'Meera'].includes(cleanName);
-    const inC = ['Kabir', 'Meera', 'Neha', 'Diya'].includes(cleanName);
-    memberships = [
-      { label: `A (Cricket)`, isIn: inA },
-      { label: `B (Music)`, isIn: inB },
-      { label: `C (Robotics)`, isIn: inC }
-    ];
-  } else if (labVennType === 'subset') {
-    const inA = ['Aarav', 'Kabir'].includes(cleanName);
-    const inB = ['Aarav', 'Kabir', 'Diya', 'Riya'].includes(cleanName);
-    memberships = [
-      { label: `Subset A`, isIn: inA },
-      { label: `Superset B`, isIn: inB },
-      { label: `A ⊂ B`, isIn: true }
-    ];
-  } else {
-    const inA = ['Aarav', 'Kabir'].includes(cleanName);
-    const inB = ['Riya', 'Meera'].includes(cleanName);
-    memberships = [
-      { label: `Set A (Morning)`, isIn: inA },
-      { label: `Set B (Evening)`, isIn: inB },
-      { label: `A ∩ B = ∅`, isIn: false }
-    ];
-  }
-
-  box.innerHTML = `
-    <div class="student-id-card jtr-pop" style="border-radius:12px;padding:16px;background:var(--white);border:2px solid var(--ink);box-shadow:4px 4px 0 var(--ink)">
-      ${getAvatarSVG(s.name, s.color, 54)}
-      <div style="flex:1;min-width:0">
-        <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
-          <span class="nomonkey-sticker" style="font-size:.65rem;padding:2px 8px;transform:none;background:var(--lime);color:#11100f;border:1.5px solid #11100f">SET ELEMENT</span>
-          <span style="font-size:.72rem;color:var(--txt2);font-weight:700">Membership</span>
-        </div>
-        <div style="font-size:1.25rem;font-weight:900;letter-spacing:-0.02em;margin:2px 0 8px">${escHtml(display)}</div>
-        <div class="student-badge-row">
-          ${memberships.map(m => `<span class="s-badge" style="background:${m.isIn ? 'rgba(52,199,89,0.16)' : 'rgba(206,5,5,0.1)'};color:${m.isIn ? 'var(--accent2)' : 'var(--red)'}">${m.isIn ? '∈' : '∉'} ${escHtml(m.label)}</span>`).join('')}
-        </div>
-        <div style="margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--txt2)">
-          Python: <code>"${escHtml(display)}" in A</code> → <strong>${memberships[0].isIn ? 'True' : 'False'}</strong>
-        </div>
-      </div>
-    </div>`;
+  // Removed from Sets per user request — Sets and OOP are kept strictly separate.
 }
 
 function renderLabVenn() {
