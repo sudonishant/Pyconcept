@@ -1736,7 +1736,6 @@ CSE
       </div>
     </div>
     <div style="display:flex;gap:6px">
-      <button class="icon-btn" style="width:28px;height:28px;font-size:.8rem" aria-label="Set OpenRouter API Key" title="Set API Key (for static mode)" onclick="promptOpenRouterKey()">⚙️</button>
       <button class="icon-btn" style="width:28px;height:28px;font-size:.8rem" aria-label="Close PyBot Drawer" title="Close" onclick="toggleAIDrawer()">✕</button>
     </div>
   </div>
@@ -5053,11 +5052,11 @@ async function checkAIHealth() {
     if (r.ok) {
       const d = await r.json();
       aiServerReady = !!d.ai;
-      if (badge) badge.textContent = aiServerReady ? '● OpenRouter Connected' : '○ Click ⚙️ to set key';
+      if (badge) badge.textContent = aiServerReady ? '● OpenRouter Connected' : '● Built-in Python Tutor';
       return;
     }
   } catch (e) {}
-  if (badge) badge.textContent = sessionStorage.getItem('openrouter_key') ? '● Browser Key Ready' : '○ Click ⚙️ to set key';
+  if (badge) badge.textContent = '● Built-in Python Tutor';
 }
 
 function toggleAIDrawer() {
