@@ -3768,24 +3768,55 @@ function renderOOPStep() {
 
 function updateOOPPanel() {
   const panel = document.getElementById('oop-obj-panel');
+  if (!panel) return;
   if (oopObjects.length === 0) {
     panel.innerHTML = `<div style="font-size:.85rem;color:var(--txt2);text-align:center;margin:auto;padding:16px">No objects yet — write code and run it!</div>`;
     return;
   }
-  const palette = ['#4f46e5', '#06b6d4', '#8b5cf6', '#f59e0b', '#ec4899'];
+  const palette = ['#ce0505', '#11100f', '#007aff', '#af52de', '#ff9500', '#34c759'];
   panel.innerHTML = oopObjects.map((o, idx) => {
-    const displayName = o.attrs.name || o.varName;
-    const color = palette[idx % palette.length];
+    const displayName = String(o.attrs.name || o.varName);
+    const cleanName = displayName.replace(/^[^a-zA-Z0-9]+/, '').trim();
+    const prof = STUDENT_PROFILES[cleanName] || {};
+    const color = prof.color || palette[idx % palette.length];
+    const heapAddr = o._heapAddr || ('0x7ffd' + (101 + idx * 14).toString(16));
+    const bannerBg = idx % 2 === 0 ? 'var(--lime)' : 'var(--red)';
+    const bannerTxt = idx % 2 === 0 ? '#11100f' : '#ffffff';
+
+    const attrEntries = Object.entries(o.attrs);
     return `
-    <div class="obj-instance">
-      <div style="display:flex;align-items:center;gap:12px">
-        ${getAvatarSVG(String(displayName), color, 46)}
+    <div class="obj-instance" style="padding:0;overflow:hidden;border:2px solid var(--ink);border-radius:10px;background:var(--white);box-shadow:4px 4px 0 var(--ink);margin-bottom:6px">
+      <!-- ID Card Top Header Strip -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 12px;background:${bannerBg};color:${bannerTxt};border-bottom:2px solid var(--ink);font:900 10px/1.2 'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:0.06em">
+        <span>🪪 STUDENT ID // ${escHtml(o.className)}</span>
+        <span style="padding:2px 6px;border-radius:4px;background:#11100f;color:#ffffff;font-size:9px">VAR: ${escHtml(o.varName)}</span>
+      </div>
+
+      <!-- ID Card Body -->
+      <div style="display:flex;align-items:center;gap:14px;padding:14px">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:5px;flex-shrink:0">
+          ${getAvatarSVG(displayName, color, 62)}
+          <span style="font:800 8px/1 'JetBrains Mono',monospace;padding:2px 6px;border-radius:4px;background:var(--paper);border:1px solid var(--ink);color:var(--ink)">✓ ACTIVE</span>
+        </div>
         <div style="flex:1;min-width:0">
-          <div class="oi-title" style="margin-bottom:4px">${escHtml(o.varName)} = ${escHtml(o.className)}</div>
-          <div class="student-badge-row">
-            ${Object.entries(o.attrs).map(([k,v]) => `<span class="s-badge">${escHtml(k)}: ${escHtml(String(v))}</span>`).join('')}
+          <div style="font:950 18px/1.1 Impact,'Arial Black',sans-serif;letter-spacing:0.01em;text-transform:uppercase;color:var(--ink);margin-bottom:8px">
+            ${escHtml(displayName)}
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px">
+            ${attrEntries.map(([k, v]) => `
+              <div style="padding:4px 8px;border-radius:6px;background:var(--paper);border:1px solid var(--line);font-size:11px;line-height:1.3">
+                <span style="display:block;font:800 8.5px/1 'JetBrains Mono',monospace;text-transform:uppercase;color:var(--brown)">${escHtml(k)}</span>
+                <strong style="color:var(--ink);font-weight:800">${escHtml(String(v))}</strong>
+              </div>
+            `).join('')}
           </div>
         </div>
+      </div>
+
+      <!-- ID Card Footer Barcode Strip -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:5px 12px;background:var(--paper);border-top:1.5px solid var(--ink);font:800 9.5px/1.2 'JetBrains Mono',monospace;color:var(--muted)">
+        <span>HEAP: ${escHtml(heapAddr)}</span>
+        <span>${escHtml(o.varName)}.__dict__ (${attrEntries.length} attrs)</span>
       </div>
     </div>`;
   }).join('');
