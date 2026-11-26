@@ -928,7 +928,7 @@ nav{
         </div>
         <div class="mb-case-body">
           <div style="font:950 32px/1 Impact,'Arial Black',sans-serif;text-transform:uppercase;margin-bottom:8px">Sets &amp; Venn Studio</div>
-          <div class="tc-desc" style="margin-bottom:18px">12 visual concepts, Multi-Venn diagrams (2-Set, 3-Set, Subset, Disjoint), Student Emoji ID Cards, and CPython hash-table step tracer.</div>
+          <div class="tc-desc" style="margin-bottom:18px">12 visual concepts, Multi-Venn diagrams (2-Set, 3-Set, Subset, Disjoint), Set Membership (∈ / ∉), and CPython hash-table step tracer.</div>
           <div class="tc-tags" style="margin-bottom:20px">
             <span class="tag">12 Visuals</span>
             <span class="tag">Hash Tracer</span>
@@ -1049,7 +1049,7 @@ nav{
     <div style="margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
       <div>
         <div style="font-size:1.35rem;font-weight:900;margin-bottom:4px">⚗️ Sets Studio &amp; Multi-Venn Visualizer</div>
-        <p style="color:var(--txt2);font-size:.9rem">Switch Venn diagram types, inspect student profiles (Name, Branch, Roll, Semester, Session), edit Python code, and toggle 2D / 3D.</p>
+        <p style="color:var(--txt2);font-size:.9rem">Switch Venn diagram types (2-Set, 3-Set, Subset, Disjoint), inspect Set Membership (∈ / ∉) & operations, edit Python code, and toggle 2D / 3D.</p>
       </div>
       <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
         <div class="view-toggle" id="sets-lab-view-toggle">
@@ -1068,7 +1068,7 @@ nav{
           <button class="op-btn" style="padding:6px 14px;font-size:.8rem" onclick="setLabVennType('subset',this)">Subset (A ⊂ B)</button>
           <button class="op-btn" style="padding:6px 14px;font-size:.8rem" onclick="setLabVennType('disjoint',this)">Disjoint (A ∩ B = ∅)</button>
         </div>
-        <span style="font-size:.76rem;color:var(--txt2);font-weight:600">Click any student avatar inside the Venn to view ID card</span>
+        <span style="font-size:.76rem;color:var(--txt2);font-weight:600">Click any element inside the Venn to inspect Set Membership (∈ / ∉)</span>
       </div>
       <div class="responsive-2col">
         <div>
@@ -1076,7 +1076,7 @@ nav{
             <div class="stage-3d-inner" id="sets-lab-venn-stage"></div>
           </div>
           <div id="sets-3d-canvas-wrap" style="display:none;height:270px;border-radius:16px;overflow:hidden;position:relative;background:radial-gradient(circle at 50% 35%,#1e293b,#090d16);border:1.5px solid rgba(255,255,255,.22);cursor:grab">
-            <div style="position:absolute;bottom:8px;left:12px;z-index:2;font-size:.7rem;color:rgba(255,255,255,.7);pointer-events:none">Drag to orbit 3D · Click any student block</div>
+            <div style="position:absolute;bottom:8px;left:12px;z-index:2;font-size:.7rem;color:rgba(255,255,255,.7);pointer-events:none">Drag to orbit 3D · Click any element block to inspect membership</div>
           </div>
         </div>
         <div id="sets-student-card"></div>
@@ -2472,7 +2472,7 @@ function updateSets3D() {
     const isSel = selectedLabStudent === name;
     const grp = new THREE.Group();
     grp.userData.studentName = name;
-    const tex = makeLabelTex(`${s.emoji || '⚡'} ${name}`, `${s.branch} · #${s.roll}`, isSel ? '#007aff' : '#111827', s.color);
+    const inA = ['Aarav', 'Kabir', 'Diya'].includes(name); const tex = makeLabelTex(`${s.emoji || '⚡'} ${name}`, inA ? '∈ Set A' : '∈ Set B / U', isSel ? '#ce0505' : '#11100f', s.color);
     const mats = [
       new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.4 }),
       new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.4 }),
@@ -2868,21 +2868,61 @@ function renderStudentIDCard(name) {
   const box = document.getElementById('sets-student-card');
   if (!box) return;
   const cleanName = String(name || 'Aarav').replace(/^[^a-zA-Z0-9]+/, '').trim();
-  const s = STUDENT_PROFILES[cleanName] || { name: cleanName, emoji: '⚡', displayName: '⚡ ' + cleanName, branch: 'CSE', roll: '105', semester: '3rd', session: '2025-26', color: '#007aff' };
+  const s = STUDENT_PROFILES[cleanName] || { name: cleanName, emoji: '⚡', displayName: '⚡ ' + cleanName, color: '#007aff' };
+  const display = s.displayName || (s.emoji + ' ' + s.name);
+
+  // Determine pure Set Membership based on current labVennType
+  let memberships = [];
+  if (labVennType === 'two') {
+    const inA = ['Aarav', 'Kabir', 'Diya'].includes(cleanName);
+    const inB = ['Diya', 'Riya', 'Meera'].includes(cleanName);
+    memberships = [
+      { label: `Set A (Cricket)`, isIn: inA },
+      { label: `Set B (Music)`, isIn: inB },
+      { label: `A ∩ B (Both)`, isIn: inA && inB },
+      { label: `U (Universal)`, isIn: true }
+    ];
+  } else if (labVennType === 'three') {
+    const inA = ['Aarav', 'Diya', 'Kabir'].includes(cleanName);
+    const inB = ['Diya', 'Riya', 'Meera'].includes(cleanName);
+    const inC = ['Kabir', 'Meera', 'Neha', 'Diya'].includes(cleanName);
+    memberships = [
+      { label: `A (Cricket)`, isIn: inA },
+      { label: `B (Music)`, isIn: inB },
+      { label: `C (Robotics)`, isIn: inC }
+    ];
+  } else if (labVennType === 'subset') {
+    const inA = ['Aarav', 'Kabir'].includes(cleanName);
+    const inB = ['Aarav', 'Kabir', 'Diya', 'Riya'].includes(cleanName);
+    memberships = [
+      { label: `Subset A`, isIn: inA },
+      { label: `Superset B`, isIn: inB },
+      { label: `A ⊂ B`, isIn: true }
+    ];
+  } else {
+    const inA = ['Aarav', 'Kabir'].includes(cleanName);
+    const inB = ['Riya', 'Meera'].includes(cleanName);
+    memberships = [
+      { label: `Set A (Morning)`, isIn: inA },
+      { label: `Set B (Evening)`, isIn: inB },
+      { label: `A ∩ B = ∅`, isIn: false }
+    ];
+  }
+
   box.innerHTML = `
-    <div class="student-id-card jtr-pop" style="border-radius:20px;padding:16px;background:var(--glass-bg);backdrop-filter:var(--blur);border:1.5px solid var(--glass-border);box-shadow:var(--glass-shadow)">
-      ${getAvatarSVG(s.name, s.color, 62)}
+    <div class="student-id-card jtr-pop" style="border-radius:12px;padding:16px;background:var(--white);border:2px solid var(--ink);box-shadow:4px 4px 0 var(--ink)">
+      ${getAvatarSVG(s.name, s.color, 54)}
       <div style="flex:1;min-width:0">
         <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
-          <span class="nomonkey-sticker" style="font-size:.65rem;padding:2px 8px;transform:none">${s.emoji} Student ID</span>
-          <span style="font-size:.72rem;color:var(--txt2);font-weight:700">Verified</span>
+          <span class="nomonkey-sticker" style="font-size:.65rem;padding:2px 8px;transform:none;background:var(--lime);color:#11100f;border:1.5px solid #11100f">SET ELEMENT</span>
+          <span style="font-size:.72rem;color:var(--txt2);font-weight:700">Membership</span>
         </div>
-        <div style="font-size:1.25rem;font-weight:900;letter-spacing:-0.02em;margin:2px 0 6px">${escHtml(s.displayName || (s.emoji + ' ' + s.name))}</div>
+        <div style="font-size:1.25rem;font-weight:900;letter-spacing:-0.02em;margin:2px 0 8px">${escHtml(display)}</div>
         <div class="student-badge-row">
-          <span class="s-badge" style="background:rgba(0,122,255,0.12);color:var(--accent1)">Branch: ${escHtml(s.branch)}</span>
-          <span class="s-badge">Roll: #${escHtml(s.roll)}</span>
-          <span class="s-badge">Sem: ${escHtml(s.semester)}</span>
-          <span class="s-badge">Session: ${escHtml(s.session)}</span>
+          ${memberships.map(m => `<span class="s-badge" style="background:${m.isIn ? 'rgba(52,199,89,0.16)' : 'rgba(206,5,5,0.1)'};color:${m.isIn ? 'var(--accent2)' : 'var(--red)'}">${m.isIn ? '∈' : '∉'} ${escHtml(m.label)}</span>`).join('')}
+        </div>
+        <div style="margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--txt2)">
+          Python: <code>"${escHtml(display)}" in A</code> → <strong>${memberships[0].isIn ? 'True' : 'False'}</strong>
         </div>
       </div>
     </div>`;
