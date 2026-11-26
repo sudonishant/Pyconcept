@@ -4,35 +4,37 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Python Concept Explorer</title>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 <style>
 /* ═══════════════════════════════════════════════════════
    GLOBAL RESET & TOKENS
 ═══════════════════════════════════════════════════════ */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --glass-bg:rgba(255,255,255,0.18);
-  --glass-border:rgba(255,255,255,0.45);
-  --glass-shadow:0 8px 40px rgba(80,60,180,0.13);
-  --blur:blur(22px) saturate(1.6);
-  --accent1:#6c63ff;
-  --accent2:#43e97b;
-  --accent3:#f7971e;
-  --accent4:#f953c6;
-  --txt:#1a1a2e;
-  --txt2:#555;
-  --bg-from:#e8e0ff;
-  --bg-to:#d0f0ff;
+  --glass-bg:rgba(255,255,255,0.52);
+  --glass-border:rgba(255,255,255,0.72);
+  --glass-shadow:0 12px 44px rgba(30,41,99,0.10);
+  --blur:blur(24px) saturate(1.7);
+  --accent1:#4f46e5;
+  --accent2:#10b981;
+  --accent3:#f59e0b;
+  --accent4:#ec4899;
+  --accent5:#06b6d4;
+  --txt:#0f172a;
+  --txt2:#475569;
+  --bg-from:#eef2ff;
+  --bg-to:#ecfeff;
   --card-radius:22px;
   --spring:cubic-bezier(0.34,1.4,0.64,1);
 }
 [data-theme="dark"]{
-  --glass-bg:rgba(20,10,50,0.55);
-  --glass-border:rgba(255,255,255,0.12);
-  --glass-shadow:0 8px 40px rgba(0,0,0,0.5);
-  --txt:#f0eeff;
-  --txt2:#bbb;
-  --bg-from:#0f0a2e;
-  --bg-to:#0a1a2e;
+  --glass-bg:rgba(15,23,42,0.68);
+  --glass-border:rgba(148,163,184,0.18);
+  --glass-shadow:0 14px 48px rgba(0,0,0,0.58);
+  --txt:#f8fafc;
+  --txt2:#94a3b8;
+  --bg-from:#070b19;
+  --bg-to:#0c192c;
 }
 html,body{height:100%;font-family:'Segoe UI',system-ui,sans-serif;color:var(--txt);transition:background 0.5s}
 body{background:linear-gradient(135deg,var(--bg-from),var(--bg-to));min-height:100vh;overflow-x:hidden}
@@ -356,6 +358,46 @@ input[type=range]{accent-color:var(--accent1)}
 .topic-card:hover::after{left:130%}
 .option-card.selected{animation:chipBounce .32s var(--spring)}
 .score-circle{animation:chipBounce .55s var(--spring), pulseRing 2.6s ease-in-out infinite .6s}
+
+/* 2D / 3D Visualization Stage */
+.view-toggle{
+  display:inline-flex;padding:3px;border-radius:40px;
+  background:rgba(15,23,42,0.08);border:1px solid var(--glass-border);gap:3px;
+}
+[data-theme="dark"] .view-toggle{background:rgba(255,255,255,0.08)}
+.vt-btn{
+  padding:5px 14px;border-radius:40px;border:none;cursor:pointer;
+  font-size:.76rem;font-weight:800;background:transparent;color:var(--txt2);
+  transition:all .25s var(--spring);
+}
+.vt-btn.active{background:linear-gradient(135deg,var(--accent1),var(--accent5));color:#fff;box-shadow:0 4px 14px rgba(79,70,229,0.35)}
+.stage-3d-shell{perspective:1100px;transition:transform .5s var(--spring)}
+.stage-3d-inner{transition:transform .6s var(--spring),box-shadow .6s;transform-style:preserve-3d;border-radius:18px}
+.stage-3d-shell.is-3d .stage-3d-inner{
+  transform:rotateX(22deg) rotateY(-8deg) scale(0.96);
+  box-shadow:0 28px 60px rgba(15,23,42,0.22);
+  background:linear-gradient(145deg,rgba(255,255,255,0.28),rgba(79,70,229,0.08));
+  border:1.5px solid rgba(255,255,255,0.55);
+  padding:14px;
+}
+.stage-3d-shell.is-3d:hover .stage-3d-inner{transform:rotateX(12deg) rotateY(8deg) scale(0.99)}
+.oop-3d-grid{display:flex;flex-direction:column;gap:12px;transition:all .5s var(--spring)}
+.oop-3d-grid.is-3d{perspective:900px}
+.oop-3d-grid.is-3d .obj-instance{
+  transform:rotateX(8deg) rotateY(-10deg) translateZ(14px);
+  box-shadow:14px 18px 34px rgba(79,70,229,0.22);
+}
+.oop-3d-grid.is-3d .obj-instance:hover{transform:rotateX(0deg) rotateY(0deg) translateZ(26px) scale(1.02)}
+.student-id-card{
+  display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;
+  background:var(--glass-bg);border:1.5px solid var(--glass-border);
+  box-shadow:0 6px 20px rgba(15,23,42,0.08);
+}
+.student-badge-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.s-badge{
+  padding:2px 8px;border-radius:20px;font-size:.7rem;font-weight:700;
+  background:rgba(79,70,229,0.12);color:var(--accent1);border:1px solid rgba(79,70,229,0.25);
+}
 .obj-instance .oi-title{font-weight:800;font-size:.9rem;margin-bottom:8px;color:var(--accent1)}
 .obj-instance .oi-attr{font-family:monospace;font-size:.82rem;color:var(--txt2)}
 /* call frames panel */
@@ -604,7 +646,11 @@ input[type=range]{accent-color:var(--accent1)}
     <div class="glass" style="padding:14px 16px;margin-bottom:22px">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:10px;flex-wrap:wrap">
         <span style="font-size:.75rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--accent1)" id="sc-progress-label">Concept 1 of 12 · Teaching Sequence</span>
-        <div style="display:flex;gap:8px">
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <div class="view-toggle" id="sc-view-toggle">
+            <button class="vt-btn active" onclick="setConceptViewMode('2d',this)">2D</button>
+            <button class="vt-btn" onclick="setConceptViewMode('3d',this)">3D</button>
+          </div>
           <button class="vis-btn" style="padding:5px 14px;font-size:.78rem" onclick="stepSetConcept(-1)">◀ Prev</button>
           <button class="vis-btn primary" style="padding:5px 14px;font-size:.78rem" onclick="stepSetConcept(1)">Next ▶</button>
           <button class="icon-btn tts-read-btn" style="width:32px;height:32px;font-size:.9rem" title="Read Concept Aloud" onclick="speakSetConcept()">🔊</button>
@@ -614,7 +660,9 @@ input[type=range]{accent-color:var(--accent1)}
     </div>
 
     <!-- Active Concept Stage -->
-    <div class="glass" id="sc-stage" style="padding:28px;margin-bottom:24px;min-height:400px"></div>
+    <div class="stage-3d-shell" id="sc-3d-shell" style="margin-bottom:24px">
+      <div class="glass stage-3d-inner" id="sc-stage" style="padding:28px;min-height:400px"></div>
+    </div>
 
     <!-- Common Mistakes Quick Card -->
     <div class="glass" style="padding:24px;margin-bottom:24px">
@@ -635,22 +683,55 @@ input[type=range]{accent-color:var(--accent1)}
   </div>
 
   <!-- LAB TAB -->
-  <div class="tp-section" id="sets-lab" style="max-width:1000px;margin:0 auto;padding:40px 24px">
-    <div style="margin-bottom:20px">
-      <div style="font-size:1.3rem;font-weight:800;margin-bottom:8px">⚗️ Sets Simulator</div>
-      <p style="color:var(--txt2);font-size:.9rem">Enter two sets, choose an operation, then step through the Python execution.</p>
+  <div class="tp-section" id="sets-lab" style="max-width:1100px;margin:0 auto;padding:36px 24px">
+    <div style="margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+      <div>
+        <div style="font-size:1.35rem;font-weight:900;margin-bottom:4px">⚗️ Sets Studio &amp; Multi-Venn Visualizer</div>
+        <p style="color:var(--txt2);font-size:.9rem">Switch Venn diagram types, inspect student profiles (Name, Branch, Roll, Semester, Session), edit Python code, and toggle 2D / 3D.</p>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <div class="view-toggle" id="sets-lab-view-toggle">
+          <button class="vt-btn active" onclick="setSetsLabView('2d',this)">2D Diagram</button>
+          <button class="vt-btn" onclick="setSetsLabView('3d',this)">3D Glass</button>
+        </div>
+      </div>
     </div>
+
+    <!-- Multi-Venn + Student Profiles Interactive Card -->
+    <div class="glass" style="padding:22px;margin-bottom:20px">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px">
+        <div style="display:flex;gap:8px;flex-wrap:wrap" id="lab-venn-types">
+          <button class="op-btn active" style="padding:6px 14px;font-size:.8rem" onclick="setLabVennType('two',this)">2-Set Venn (A, B)</button>
+          <button class="op-btn" style="padding:6px 14px;font-size:.8rem" onclick="setLabVennType('three',this)">3-Set Venn (A, B, C)</button>
+          <button class="op-btn" style="padding:6px 14px;font-size:.8rem" onclick="setLabVennType('subset',this)">Subset (A ⊂ B)</button>
+          <button class="op-btn" style="padding:6px 14px;font-size:.8rem" onclick="setLabVennType('disjoint',this)">Disjoint (A ∩ B = ∅)</button>
+        </div>
+        <span style="font-size:.76rem;color:var(--txt2);font-weight:600">Click any student avatar inside the Venn to view ID card</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1.35fr 1fr;gap:20px;align-items:center">
+        <div>
+          <div class="stage-3d-shell" id="sets-lab-3d-shell">
+            <div class="stage-3d-inner" id="sets-lab-venn-stage"></div>
+          </div>
+          <div id="sets-3d-canvas-wrap" style="display:none;height:270px;border-radius:16px;overflow:hidden;position:relative;background:radial-gradient(circle at 50% 35%,#1e293b,#090d16);border:1.5px solid rgba(255,255,255,.22);cursor:grab">
+            <div style="position:absolute;bottom:8px;left:12px;z-index:2;font-size:.7rem;color:rgba(255,255,255,.7);pointer-events:none">Drag to orbit 3D · Click any student block</div>
+          </div>
+        </div>
+        <div id="sets-student-card"></div>
+      </div>
+    </div>
+
     <div class="glass" style="overflow:hidden">
       <!-- Input row -->
       <div class="sets-sim-grid">
         <div class="sim-input-col">
           <div>
             <div class="sim-label">Set A (comma separated)</div>
-            <input class="sim-input" id="sim-set-a" value="1, 2, 3" placeholder="e.g. 1, 2, 3"/>
+            <input class="sim-input" id="sim-set-a" value="Aarav, Kabir, Diya" placeholder="e.g. Aarav, Kabir, Diya"/>
           </div>
           <div>
             <div class="sim-label">Set B (comma separated)</div>
-            <input class="sim-input" id="sim-set-b" value="2, 3, 4" placeholder="e.g. 2, 3, 4"/>
+            <input class="sim-input" id="sim-set-b" value="Diya, Riya, Meera" placeholder="e.g. Diya, Riya, Meera"/>
           </div>
           <div>
             <div class="sim-label">Operation</div>
@@ -732,9 +813,10 @@ input[type=range]{accent-color:var(--accent1)}
         <div class="bp-class-box">
           <div class="bp-class-name">Student</div>
           <div style="margin-top:16px">
-            <div class="bp-row"><span class="bp-attr">__init__</span><span class="bp-sep">(self, name, course)</span></div>
+            <div class="bp-row"><span class="bp-attr">__init__</span><span class="bp-sep">(self, name, branch, roll, sem, session)</span></div>
             <div class="bp-row"><span class="bp-attr">self.name</span><span class="bp-sep"> = </span><span class="bp-val">name</span></div>
-            <div class="bp-row"><span class="bp-attr">self.course</span><span class="bp-sep"> = </span><span class="bp-val">course</span></div>
+            <div class="bp-row"><span class="bp-attr">self.branch</span><span class="bp-sep"> = </span><span class="bp-val">branch</span></div>
+            <div class="bp-row"><span class="bp-attr">self.roll / sem / session</span><span class="bp-sep"> = </span><span class="bp-val">roll, sem, session</span></div>
             <div class="bp-row"><span class="bp-attr">introduce</span><span class="bp-sep">(self)</span></div>
           </div>
         </div>
@@ -802,7 +884,11 @@ input[type=range]{accent-color:var(--accent1)}
         <div style="font-size:1.3rem;font-weight:800;margin-bottom:4px">⚗️ OOP Code Lab</div>
         <p style="color:var(--txt2);font-size:.9rem">Edit the Python code below, then run it step-by-step to see OOP in action.</p>
       </div>
-      <div style="display:flex;gap:8px">
+      <div style="display:flex;gap:8px;align-items:center">
+        <div class="view-toggle" id="oop-lab-view-toggle">
+          <button class="vt-btn active" onclick="setOOPLabView('2d',this)">2D Cards</button>
+          <button class="vt-btn" onclick="setOOPLabView('3d',this)">3D Glass</button>
+        </div>
         <button class="vis-btn" onclick="resetOOPCode()" title="Reset to default code">↺ Reset Code</button>
         <button class="tc-btn" style="--grad:linear-gradient(135deg,#f7971e,#f953c6);padding:10px 22px" onclick="runOOPCode()">▶ Run &amp; Visualize</button>
       </div>
@@ -857,8 +943,11 @@ input[type=range]{accent-color:var(--accent1)}
         <!-- Object panel -->
         <div>
           <div style="font-size:.78rem;font-weight:700;color:var(--txt2);margin-bottom:6px;letter-spacing:.5px">OBJECT PANEL</div>
-          <div class="oop-object-panel" id="oop-obj-panel">
+          <div class="oop-object-panel oop-3d-grid" id="oop-obj-panel">
             <div style="font-size:.85rem;color:var(--txt2);text-align:center;margin:auto;padding:16px">No objects yet — write code and run it!</div>
+          </div>
+          <div id="oop-3d-canvas-wrap" style="display:none;height:260px;border-radius:16px;overflow:hidden;position:relative;background:radial-gradient(circle at 50% 35%,#1e1b4b,#090d16);border:1.5px solid rgba(255,255,255,.22);cursor:grab">
+            <div style="position:absolute;bottom:8px;left:12px;z-index:2;font-size:.7rem;color:rgba(255,255,255,.7);pointer-events:none">Drag to orbit 3D · Click a 3D card to flip</div>
           </div>
         </div>
 
@@ -1456,7 +1545,8 @@ function syncSetsEditorFromInputs() {
   const B = parseSet(document.getElementById('sim-set-b').value);
   const opMap = {union:'|', intersection:'&', difference:'-', symdiff:'^'};
   const sym = opMap[simOp];
-  const code = `A = {${A.join(', ')}}\nB = {${B.join(', ')}}\n\nresult = A ${sym} B\nprint(result)`;
+  const fmt = arr => arr.map(v => typeof v === 'string' ? `"${v}"` : v).join(', ');
+  const code = `A = {${fmt(A)}}\nB = {${fmt(B)}}\n\nresult = A ${sym} B\nprint(result)`;
   const ed = document.getElementById('sim-editor');
   if (ed) {
     ed.value = code;
@@ -1630,19 +1720,478 @@ function resetSim() {
 }
 
 /* ══════════════════════════════════════════════════════
+   STUDENT PROFILES + MULTI-VENN + 2D/3D VIEWS
+══════════════════════════════════════════════════════ */
+const STUDENT_PROFILES = {
+  Aarav: { name: 'Aarav', branch: 'CSE', roll: '101', semester: '3rd', session: '2025-26', color: '#4f46e5' },
+  Kabir: { name: 'Kabir', branch: 'CSE', roll: '109', semester: '5th', session: '2024-25', color: '#06b6d4' },
+  Diya:  { name: 'Diya',  branch: 'ECE', roll: '104', semester: '3rd', session: '2025-26', color: '#8b5cf6' },
+  Riya:  { name: 'Riya',  branch: 'IT',  roll: '112', semester: '3rd', session: '2025-26', color: '#f59e0b' },
+  Meera: { name: 'Meera', branch: 'AIML',roll: '118', semester: '1st', session: '2025-26', color: '#ec4899' },
+  Neha:  { name: 'Neha',  branch: 'ME',  roll: '125', semester: '5th', session: '2024-25', color: '#10b981' }
+};
+
+function getAvatarSVG(name, color = '#4f46e5', size = 48) {
+  const initial = (name || 'S')[0].toUpperCase();
+  return `<svg width="${size}" height="${size}" viewBox="0 0 64 64" style="border-radius:50%;flex-shrink:0;box-shadow:0 4px 12px rgba(15,23,42,.18)">
+    <defs><linearGradient id="av-${escHtml(name)}" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="${color}"/><stop offset="100%" stop-color="#06b6d4"/></linearGradient></defs>
+    <rect width="64" height="64" rx="32" fill="url(#av-${escHtml(name)})"/>
+    <circle cx="32" cy="24" r="11" fill="rgba(255,255,255,0.92)"/>
+    <path d="M14 56c2-11 10-16 18-16s16 5 18 16" fill="rgba(255,255,255,0.92)"/>
+    <text x="51" y="54" font-size="11" font-weight="900" fill="#fff" text-anchor="middle">${escHtml(initial)}</text>
+  </svg>`;
+}
+
+let setsLabMode = '2d', oopLabMode = '2d';
+let labVennType = 'two', selectedLabStudent = 'Aarav';
+let sets3D = null, oop3D = null;
+
+function makeLabelTex(title, sub, bgHex, accentHex) {
+  const c = document.createElement('canvas');
+  c.width = 256; c.height = 192;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = bgHex;
+  ctx.fillRect(0, 0, 256, 192);
+  ctx.fillStyle = accentHex;
+  ctx.fillRect(0, 0, 256, 28);
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 28px system-ui, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(title, 128, 92);
+  ctx.fillStyle = 'rgba(255,255,255,0.85)';
+  ctx.font = '18px monospace';
+  ctx.fillText(sub, 128, 136);
+  const tex = new THREE.CanvasTexture(c);
+  tex.needsUpdate = true;
+  return tex;
+}
+
+function attachOrbit(el, state) {
+  let dragging = false, px = 0, py = 0;
+  el.addEventListener('pointerdown', e => { dragging = true; px = e.clientX; py = e.clientY; el.style.cursor = 'grabbing'; });
+  window.addEventListener('pointerup', () => { dragging = false; el.style.cursor = 'grab'; });
+  window.addEventListener('pointermove', e => {
+    if (!dragging) return;
+    state.yaw += (e.clientX - px) * 0.01;
+    state.pitch = Math.max(0.25, Math.min(1.35, state.pitch + (e.clientY - py) * 0.008));
+    px = e.clientX; py = e.clientY;
+  });
+}
+
+function initSets3D() {
+  const wrap = document.getElementById('sets-3d-canvas-wrap');
+  if (!wrap || typeof THREE === 'undefined' || sets3D) return;
+  try {
+    const w = wrap.clientWidth || 520, h = wrap.clientHeight || 270;
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(42, w / h, 0.1, 100);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(w, h);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    wrap.appendChild(renderer.domElement);
+
+    scene.add(new THREE.AmbientLight(0xffffff, 0.85));
+    const key = new THREE.DirectionalLight(0xffffff, 1.2);
+    key.position.set(5, 9, 6);
+    scene.add(key);
+    const rim = new THREE.DirectionalLight(0x818cf8, 0.7);
+    rim.position.set(-6, 4, -5);
+    scene.add(rim);
+
+    const floor = new THREE.Mesh(
+      new THREE.CylinderGeometry(5.6, 5.8, 0.16, 48),
+      new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.35, metalness: 0.35 })
+    );
+    floor.position.y = -0.35;
+    scene.add(floor);
+
+    const root = new THREE.Group();
+    scene.add(root);
+    const state = { yaw: 0.25, pitch: 0.72, dist: 9.2, pickables: [] };
+    attachOrbit(wrap, state);
+
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    wrap.addEventListener('click', e => {
+      const rect = renderer.domElement.getBoundingClientRect();
+      mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+      raycaster.setFromCamera(mouse, camera);
+      const hits = raycaster.intersectObjects(state.pickables, true);
+      if (hits.length) {
+        let obj = hits[0].object;
+        while (obj && !obj.userData.studentName) obj = obj.parent;
+        if (obj && obj.userData.studentName) selectLabStudent(obj.userData.studentName);
+      }
+    });
+
+    sets3D = { scene, camera, renderer, root, state, wrap };
+    const animate = () => {
+      requestAnimationFrame(animate);
+      if (setsLabMode !== '3d') return;
+      const cw = wrap.clientWidth || 520, ch = wrap.clientHeight || 270;
+      if (renderer.domElement.width !== cw || renderer.domElement.height !== ch) {
+        camera.aspect = cw / ch; camera.updateProjectionMatrix(); renderer.setSize(cw, ch);
+      }
+      camera.position.set(
+        Math.sin(state.yaw) * Math.cos(state.pitch) * state.dist,
+        Math.sin(state.pitch) * state.dist,
+        Math.cos(state.yaw) * Math.cos(state.pitch) * state.dist
+      );
+      camera.lookAt(0, 0.2, 0);
+      const t = performance.now() * 0.002;
+      state.pickables.forEach((g, idx) => {
+        g.position.y = 0.25 + Math.sin(t + idx) * 0.08 + (g.userData.studentName === selectedLabStudent ? 0.28 : 0);
+      });
+      renderer.render(scene, camera);
+    };
+    animate();
+  } catch (e) { sets3D = null; }
+}
+
+function updateSets3D() {
+  if (!sets3D) return;
+  const { root, state } = sets3D;
+  while (root.children.length) root.remove(root.children[0]);
+  state.pickables = [];
+
+  const addRing = (x, z, r, hex) => {
+    const ring = new THREE.Mesh(
+      new THREE.TorusGeometry(r, 0.09, 16, 64),
+      new THREE.MeshStandardMaterial({ color: hex, emissive: hex, emissiveIntensity: 0.35, roughness: 0.25, metalness: 0.5 })
+    );
+    ring.rotation.x = Math.PI / 2;
+    ring.position.set(x, -0.18, z);
+    root.add(ring);
+  };
+
+  if (labVennType === 'two') {
+    addRing(-1.1, 0, 2.0, 0x4f46e5);
+    addRing(1.1, 0, 2.0, 0xf59e0b);
+  } else if (labVennType === 'three') {
+    addRing(-1.0, -0.6, 1.75, 0x4f46e5);
+    addRing(1.0, -0.6, 1.75, 0xf59e0b);
+    addRing(0, 1.0, 1.75, 0x10b981);
+  } else if (labVennType === 'subset') {
+    addRing(0, 0, 2.5, 0xf59e0b);
+    addRing(-0.4, 0.1, 1.35, 0x4f46e5);
+  } else {
+    addRing(-1.9, 0, 1.6, 0x4f46e5);
+    addRing(1.9, 0, 1.6, 0xf59e0b);
+  }
+
+  const coords = labVennType === 'three'
+    ? [['Aarav', -1.5, -0.8], ['Diya', 0, -0.2], ['Riya', 1.5, -0.8], ['Kabir', -0.7, 0.9], ['Meera', 0.7, 0.9], ['Neha', 0, 1.6]]
+    : labVennType === 'subset'
+    ? [['Aarav', -0.7, 0.1], ['Kabir', -0.1, 0.4], ['Diya', 1.1, -0.3], ['Riya', 1.2, 0.6]]
+    : labVennType === 'disjoint'
+    ? [['Aarav', -2.2, -0.2], ['Kabir', -1.5, 0.3], ['Riya', 1.6, -0.2], ['Meera', 2.2, 0.3]]
+    : [['Aarav', -1.8, -0.3], ['Kabir', -1.6, 0.6], ['Diya', 0, 0.1], ['Riya', 1.7, -0.3], ['Meera', 1.6, 0.6], ['Neha', 3.4, 1.2]];
+
+  coords.forEach(([name, x, z]) => {
+    const s = STUDENT_PROFILES[name] || { branch: 'CSE', roll: '101', color: '#4f46e5' };
+    const isSel = selectedLabStudent === name;
+    const grp = new THREE.Group();
+    grp.userData.studentName = name;
+    const tex = makeLabelTex(name, `${s.branch} · #${s.roll}`, isSel ? '#312e81' : '#1e293b', s.color);
+    const mats = [
+      new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.4 }),
+      new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.4 }),
+      new THREE.MeshStandardMaterial({ map: tex, roughness: 0.25 }),
+      new THREE.MeshStandardMaterial({ color: 0x1e293b }),
+      new THREE.MeshStandardMaterial({ color: isSel ? 0x818cf8 : 0x475569 }),
+      new THREE.MeshStandardMaterial({ color: isSel ? 0x818cf8 : 0x475569 })
+    ];
+    const blk = new THREE.Mesh(new THREE.BoxGeometry(0.92, 0.34, 0.72), mats);
+    grp.add(blk);
+    grp.position.set(x, 0.25, z);
+    root.add(grp);
+    state.pickables.push(grp);
+  });
+}
+
+function initOOP3D() {
+  const wrap = document.getElementById('oop-3d-canvas-wrap');
+  if (!wrap || typeof THREE === 'undefined' || oop3D) return;
+  try {
+    const w = wrap.clientWidth || 480, h = wrap.clientHeight || 260;
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(42, w / h, 0.1, 100);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(w, h);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    wrap.appendChild(renderer.domElement);
+
+    scene.add(new THREE.AmbientLight(0xffffff, 0.9));
+    const key = new THREE.DirectionalLight(0xffffff, 1.2);
+    key.position.set(4, 8, 6);
+    scene.add(key);
+
+    const floor = new THREE.Mesh(
+      new THREE.BoxGeometry(9.5, 0.16, 4.2),
+      new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.35, metalness: 0.35 })
+    );
+    floor.position.y = -0.9;
+    scene.add(floor);
+
+    const root = new THREE.Group();
+    scene.add(root);
+    const state = { yaw: 0.12, pitch: 0.24, dist: 7.4, cards: [] };
+    attachOrbit(wrap, state);
+
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    wrap.addEventListener('click', e => {
+      const rect = renderer.domElement.getBoundingClientRect();
+      mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+      raycaster.setFromCamera(mouse, camera);
+      const hits = raycaster.intersectObjects(state.cards, true);
+      if (hits.length) {
+        let obj = hits[0].object;
+        while (obj && obj.userData.targetRotY === undefined) obj = obj.parent;
+        if (obj) obj.userData.targetRotY = obj.userData.targetRotY === 0 ? Math.PI : 0;
+      }
+    });
+
+    oop3D = { scene, camera, renderer, root, state, wrap };
+    const animate = () => {
+      requestAnimationFrame(animate);
+      if (oopLabMode !== '3d') return;
+      const cw = wrap.clientWidth || 480, ch = wrap.clientHeight || 260;
+      if (renderer.domElement.width !== cw || renderer.domElement.height !== ch) {
+        camera.aspect = cw / ch; camera.updateProjectionMatrix(); renderer.setSize(cw, ch);
+      }
+      camera.position.set(
+        Math.sin(state.yaw) * Math.cos(state.pitch) * state.dist,
+        Math.sin(state.pitch) * state.dist + 0.4,
+        Math.cos(state.yaw) * Math.cos(state.pitch) * state.dist
+      );
+      camera.lookAt(0.3, 0.1, 0);
+      state.cards.forEach(c => {
+        c.rotation.y += (c.userData.targetRotY - c.rotation.y) * 0.14;
+      });
+      renderer.render(scene, camera);
+    };
+    animate();
+  } catch (e) { oop3D = null; }
+}
+
+function updateOOP3D() {
+  if (!oop3D) return;
+  const { root, state } = oop3D;
+  while (root.children.length) root.remove(root.children[0]);
+  state.cards = [];
+
+  // 3D Blueprint Stamp Press
+  const bpTex = makeLabelTex('Student', 'Blueprint (class)', '#1e3a8a', '#3b82f6');
+  const bp = new THREE.Mesh(
+    new THREE.BoxGeometry(1.7, 2.0, 0.24),
+    new THREE.MeshStandardMaterial({ map: bpTex, roughness: 0.25, emissive: 0x1d4ed8, emissiveIntensity: 0.2 })
+  );
+  bp.position.set(-2.3, 0.2, 0);
+  root.add(bp);
+
+  const list = oopObjects.length ? oopObjects : [
+    { varName: 's1', className: 'Student', attrs: { name: 'Aarav', branch: 'CSE', roll: 101 } },
+    { varName: 's2', className: 'Student', attrs: { name: 'Diya', branch: 'ECE', roll: 104 } }
+  ];
+  const palette = ['#4f46e5', '#06b6d4', '#f59e0b', '#ec4899'];
+  list.slice(0, 4).forEach((o, i) => {
+    const title = String(o.attrs.name || o.varName);
+    const sub = `${o.attrs.branch || 'CSE'} · Roll ${o.attrs.roll || i + 1}`;
+    const frontTex = makeLabelTex(title, sub, '#1e293b', palette[i % palette.length]);
+    const backTex = makeLabelTex(`${o.varName}.${o.className}`, `Sem ${o.attrs.semester || '3rd'} · ${o.attrs.session || '2025-26'}`, '#312e81', '#ec4899');
+    const card = new THREE.Mesh(
+      new THREE.BoxGeometry(1.38, 1.85, 0.12),
+      [
+        new THREE.MeshStandardMaterial({ color: 0x334155 }),
+        new THREE.MeshStandardMaterial({ color: 0x334155 }),
+        new THREE.MeshStandardMaterial({ color: 0x334155 }),
+        new THREE.MeshStandardMaterial({ color: 0x334155 }),
+        new THREE.MeshStandardMaterial({ map: frontTex, roughness: 0.25 }),
+        new THREE.MeshStandardMaterial({ map: backTex, roughness: 0.25 })
+      ]
+    );
+    card.position.set(-0.2 + i * 1.55, 0.15, 0);
+    card.userData.targetRotY = 0;
+    root.add(card);
+    state.cards.push(card);
+  });
+
+  // Glowing self connector beam
+  const beam = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.035, 0.035, 2.0, 12),
+    new THREE.MeshStandardMaterial({ color: 0xf59e0b, emissive: 0xf59e0b, emissiveIntensity: 0.8 })
+  );
+  beam.rotation.z = Math.PI / 2;
+  beam.position.set(-1.25, 0.2, 0.18);
+  root.add(beam);
+}
+
+function setConceptViewMode(mode, btn) {
+  const shell = document.getElementById('sc-3d-shell');
+  if (shell) shell.classList.toggle('is-3d', mode === '3d');
+  document.querySelectorAll('#sc-view-toggle .vt-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+}
+
+function setSetsLabView(mode, btn) {
+  setsLabMode = mode;
+  document.querySelectorAll('#sets-lab-view-toggle .vt-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  const d2 = document.getElementById('sets-lab-3d-shell');
+  const d3 = document.getElementById('sets-3d-canvas-wrap');
+  if (mode === '3d') {
+    if (d2) d2.style.display = 'none';
+    if (d3) d3.style.display = 'block';
+    initSets3D();
+    updateSets3D();
+  } else {
+    if (d3) d3.style.display = 'none';
+    if (d2) d2.style.display = 'block';
+  }
+}
+
+function setOOPLabView(mode, btn) {
+  oopLabMode = mode;
+  document.querySelectorAll('#oop-lab-view-toggle .vt-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  const d2 = document.getElementById('oop-obj-panel');
+  const d3 = document.getElementById('oop-3d-canvas-wrap');
+  if (mode === '3d') {
+    if (d2) d2.style.display = 'none';
+    if (d3) d3.style.display = 'block';
+    initOOP3D();
+    updateOOP3D();
+  } else {
+    if (d3) d3.style.display = 'none';
+    if (d2) d2.style.display = 'flex';
+  }
+}
+
+function setLabVennType(type, btn) {
+  labVennType = type;
+  document.querySelectorAll('#lab-venn-types .op-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderLabVenn();
+  if (setsLabMode === '3d') updateSets3D();
+}
+
+function selectLabStudent(name) {
+  selectedLabStudent = name;
+  renderLabVenn();
+  renderStudentIDCard(name);
+  if (setsLabMode === '3d') updateSets3D();
+}
+
+function renderStudentIDCard(name) {
+  const box = document.getElementById('sets-student-card');
+  if (!box) return;
+  const s = STUDENT_PROFILES[name] || { name, branch: 'CSE', roll: '105', semester: '3rd', session: '2025-26', color: '#4f46e5' };
+  box.innerHTML = `
+    <div class="student-id-card jtr-pop">
+      ${getAvatarSVG(s.name, s.color, 56)}
+      <div style="flex:1;min-width:0">
+        <div style="font-size:.7rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--accent1)">Student Profile</div>
+        <div style="font-size:1.15rem;font-weight:900">${escHtml(s.name)}</div>
+        <div class="student-badge-row">
+          <span class="s-badge">Branch: ${escHtml(s.branch)}</span>
+          <span class="s-badge">Roll: ${escHtml(s.roll)}</span>
+          <span class="s-badge">Sem: ${escHtml(s.semester)}</span>
+          <span class="s-badge">Session: ${escHtml(s.session)}</span>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderLabVenn() {
+  const stage = document.getElementById('sets-lab-venn-stage');
+  if (!stage) return;
+  const chip = (name, x, y, fill) => {
+    const active = selectedLabStudent === name;
+    return `<g style="cursor:pointer" onclick="selectLabStudent('${name}')">
+      <circle class="${active?'pulse-ring':''}" cx="${x}" cy="${y}" r="${active?22:18}" fill="${fill}" stroke="#fff" stroke-width="${active?3:1.8}"/>
+      <text x="${x}" y="${y+4}" text-anchor="middle" font-size="10.5" font-weight="800" fill="#fff">${name}</text>
+    </g>`;
+  };
+
+  let svg = '';
+  if (labVennType === 'two') {
+    svg = `<svg viewBox="0 0 380 210" style="width:100%;max-height:220px">
+      <defs><clipPath id="lv-clip-a"><circle cx="140" cy="108" r="74"/></clipPath></defs>
+      <rect x="6" y="6" width="368" height="198" rx="16" fill="rgba(148,163,184,0.12)" stroke="#94a3b8" stroke-width="1.5"/>
+      <text x="18" y="25" font-size="11" font-weight="800" fill="var(--txt2)">U (All Students)</text>
+      <circle cx="140" cy="108" r="74" fill="rgba(79,70,229,0.20)" stroke="#4f46e5" stroke-width="2.5"/>
+      <circle cx="240" cy="108" r="74" fill="rgba(245,158,11,0.20)" stroke="#f59e0b" stroke-width="2.5"/>
+      <circle cx="240" cy="108" r="74" fill="rgba(139,92,246,0.34)" clip-path="url(#lv-clip-a)"/>
+      <text x="102" y="54" font-size="12" font-weight="800" fill="#4f46e5">A (Cricket)</text>
+      <text x="234" y="54" font-size="12" font-weight="800" fill="#d97706">B (Music)</text>
+      ${chip('Aarav', 102, 95, '#4f46e5')}
+      ${chip('Kabir', 106, 140, '#06b6d4')}
+      ${chip('Diya', 190, 112, '#8b5cf6')}
+      ${chip('Riya', 274, 95, '#f59e0b')}
+      ${chip('Meera', 270, 140, '#ec4899')}
+      ${chip('Neha', 338, 174, '#10b981')}
+    </svg>`;
+  } else if (labVennType === 'three') {
+    svg = `<svg viewBox="0 0 380 225" style="width:100%;max-height:230px">
+      <circle cx="145" cy="86" r="64" fill="rgba(79,70,229,0.20)" stroke="#4f46e5" stroke-width="2.2"/>
+      <circle cx="235" cy="86" r="64" fill="rgba(245,158,11,0.20)" stroke="#f59e0b" stroke-width="2.2"/>
+      <circle cx="190" cy="148" r="64" fill="rgba(16,185,129,0.20)" stroke="#10b981" stroke-width="2.2"/>
+      <text x="98" y="42" font-size="11.5" font-weight="800" fill="#4f46e5">A Cricket</text>
+      <text x="242" y="42" font-size="11.5" font-weight="800" fill="#d97706">B Music</text>
+      <text x="190" y="218" text-anchor="middle" font-size="11.5" font-weight="800" fill="#059669">C Robotics</text>
+      ${chip('Aarav', 115, 76, '#4f46e5')}
+      ${chip('Diya', 190, 108, '#8b5cf6')}
+      ${chip('Riya', 265, 76, '#f59e0b')}
+      ${chip('Kabir', 148, 140, '#06b6d4')}
+      ${chip('Meera', 232, 140, '#ec4899')}
+      ${chip('Neha', 190, 178, '#10b981')}
+    </svg>`;
+  } else if (labVennType === 'subset') {
+    svg = `<svg viewBox="0 0 380 210" style="width:100%;max-height:220px">
+      <circle cx="190" cy="105" r="90" fill="rgba(245,158,11,0.16)" stroke="#f59e0b" stroke-width="2.5"/>
+      <text x="190" y="32" text-anchor="middle" font-size="12" font-weight="800" fill="#d97706">B = All Club Members</text>
+      <circle cx="166" cy="116" r="54" fill="rgba(79,70,229,0.22)" stroke="#4f46e5" stroke-width="2.5"/>
+      <text x="166" y="80" text-anchor="middle" font-size="11.5" font-weight="800" fill="#4f46e5">A ⊂ B (CSE)</text>
+      ${chip('Aarav', 145, 118, '#4f46e5')}
+      ${chip('Kabir', 188, 132, '#06b6d4')}
+      ${chip('Diya', 248, 92, '#8b5cf6')}
+      ${chip('Riya', 248, 142, '#f59e0b')}
+    </svg>`;
+  } else {
+    svg = `<svg viewBox="0 0 380 200" style="width:100%;max-height:210px">
+      <circle cx="110" cy="100" r="72" fill="rgba(79,70,229,0.20)" stroke="#4f46e5" stroke-width="2.5"/>
+      <text x="110" y="48" text-anchor="middle" font-size="12" font-weight="800" fill="#4f46e5">A (Morning)</text>
+      <circle cx="270" cy="100" r="72" fill="rgba(245,158,11,0.20)" stroke="#f59e0b" stroke-width="2.5"/>
+      <text x="270" y="48" text-anchor="middle" font-size="12" font-weight="800" fill="#d97706">B (Evening)</text>
+      <text x="190" y="104" text-anchor="middle" font-size="12" font-weight="900" fill="var(--txt2)">A ∩ B = ∅</text>
+      ${chip('Aarav', 88, 100, '#4f46e5')}
+      ${chip('Kabir', 132, 120, '#06b6d4')}
+      ${chip('Riya', 248, 100, '#f59e0b')}
+      ${chip('Meera', 292, 120, '#ec4899')}
+    </svg>`;
+  }
+  stage.innerHTML = svg;
+}
+
+/* ══════════════════════════════════════════════════════
    OOP SIMULATOR (Editable Code + Tracer)
 ══════════════════════════════════════════════════════ */
 const DEFAULT_OOP_CODE = `class Student:
-    def __init__(self, name, course, year):
+    def __init__(self, name, branch, roll, semester, session):
         self.name = name
-        self.course = course
-        self.year = year
+        self.branch = branch
+        self.roll = roll
+        self.semester = semester
+        self.session = session
 
     def introduce(self):
-        return f"Hi, I'm {self.name} in {self.course} (Year {self.year})"
+        return f"{self.name} ({self.branch}, Roll {self.roll}, Sem {self.semester}, {self.session})"
 
-s1 = Student("Rohan", "B.Tech", 2)
-s2 = Student("Priya", "MCA", 1)
+s1 = Student("Aarav", "CSE", 101, "3rd", "2025-26")
+s2 = Student("Diya", "ECE", 104, "3rd", "2025-26")
 print(s1.introduce())
 print(s2.introduce())`;
 
@@ -2061,12 +2610,24 @@ function updateOOPPanel() {
     panel.innerHTML = `<div style="font-size:.85rem;color:var(--txt2);text-align:center;margin:auto;padding:16px">No objects yet — write code and run it!</div>`;
     return;
   }
-  panel.innerHTML = oopObjects.map(o => `
+  const palette = ['#4f46e5', '#06b6d4', '#8b5cf6', '#f59e0b', '#ec4899'];
+  panel.innerHTML = oopObjects.map((o, idx) => {
+    const displayName = o.attrs.name || o.varName;
+    const color = palette[idx % palette.length];
+    return `
     <div class="obj-instance">
-      <div class="oi-title">🎓 ${escHtml(o.varName)} = ${escHtml(o.className)}</div>
-      ${Object.entries(o.attrs).map(([k,v]) => `<div class="oi-attr">${escHtml(k)} = ${escHtml(formatPyVal(v))}</div>`).join('')}
-    </div>
-  `).join('');
+      <div style="display:flex;align-items:center;gap:12px">
+        ${getAvatarSVG(String(displayName), color, 46)}
+        <div style="flex:1;min-width:0">
+          <div class="oi-title" style="margin-bottom:4px">${escHtml(o.varName)} = ${escHtml(o.className)}</div>
+          <div class="student-badge-row">
+            ${Object.entries(o.attrs).map(([k,v]) => `<span class="s-badge">${escHtml(k)}: ${escHtml(String(v))}</span>`).join('')}
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  if (oopLabMode === '3d') updateOOP3D();
 }
 
 function oopTogglePlay() {
@@ -2346,6 +2907,8 @@ function escHtml(str) {
 /* ── Init ── */
 document.addEventListener('DOMContentLoaded', () => {
   drawVenn();
+  renderLabVenn();
+  renderStudentIDCard('Aarav');
   setupEditor('sim-editor', 'sim-line-nums');
   setupEditor('oop-editor', 'oop-line-nums');
   syncSetsEditorFromInputs();
