@@ -902,18 +902,28 @@ header .icon-btn{
 }
 .topic-tabs-bar{top:88px !important}
 @media(max-width:760px){
-  header{top:8px;padding:0 10px;margin-top:8px}
+  header{top:6px;padding:0 8px;margin-top:6px}
   header nav{
     grid-template-columns:1fr auto !important;
-    gap:10px !important;padding:10px 12px !important;
+    gap:7px !important;padding:7px 10px !important;min-height:auto !important;
+    border-radius:10px !important;box-shadow:3px 3px 0 var(--ink) !important;
   }
+  header .brand{gap:8px;white-space:nowrap}
+  header .brand-mark{width:30px;height:30px;font-size:12px}
+  header .brand-name{font-size:12.5px;white-space:nowrap}
+  header .brand-sub{display:none}
+  header .icon-btn{width:32px;height:32px;font-size:.85rem;border-radius:8px !important}
+  header #tts-status-txt{display:none}
+  header #tts-status-pill{padding:5px 7px;min-height:28px}
   header .nav-tabs{
     grid-column:1 / -1;grid-row:2;width:100%;justify-content:space-between;
+    padding:3px !important;gap:3px !important;border-radius:8px !important;
   }
-  header .nav-tab{flex:1;text-align:center;padding:8px 6px !important;font-size:11px !important}
-  header #tts-status-txt{display:none}
-  header #tts-status-pill{padding:6px 8px}
-  .topic-tabs-bar{top:128px !important}
+  header .nav-tab{
+    flex:1;text-align:center;padding:6px 4px !important;
+    min-height:32px !important;font-size:11px !important;
+  }
+  .topic-tabs-bar{top:98px !important}
 }
 
 
