@@ -3,11 +3,38 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Python Concept Explorer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<title>Python Sets &amp; OOP Visual Lab | Free Python 3 Compiler + 100 Quiz</title>
+<meta name="description" content="Master Python Sets (Venn diagrams) and OOP with 2D/3D visualizers, a free in-browser Python 3 compiler, and 100 interactive quiz questions."/>
+<meta name="keywords" content="Python Sets, Python OOP, Venn Diagram Visualizer, Python 3 Online Compiler, Pyodide, Object Oriented Programming, Python Quiz"/>
+<meta name="robots" content="index, follow"/>
+<meta name="theme-color" content="#f4f1e9"/>
+<link rel="canonical" href="https://pyconcept.neeshant.in/"/>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
+<meta property="og:type" content="website"/>
+<meta property="og:title" content="Python Sets &amp; OOP Visual Lab | Free Python 3 Compiler + 100 Quiz"/>
+<meta property="og:description" content="Interactive 2D/3D Venn diagrams, 3D OOP Hydraulic Stamp Press, in-browser Python 3 compiler, and 100 quiz questions."/>
+<meta property="og:url" content="https://pyconcept.neeshant.in/"/>
+<meta property="og:image" content="https://pyconcept.neeshant.in/og-cover.png"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="Python Sets &amp; OOP Visual Lab"/>
+<meta name="twitter:description" content="2D/3D Sets &amp; OOP visualizers + live Python 3 browser compiler + 100-question quiz."/>
+<meta name="twitter:image" content="https://pyconcept.neeshant.in/og-cover.png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LearningResource",
+  "name": "Python Sets & OOP Visual Lab",
+  "description": "Master Python Sets (Venn diagrams) and OOP with 2D/3D visualizers, a free in-browser Python 3 compiler, and 100 interactive quiz questions.",
+  "url": "https://pyconcept.neeshant.in/",
+  "learningResourceType": "Interactive Simulation",
+  "educationalLevel": "Beginner to Intermediate",
+  "programmingLanguage": "Python",
+  "isAccessibleForFree": true
+}
+</script>
 <style>
 /* ═══════════════════════════════════════════════════════
    GLOBAL RESET & APPLE iOS HUMAN INTERFACE TOKENS
@@ -828,6 +855,18 @@ nav{
 .vis-btn{border:1.5px solid var(--ink) !important;border-radius:8px !important}
 .s-badge{border:1.5px solid var(--ink) !important;font-family:'JetBrains Mono',monospace}
 
+
+/* Phase 5: Accessibility & Reduced Motion */
+:focus-visible{outline:3px solid var(--red,#ce0505);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:0.01ms !important;animation-iteration-count:1 !important;transition-duration:0.01ms !important;scroll-behavior:auto !important}
+}
+@media(max-width:480px){
+  nav{padding:8px 12px !important;gap:8px}
+  .nav-tab,.vis-btn,.tc-btn,.op-btn{min-height:40px}
+  .mb-h1{font-size:36px !important}
+}
+
 </style>
 </head>
 <body>
@@ -838,7 +877,8 @@ nav{
 <div class="orb orb3" aria-hidden="true"></div>
 
 <!-- ═══ NAV ═══ -->
-<nav>
+<header>
+<nav aria-label="Main Navigation">
   <div class="brand" style="cursor:pointer" onclick="showPage('landing')"><span class="brand-mark">PY</span><span><span class="brand-name">PyConcept Bureau</span><span class="brand-sub">PYTHON ARCHIVE / iOS LAB</span></span></div>
   <div class="nav-tabs">
     <button class="nav-tab active" id="nav-landing" onclick="showPage('landing')">Home</button>
@@ -848,10 +888,12 @@ nav{
   </div>
   <div class="nav-right">
     <div id="tts-status-pill"><span class="tts-dot"></span><span id="tts-status-txt">TTS Loading…</span></div>
-    <button class="icon-btn" id="theme-btn" title="Toggle Dark/Light" onclick="toggleTheme()">🌙</button>
+    <button class="icon-btn" id="theme-btn" aria-label="Toggle Dark or Light Theme" title="Toggle Dark/Light" onclick="toggleTheme()">🌙</button>
   </div>
 </nav>
+</header>
 
+<main id="app-main">
 <!-- ═══ LANDING PAGE ═══ -->
 <div class="aww-cursor" id="aww-cursor"></div>
 <div class="page active" id="page-landing">
@@ -1094,7 +1136,7 @@ nav{
         <button class="vis-btn" onclick="resetSim()">↺ Reset</button>
         <div class="step-info" id="sim-step-info">Step 0 / 0</div>
         <div class="speed-wrap">Speed<input type="range" id="sim-speed" min="300" max="2000" value="900" step="100">Auto</div>
-        <button class="icon-btn tts-read-btn" title="Read aloud" onclick="speakText(document.getElementById('sim-output').textContent)">🔊</button>
+        <button class="icon-btn tts-read-btn" aria-label="Read Output Aloud" title="Read aloud" onclick="speakText(document.getElementById('sim-output').textContent)">🔊</button>
       </div>
       <!-- How Sets Work Under The Hood (CPython Execution Mechanics) -->
       <div id="sim-how-it-works-panel" style="margin:0 24px 20px;padding:20px;border-radius:18px;background:rgba(255,255,255,0.06);border:1.5px solid var(--glass-border);display:none">
@@ -1218,6 +1260,72 @@ nav{
       </div>
     </div>
 
+    <!-- 4 PILLARS OF OOP + ADVANCED OOP (Phase 3) -->
+    <div class="glass" style="padding:26px;margin-top:24px;margin-bottom:24px">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px">
+        <div>
+          <div style="font-size:.72rem;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:var(--red)">Core Architecture</div>
+          <div style="font-size:1.35rem;font-weight:900">🏛️ The 4 Pillars of OOP</div>
+        </div>
+        <button class="vis-btn primary" style="padding:6px 14px;font-size:.78rem" onclick="showTopicTab('oop','quiz-oop')">Practice Pillar Quiz 🎯</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px">
+
+        <div class="glass-sm" style="padding:16px">
+          <div style="font-weight:900;font-size:1rem;color:var(--red);margin-bottom:4px">1. Inheritance &amp; super()</div>
+          <p style="font-size:.8rem;color:var(--txt2);line-height:1.55;margin-bottom:10px">A child class reuses attributes and methods from a parent class. Use <code>super().__init__()</code> to initialize parent attributes cleanly.</p>
+          <pre style="padding:10px;border-radius:8px;background:#11100f;color:#f4f1e9;font-family:'JetBrains Mono',monospace;font-size:.73rem;overflow-x:auto;margin-bottom:8px">class GradStudent(Student):
+  def __init__(self, name, branch, thesis):
+    super().__init__(name, branch, 101, "7th", "2025")
+    self.thesis = thesis</pre>
+          <div style="font-size:.74rem;padding:6px 8px;border-radius:6px;background:rgba(206,5,5,0.08);border:1px solid rgba(206,5,5,0.3)">⚠️ <strong>Mistake:</strong> Forgetting <code>super().__init__()</code> leaves parent attributes unset.</div>
+        </div>
+
+        <div class="glass-sm" style="padding:16px">
+          <div style="font-weight:900;font-size:1rem;color:var(--red);margin-bottom:4px">2. Encapsulation (__private)</div>
+          <p style="font-size:.8rem;color:var(--txt2);line-height:1.55;margin-bottom:10px">Bundles data and restricts direct outside modification using private attributes (<code>__marks</code>) and validated getter/setter methods.</p>
+          <pre style="padding:10px;border-radius:8px;background:#11100f;color:#f4f1e9;font-family:'JetBrains Mono',monospace;font-size:.73rem;overflow-x:auto;margin-bottom:8px">class Account:
+  def __init__(self, marks):
+    self.__marks = marks  # name-mangled
+  def get_marks(self): return self.__marks</pre>
+          <div style="font-size:.74rem;padding:6px 8px;border-radius:6px;background:rgba(206,5,5,0.08);border:1px solid rgba(206,5,5,0.3)">⚠️ <strong>Mistake:</strong> Accessing <code>obj.__marks</code> directly raises <code>AttributeError</code>.</div>
+        </div>
+
+        <div class="glass-sm" style="padding:16px">
+          <div style="font-weight:900;font-size:1rem;color:var(--red);margin-bottom:4px">3. Abstraction (ABC)</div>
+          <p style="font-size:.8rem;color:var(--txt2);line-height:1.55;margin-bottom:10px">Hides internal complexity and forces subclasses to implement required methods via Python's <code>abc</code> module.</p>
+          <pre style="padding:10px;border-radius:8px;background:#11100f;color:#f4f1e9;font-family:'JetBrains Mono',monospace;font-size:.73rem;overflow-x:auto;margin-bottom:8px">from abc import ABC, abstractmethod
+class Person(ABC):
+  @abstractmethod
+  def role(self): pass</pre>
+          <div style="font-size:.74rem;padding:6px 8px;border-radius:6px;background:rgba(206,5,5,0.08);border:1px solid rgba(206,5,5,0.3)">⚠️ <strong>Mistake:</strong> Instantiating an abstract class directly raises <code>TypeError</code>.</div>
+        </div>
+
+        <div class="glass-sm" style="padding:16px">
+          <div style="font-weight:900;font-size:1rem;color:var(--red);margin-bottom:4px">4. Polymorphism (Overriding)</div>
+          <p style="font-size:.8rem;color:var(--txt2);line-height:1.55;margin-bottom:10px">Different classes share the same method name (e.g. <code>introduce()</code>) while each executes its own specialized behavior.</p>
+          <pre style="padding:10px;border-radius:8px;background:#11100f;color:#f4f1e9;font-family:'JetBrains Mono',monospace;font-size:.73rem;overflow-x:auto;margin-bottom:8px">class Mentor(Student):
+  def introduce(self):
+    return f"Mentor {self.name}"
+for p in [s1, mentor1]: print(p.introduce())</pre>
+          <div style="font-size:.74rem;padding:6px 8px;border-radius:6px;background:rgba(206,5,5,0.08);border:1px solid rgba(206,5,5,0.3)">⚠️ <strong>Mistake:</strong> Assuming Python supports C++/Java style method overloading by signature.</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ADVANCED OOP QUICK REFERENCE -->
+    <div class="glass" style="padding:24px;margin-bottom:24px">
+      <div style="font-size:.72rem;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:var(--red);margin-bottom:6px">Quiz-Ready Reference</div>
+      <div style="font-size:1.2rem;font-weight:900;margin-bottom:14px">⚡ Advanced OOP Essentials (Dunders, Decorators &amp; MRO)</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;font-size:.8rem">
+        <div class="glass-sm" style="padding:12px"><strong>Dunder Methods:</strong> <code>__str__</code> controls <code>print(obj)</code>; <code>__repr__</code> is for debugging; <code>__len__</code> powers <code>len(obj)</code>.</div>
+        <div class="glass-sm" style="padding:12px"><strong>@classmethod &amp; @staticmethod:</strong> <code>@classmethod</code> takes <code>cls</code> (factory methods); <code>@staticmethod</code> takes neither <code>self</code> nor <code>cls</code>.</div>
+        <div class="glass-sm" style="padding:12px"><strong>@property:</strong> Lets you access a getter method like an attribute (<code>s1.grade</code> without parentheses).</div>
+        <div class="glass-sm" style="padding:12px"><strong>MRO &amp; Multiple Inheritance:</strong> Python uses C3 Linearization (<code>Class.__mro__</code>) to resolve method lookup order; check with <code>issubclass(Child, Parent)</code>.</div>
+      </div>
+    </div>
+
     <div style="display:flex;gap:14px;margin-top:28px">
       <button class="tc-btn" style="--grad:linear-gradient(135deg,#f7971e,#f953c6)" onclick="showTopicTab('oop','lab')">Open Lab ⚗️</button>
       <button class="tc-btn" style="--grad:linear-gradient(135deg,#f953c6,#c850c0)" onclick="showTopicTab('oop','quiz-oop')">Take Quiz 🎯</button>
@@ -1331,7 +1439,7 @@ CSE
       <button class="vis-btn" onclick="resetOOP()">↺ Reset</button>
       <div class="step-info" id="oop-step-info">Step 0 / 0</div>
       <div class="speed-wrap">Speed<input type="range" id="oop-speed" min="300" max="2000" value="900" step="100">Auto</div>
-      <button class="icon-btn tts-read-btn" onclick="speakText(document.getElementById('oop-output').textContent)">🔊</button>
+      <button class="icon-btn tts-read-btn" aria-label="Read OOP Output Aloud" onclick="speakText(document.getElementById('oop-output').textContent)">🔊</button>
     </div>
     <!-- How OOP Works Under The Hood (CPython Heap & Stack Mechanics) -->
     <div id="oop-how-it-works-panel" class="glass" style="margin-top:16px;padding:22px;border-radius:20px;display:none">
@@ -1426,6 +1534,42 @@ CSE
   </div>
 </div>
 
+</main>
+
+<!-- ═══ FAQ & FOOTER (SEO + Semantic HTML) ═══ -->
+<footer style="max-width:1040px;margin:0 auto;padding:24px 24px 96px;position:relative;z-index:1">
+  <section aria-labelledby="faq-heading" class="glass" style="padding:26px;margin-bottom:24px">
+    <div style="color:var(--red);font:900 10px/1.4 'JetBrains Mono',monospace;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px">FREQUENTLY ASKED QUESTIONS</div>
+    <h2 id="faq-heading" style="font:950 26px/1.05 Impact,'Arial Black',sans-serif;text-transform:uppercase;margin-bottom:16px">Python Sets &amp; OOP FAQ</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px">
+      <div class="glass-sm" style="padding:14px">
+        <div style="font-weight:800;font-size:.9rem;margin-bottom:4px">1. What are Python Sets?</div>
+        <div style="font-size:.82rem;color:var(--txt2);line-height:1.55">A Set is an unordered collection of unique, hashable items supporting O(1) membership checks and math operations like Union (<code>|</code>), Intersection (<code>&amp;</code>), and Difference (<code>-</code>).</div>
+      </div>
+      <div class="glass-sm" style="padding:14px">
+        <div style="font-weight:800;font-size:.9rem;margin-bottom:4px">2. What is OOP in Python?</div>
+        <div style="font-size:.82rem;color:var(--txt2);line-height:1.55">Object-Oriented Programming organizes code into <code>class</code> blueprints and independent <code>object</code> instances using the 4 pillars: Inheritance, Encapsulation, Abstraction, and Polymorphism.</div>
+      </div>
+      <div class="glass-sm" style="padding:14px">
+        <div style="font-weight:800;font-size:.9rem;margin-bottom:4px">3. How does the Python 3 Compiler work live?</div>
+        <div style="font-size:.82rem;color:var(--txt2);line-height:1.55">On localhost it uses the Python 3 backend; on static hosting (Vercel) it automatically falls back to Pyodide (CPython WebAssembly) inside your browser with full <code>input()</code> support.</div>
+      </div>
+      <div class="glass-sm" style="padding:14px">
+        <div style="font-weight:800;font-size:.9rem;margin-bottom:4px">4. What is the difference between self and __init__?</div>
+        <div style="font-size:.82rem;color:var(--txt2);line-height:1.55"><code>__init__</code> is the constructor method invoked on object creation, while <code>self</code> refers to the newly allocated object instance so attributes are stored privately in <code>self.__dict__</code>.</div>
+      </div>
+      <div class="glass-sm" style="padding:14px">
+        <div style="font-weight:800;font-size:.9rem;margin-bottom:4px">5. Is the 100-question Quiz free?</div>
+        <div style="font-size:.82rem;color:var(--txt2);line-height:1.55">Yes! You can customize 5 to 100 questions across Sets, OOP, or Mixed mode with a live countdown timer, detailed explanations, and local activity history.</div>
+      </div>
+    </div>
+  </section>
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;font:800 11px/1.4 'JetBrains Mono',monospace;color:var(--txt2)">
+    <span>PYCONCEPT BUREAU // TOPIC 14 (SETS) &amp; TOPIC 23 (OOP)</span>
+    <span><a href="https://github.com/sudonishant/Pyconcept" target="_blank" rel="noopener">GitHub Repository ↗</a></span>
+  </div>
+</footer>
+
 <!-- Floating AI Tutor Bot -->
 <button id="ai-fab" onclick="toggleAIDrawer()" title="Ask PyBot AI Tutor">🤖 PyBot AI</button>
 <div class="glass" id="ai-drawer">
@@ -1438,8 +1582,8 @@ CSE
       </div>
     </div>
     <div style="display:flex;gap:6px">
-      <button class="icon-btn" style="width:28px;height:28px;font-size:.8rem" title="Set API Key (for static mode)" onclick="promptOpenRouterKey()">⚙️</button>
-      <button class="icon-btn" style="width:28px;height:28px;font-size:.8rem" title="Close" onclick="toggleAIDrawer()">✕</button>
+      <button class="icon-btn" style="width:28px;height:28px;font-size:.8rem" aria-label="Set OpenRouter API Key" title="Set API Key (for static mode)" onclick="promptOpenRouterKey()">⚙️</button>
+      <button class="icon-btn" style="width:28px;height:28px;font-size:.8rem" aria-label="Close PyBot Drawer" title="Close" onclick="toggleAIDrawer()">✕</button>
     </div>
   </div>
   <div class="ai-msgs" id="ai-msgs">
@@ -2570,6 +2714,21 @@ function resetSets3DOrbit() {
   sets3D.state.dist = 9.0;
 }
 
+
+let _threePromise = null;
+function ensureThreeJS() {
+  if (typeof THREE !== 'undefined') return Promise.resolve(window.THREE);
+  if (_threePromise) return _threePromise;
+  _threePromise = new Promise((resolve, reject) => {
+    const sc = document.createElement('script');
+    sc.src = 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js';
+    sc.onload = () => resolve(window.THREE);
+    sc.onerror = () => reject(new Error('Failed to load Three.js'));
+    document.head.appendChild(sc);
+  });
+  return _threePromise;
+}
+
 function initSets3D() {
   const wrap = document.getElementById('sets-3d-canvas-wrap');
   if (!wrap || typeof THREE === 'undefined' || sets3D) return;
@@ -3103,8 +3262,7 @@ function setSetsLabView(mode, btn) {
   if (mode === '3d') {
     if (d2) d2.style.display = 'none';
     if (d3) d3.style.display = 'block';
-    initSets3D();
-    updateSets3D();
+    ensureThreeJS().then(() => { initSets3D(); updateSets3D(); });
   } else {
     if (d3) d3.style.display = 'none';
     if (d2) d2.style.display = 'block';
@@ -3120,8 +3278,7 @@ function setOOPLabView(mode, btn) {
   if (mode === '3d') {
     if (d2) d2.style.display = 'none';
     if (d3) d3.style.display = 'block';
-    initOOP3D();
-    updateOOP3D();
+    ensureThreeJS().then(() => { initOOP3D(); updateOOP3D(); });
   } else {
     if (d3) d3.style.display = 'none';
     if (d2) d2.style.display = 'flex';

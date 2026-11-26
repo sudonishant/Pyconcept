@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Local HTTP server for Topic 25 Studio with non-blocking Python pyttsx3 TTS API."""
+"""Local HTTP server for Topic 14 (Sets) & Topic 23 (OOP) Studio with sandboxed Python 3 runner, OpenRouter proxy, and pyttsx3 TTS API."""
 
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -17,8 +17,39 @@ ROOT = Path(__file__).resolve().parent
 
 import time
 
+import re as _re
+from collections import defaultdict as _defaultdict
+
+RATE_LOCK = threading.Lock()
+RATE_LOG: dict[str, list[float]] = _defaultdict(list)
+BLOCKED_PATTERNS = _re.compile(
+    r"\b(import\s+(os|subprocess|socket|shutil|sys|ctypes|importlib|pty|pathlib|urllib|http|multiprocessing)|"
+    r"from\s+(os|subprocess|socket|shutil|sys|ctypes|importlib|pty|pathlib|urllib|http)\b|"
+    r"__import__|open\s*\(|eval\s*\(|exec\s*\()"
+)
+
+
+def is_rate_limited(ip: str, limit: int = 20, window_sec: float = 60.0) -> bool:
+    now = time.time()
+    with RATE_LOCK:
+        stamps = [t for t in RATE_LOG[ip] if now - t < window_sec]
+        if len(stamps) >= limit:
+            RATE_LOG[ip] = stamps
+            return True
+        stamps.append(now)
+        RATE_LOG[ip] = stamps
+        return False
+
+
 def run_python_code(code: str, stdin_data: str = "") -> dict:
-    """Execute user Python code in an isolated subprocess like an Online Python Compiler."""
+    """Execute user Python code in an isolated subprocess with security limits."""
+    if len(code) > 5000:
+        return {"ok": False, "stdout": "", "stderr": "SecurityError: Code exceeds 5000 character limit.", "returncode": 1, "elapsed_ms": 0.0}
+    if len(stdin_data) > 2000:
+        return {"ok": False, "stdout": "", "stderr": "SecurityError: Standard input exceeds 2000 character limit.", "returncode": 1, "elapsed_ms": 0.0}
+    m = BLOCKED_PATTERNS.search(code)
+    if m:
+        return {"ok": False, "stdout": "", "stderr": f"SecurityError: Restricted operation '{m.group(0)}' is blocked in sandbox mode.", "returncode": 1, "elapsed_ms": 0.0}
     t0 = time.perf_counter()
     try:
         proc = subprocess.run(
@@ -132,6 +163,9 @@ class StudioHandler(SimpleHTTPRequestHandler):
 
     def end_headers(self):
         self.send_header("Connection", "close")
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("X-Frame-Options", "SAMEORIGIN")
+        self.send_header("Referrer-Policy", "strict-origin-when-cross-origin")
         super().end_headers()
 
     def do_GET(self):
@@ -178,6 +212,25 @@ class StudioHandler(SimpleHTTPRequestHandler):
 
     def do_POST(self):
         parsed = urlparse(self.path)
+        client_ip = self.client_address[0] if self.client_address else "unknown"
+        if is_rate_limited(client_ip, limit=20, window_sec=60.0):
+            msg = json.dumps({"error": "Rate limit exceeded (20 requests/min). Please wait."}).encode("utf-8")
+            self.send_response(429)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(msg)))
+            self.end_headers()
+            self.wfile.write(msg)
+            return
+
+        expected_token = os.environ.get("PYCONCEPT_API_TOKEN", "").strip()
+        if expected_token and self.headers.get("X-PyConcept-Token", "").strip() != expected_token:
+            msg = json.dumps({"error": "Unauthorized: invalid API token."}).encode("utf-8")
+            self.send_response(401)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(msg)))
+            self.end_headers()
+            self.wfile.write(msg)
+            return
         if parsed.path == "/api/run-python":
             length = int(self.headers.get("Content-Length", "0"))
             raw = self.rfile.read(length) if length > 0 else b"{}"

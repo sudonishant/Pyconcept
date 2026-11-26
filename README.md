@@ -1,21 +1,27 @@
-# PyConcept Explorer — Interactive Python Visualizers
+# PyConcept — Python Sets & OOP Visual Lab
 
-An interactive Liquid Glass web app covering **Topic 14: Sets** and **Topic 23: Object-Oriented Programming**, designed to work both locally (with Python `pyttsx3` TTS) and statically on GitHub Pages (with Web Speech fallback).
+Interactive visual learning studio for **Topic 14 (Sets)** and **Topic 23 (Object-Oriented Programming)** featuring 2D/3D WebGL visualizers, an in-browser **Python 3 Compiler (Pyodide)**, a **100-question Quiz Portal**, and **PyBot AI Tutor**.
 
-## Included Topics
-- **Topic 14 — Sets**:
-  - **12-Concept Interactive Visual Explorer** (Set idea, Roster vs Set-builder filter machine, `∈ / ∉` membership, Types of sets, Subset vs Proper Subset, Universal Set, Power Set `P(A)`, Venn Operations, Set Identities/Laws, Cardinality `n(A∪B)`, Intervals & Number Line, Cartesian Product `A × B`).
-  - **Sets Python Lab**: Editable Python code editor with syntax checks, step-by-step execution trace, and live output.
-- **Topic 23 — Object-Oriented Programming**:
-  - **OOP Intro**: Blueprint (`class Student`) visual and interactive flip cards.
-  - **OOP Code Lab**: Editable Python code editor with default `Student` class, syntax validation, Object Panel cards, and Programiz-style Call Frames (`Main Block` → active `__init__` / method frame).
-- **Quiz Portal**: 1-question-at-a-time interactive quiz for Sets & OOP with Question Palette, Review, and Read Aloud (`🔊`).
+## Live Deployment (Vercel)
+- **URL:** [https://pyconcept.neeshant.in/](https://pyconcept.neeshant.in/)
+- Runs completely in the browser as a static site on Vercel:
+  - Python 3 code executes client-side via **Pyodide (WebAssembly)** with full `input()` / `stdin` support.
+  - PyBot AI Tutor supports Bring-Your-Own-Key (BYOK) OpenRouter keys stored in `sessionStorage`.
+  - Text-to-Speech uses the browser SpeechSynthesis API.
 
-## Run Locally (With Python TTS)
+## Local Development
 ```bash
+git clone https://github.com/sudonishant/Pyconcept.git
+cd Pyconcept
 python3 server.py
 ```
-Then open http://127.0.0.1:8095/ in your browser.
+Open **http://127.0.0.1:8095/** in your browser.
 
-## Deploy on GitHub Pages
-Enable **Settings → Pages → main / (root)** in your repository — `index.html` works standalone with automatic browser speech synthesis fallback.
+### Optional Environment Variables (Local Server)
+- `OPENROUTER_API_KEY`: Enables the `/api/chat` OpenRouter proxy for PyBot.
+- `PYCONCEPT_API_TOKEN`: Optional auth token required on `POST` endpoints when set.
+
+## Features
+- **Topic 14 — Sets:** 12 visual concepts, Multi-Venn diagrams (2-Set, 3-Set, Subset, Disjoint) in 2D SVG & 3D Three.js, Set Membership (`∈` / `∉`), and CPython Hash Table tracer.
+- **Topic 23 — OOP:** Blueprint Stamp Press (`Custom`, `Auto`, `From Code`), 3D Hydraulic Stamp & Heap/Stack pointer beams, Student ID cards, Call Frames, plus all 4 Pillars (Inheritance, Encapsulation, Abstraction, Polymorphism) & Advanced OOP (Dunders, Decorators, MRO).
+- **100-Question Quiz Portal:** 50 Sets + 50 OOP questions, configurable question count (5–100), countdown timer, question palette, and `localStorage` activity log.
