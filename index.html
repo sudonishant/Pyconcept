@@ -6,41 +6,96 @@
 <title>Python Concept Explorer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 <style>
 /* ═══════════════════════════════════════════════════════
-   GLOBAL RESET & TOKENS
+   GLOBAL RESET & APPLE iOS HUMAN INTERFACE TOKENS
 ═══════════════════════════════════════════════════════ */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --glass-bg:rgba(255,255,255,0.52);
-  --glass-border:rgba(255,255,255,0.72);
-  --glass-shadow:0 12px 44px rgba(30,41,99,0.10);
-  --blur:blur(24px) saturate(1.7);
-  --accent1:#4f46e5;
-  --accent2:#10b981;
-  --accent3:#f59e0b;
-  --accent4:#ec4899;
-  --accent5:#06b6d4;
-  --txt:#0f172a;
-  --txt2:#475569;
-  --bg-from:#eef2ff;
-  --bg-to:#ecfeff;
-  --card-radius:22px;
-  --spring:cubic-bezier(0.34,1.4,0.64,1);
+  --ios-blue:#007aff;
+  --ios-emerald:#34c759;
+  --ios-orange:#ff9500;
+  --ios-purple:#af52de;
+  --ios-pink:#ff2d55;
+  --ios-teal:#32ade6;
+  --ios-lime:#ccff00;
+  --glass-bg:rgba(255,255,255,0.76);
+  --glass-border:rgba(0,0,0,0.08);
+  --glass-specular:rgba(255,255,255,0.85);
+  --glass-shadow:0 16px 44px -8px rgba(0,0,0,0.08), inset 0 1px 1px 0 rgba(255,255,255,0.8);
+  --blur:blur(36px) saturate(190%);
+  --accent1:#007aff;
+  --accent2:#34c759;
+  --accent3:#ff9500;
+  --accent4:#ff2d55;
+  --accent5:#32ade6;
+  --txt:#1c1c1e;
+  --txt2:#636366;
+  --bg-from:#f3f5fa;
+  --bg-to:#eef2f9;
+  --card-radius:24px;
+  --spring:cubic-bezier(0.32,0.72,0,1);
 }
 [data-theme="dark"]{
-  --glass-bg:rgba(15,23,42,0.68);
-  --glass-border:rgba(148,163,184,0.18);
-  --glass-shadow:0 14px 48px rgba(0,0,0,0.58);
-  --txt:#f8fafc;
-  --txt2:#94a3b8;
-  --bg-from:#070b19;
-  --bg-to:#0c192c;
+  --glass-bg:rgba(20,25,37,0.72);
+  --glass-border:rgba(255,255,255,0.12);
+  --glass-specular:rgba(255,255,255,0.22);
+  --glass-shadow:0 22px 60px -10px rgba(0,0,0,0.75), inset 0 1px 1px 0 rgba(255,255,255,0.2);
+  --accent1:#0a84ff;
+  --accent2:#30d158;
+  --accent3:#ff9f0a;
+  --accent4:#ff375f;
+  --accent5:#64d2ff;
+  --txt:#f5f5f7;
+  --txt2:#98989d;
+  --bg-from:#080a11;
+  --bg-to:#0f1422;
 }
-html,body{height:100%;font-family:'Space Grotesk','Segoe UI',system-ui,sans-serif;color:var(--txt);transition:background 0.5s;letter-spacing:-0.01em}
-body{background:linear-gradient(135deg,var(--bg-from),var(--bg-to));min-height:100vh;overflow-x:hidden}
+html,body{
+  height:100%;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Plus Jakarta Sans","Space Grotesk",system-ui,sans-serif;
+  color:var(--txt);
+  transition:background 0.5s;
+  letter-spacing:-0.015em;
+  -webkit-font-smoothing:antialiased;
+}
+body{
+  background:linear-gradient(145deg,var(--bg-from),var(--bg-to));
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* iOS Touch Haptic feedback on active elements */
+button, .vis-btn, .tc-btn, .nav-tab, .op-btn, .option-card, .s-badge, .vt-btn, .icon-btn, .pal-btn, .nomonkey-sticker {
+  transition:transform 0.18s cubic-bezier(0.34, 1.4, 0.64, 1), box-shadow 0.2s, background 0.2s, border-color 0.2s;
+  touch-action:manipulation;
+}
+button:active, .vis-btn:active, .tc-btn:active, .nav-tab:active, .op-btn:active, .option-card:active, .vt-btn:active, .icon-btn:active {
+  transform:scale(0.96) !important;
+  filter:brightness(0.95);
+}
+
+/* NoMonkey Work Brutalist Sticker & Terminal Badges */
+.nomonkey-sticker{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:5px 14px;border-radius:9999px;font-size:0.72rem;font-weight:800;
+  background:#ccff00;color:#000;box-shadow:0 4px 14px rgba(204,255,0,0.35);
+  transform:rotate(-1.5deg);transition:transform 0.2s cubic-bezier(0.34, 1.4, 0.64, 1);
+  user-select:none;cursor:default;
+}
+.nomonkey-sticker:hover{transform:rotate(0deg) scale(1.06)}
+.nomonkey-sticker.pink{background:#ff2d55;color:#fff;transform:rotate(1.8deg);box-shadow:0 4px 14px rgba(255,45,85,0.35)}
+.nomonkey-sticker.blue{background:#007aff;color:#fff;transform:rotate(-1deg);box-shadow:0 4px 14px rgba(0,122,255,0.35)}
+.nomonkey-sticker.orange{background:#ff9500;color:#fff;transform:rotate(1.2deg);box-shadow:0 4px 14px rgba(255,149,0,0.35)}
+.nomonkey-sticker.purple{background:#af52de;color:#fff;transform:rotate(-2deg);box-shadow:0 4px 14px rgba(175,82,222,0.35)}
+.nomonkey-terminal{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:5px 14px;border-radius:9999px;font-size:0.75rem;font-family:'JetBrains Mono',monospace;font-weight:700;
+  background:rgba(10,15,28,0.85);color:#ccff00;border:1px solid rgba(204,255,0,0.3);
+  box-shadow:0 6px 20px rgba(0,0,0,0.2);
+}
 .editorial-serif{font-family:'Instrument Serif',Georgia,serif;font-style:italic;font-weight:400;letter-spacing:0}
 .aww-marquee{
   overflow:hidden;border-top:1px solid var(--glass-border);border-bottom:1px solid var(--glass-border);
@@ -92,14 +147,17 @@ body{background:linear-gradient(135deg,var(--bg-from),var(--bg-to));min-height:1
    TOP NAV
 ═══════════════════════════════════════════════════════ */
 nav{
-  position:sticky;top:0;z-index:100;min-height:66px;
-  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
-  padding:12px 28px;
-  background:rgba(255,255,255,0.72);
-  backdrop-filter:blur(28px);
-  border-bottom:1.5px solid var(--glass-border);
-  box-shadow:0 4px 24px rgba(15,23,42,0.06);
+  position:sticky;top:14px;z-index:100;min-height:60px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  max-width:1080px;margin:14px auto 0;
+  padding:8px 20px;border-radius:9999px;
+  background:var(--glass-bg);
+  backdrop-filter:var(--blur);
+  -webkit-backdrop-filter:var(--blur);
+  border:1.5px solid var(--glass-border);
+  box-shadow:var(--glass-shadow);
 }
+@media(max-width:1120px){nav{margin:12px 16px 0;max-width:none}}
 [data-theme="dark"] nav{background:rgba(15,23,42,0.84)}
 .nav-logo{font-size:1.1rem;font-weight:800;background:linear-gradient(90deg,#6c63ff,#43e97b);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .nav-tabs{display:flex;gap:6px;margin-left:auto}
@@ -837,11 +895,11 @@ input[type=range]{accent-color:var(--accent1)}
         <div class="sim-input-col">
           <div>
             <div class="sim-label">Set A (comma separated)</div>
-            <input class="sim-input" id="sim-set-a" value="Aarav, Kabir, Diya" placeholder="e.g. Aarav, Kabir, Diya"/>
+            <input class="sim-input" id="sim-set-a" value="⚡ Aarav, 🎧 Kabir, 🎨 Diya" placeholder="e.g. ⚡ Aarav, 🎧 Kabir, 🎨 Diya"/>
           </div>
           <div>
             <div class="sim-label">Set B (comma separated)</div>
-            <input class="sim-input" id="sim-set-b" value="Diya, Riya, Meera" placeholder="e.g. Diya, Riya, Meera"/>
+            <input class="sim-input" id="sim-set-b" value="🎨 Diya, 🚀 Riya, 🤖 Meera" placeholder="e.g. 🎨 Diya, 🚀 Riya, 🤖 Meera"/>
           </div>
           <div>
             <div class="sim-label">Operation</div>
@@ -884,6 +942,19 @@ input[type=range]{accent-color:var(--accent1)}
         <div class="step-info" id="sim-step-info">Step 0 / 0</div>
         <div class="speed-wrap">Speed<input type="range" id="sim-speed" min="300" max="2000" value="900" step="100">Auto</div>
         <button class="icon-btn tts-read-btn" title="Read aloud" onclick="speakText(document.getElementById('sim-output').textContent)">🔊</button>
+      </div>
+      <!-- How Sets Work Under The Hood (CPython Execution Mechanics) -->
+      <div id="sim-how-it-works-panel" style="margin:0 24px 20px;padding:20px;border-radius:18px;background:rgba(255,255,255,0.06);border:1.5px solid var(--glass-border);display:none">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="nomonkey-sticker" style="transform:none">🔍 How Python Executes This Under The Hood</span>
+            <span id="sim-hiw-opcode" class="nomonkey-terminal" style="font-size:.7rem;padding:3px 10px">CPython Opcode</span>
+          </div>
+          <span id="sim-hiw-complexity" class="s-badge" style="background:rgba(52,199,89,0.15);color:var(--accent2);border-color:rgba(52,199,89,0.3)">Time: O(N)</span>
+        </div>
+        <div id="sim-hiw-stage-title" style="font-size:1.02rem;font-weight:800;color:var(--txt);margin-bottom:6px">Stage: Evaluation</div>
+        <p id="sim-hiw-explanation" style="font-size:.86rem;color:var(--txt2);line-height:1.65;margin-bottom:12px"></p>
+        <div id="sim-hiw-breakdown-grid" style="display:flex;flex-wrap:wrap;gap:8px"></div>
       </div>
     </div>
   </div>
@@ -1056,8 +1127,18 @@ input[type=range]{accent-color:var(--accent1)}
           <div class="oop-object-panel oop-3d-grid" id="oop-obj-panel">
             <div style="font-size:.85rem;color:var(--txt2);text-align:center;margin:auto;padding:16px">No objects yet — write code and run it!</div>
           </div>
-          <div id="oop-3d-canvas-wrap" style="display:none;height:260px;border-radius:16px;overflow:hidden;position:relative;background:radial-gradient(circle at 50% 35%,#1e1b4b,#090d16);border:1.5px solid rgba(255,255,255,.22);cursor:grab">
-            <div style="position:absolute;bottom:8px;left:12px;z-index:2;font-size:.7rem;color:rgba(255,255,255,.7);pointer-events:none">Drag to orbit 3D · Click a 3D card to flip</div>
+          <div id="oop-3d-canvas-wrap" style="display:none;height:380px;border-radius:18px;overflow:hidden;position:relative;background:radial-gradient(circle at 50% 30%,#111827,#060911);border:1.5px solid rgba(255,255,255,.2);cursor:grab">
+            <div style="position:absolute;top:10px;left:10px;right:10px;z-index:10;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;pointer-events:auto">
+              <div style="display:flex;gap:6px">
+                <button class="vis-btn primary" style="padding:4px 12px;font-size:.72rem" onclick="trigger3DStamp()">⚡ Stamp 3D Press</button>
+                <button class="vis-btn" style="padding:4px 12px;font-size:.72rem" onclick="flipAll3DCards()">🔄 Flip Cards</button>
+                <button class="vis-btn" style="padding:4px 12px;font-size:.72rem" onclick="toggle3DHeapStack()">🧠 Heap &amp; Stack</button>
+              </div>
+              <button class="vis-btn" style="padding:4px 10px;font-size:.72rem" onclick="reset3DOrbit()">⟲ Reset Orbit</button>
+            </div>
+            <div style="position:absolute;bottom:8px;left:12px;z-index:2;font-size:.7rem;color:rgba(255,255,255,.8);pointer-events:none;background:rgba(0,0,0,0.5);padding:4px 10px;border-radius:20px;backdrop-filter:blur(8px)">
+              🖱 Drag to orbit · Scroll to zoom · Click any 3D Student Card to flip &amp; inspect attributes
+            </div>
           </div>
         </div>
 
@@ -1078,6 +1159,19 @@ input[type=range]{accent-color:var(--accent1)}
       <div class="step-info" id="oop-step-info">Step 0 / 0</div>
       <div class="speed-wrap">Speed<input type="range" id="oop-speed" min="300" max="2000" value="900" step="100">Auto</div>
       <button class="icon-btn tts-read-btn" onclick="speakText(document.getElementById('oop-output').textContent)">🔊</button>
+    </div>
+    <!-- How OOP Works Under The Hood (CPython Heap & Stack Mechanics) -->
+    <div id="oop-how-it-works-panel" class="glass" style="margin-top:16px;padding:22px;border-radius:20px;display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="nomonkey-sticker pink" style="transform:none">⚙️ OOP Execution Tracer &amp; Memory Mechanics</span>
+          <span id="oop-hiw-opcode" class="nomonkey-terminal" style="font-size:.7rem;padding:3px 10px">CPython: CALL_FUNCTION</span>
+        </div>
+        <span id="oop-hiw-mem-tag" class="s-badge" style="background:rgba(0,122,255,0.15);color:var(--accent1);border-color:rgba(0,122,255,0.3)">Heap Pointer: 0x7ffd9a</span>
+      </div>
+      <div id="oop-hiw-stage-title" style="font-size:1.02rem;font-weight:800;color:var(--txt);margin-bottom:6px">Stage: Blueprint Instantiation</div>
+      <p id="oop-hiw-explanation" style="font-size:.86rem;color:var(--txt2);line-height:1.65;margin-bottom:12px"></p>
+      <div id="oop-hiw-breakdown-grid" style="display:flex;flex-wrap:wrap;gap:8px"></div>
     </div>
   </div>
 
@@ -1367,9 +1461,9 @@ function renderSetConcept() {
           `}
         </svg>
         <div class="glass-sm" style="padding:18px;font-size:.86rem;line-height:1.7">
-          <div><strong>Notation:</strong> <code>A = {Aarav, Kabir, Diya}</code></div>
+          <div><strong>Notation:</strong> <code>A = {⚡ Aarav, 🎧 Kabir, 🎨 Diya}</code></div>
           <div style="margin-top:8px"><strong>Rule:</strong> Membership must be a clear yes/no for every student (e.g. "Students under age 18" ✅).</div>
-          <div style="margin-top:8px;color:var(--accent1)"><strong>Python:</strong> <code>A = {"Aarav", "Kabir", "Diya"}</code></div>
+          <div style="margin-top:8px;color:var(--accent1)"><strong>Python:</strong> <code>A = {"⚡ Aarav", "🎧 Kabir", "🎨 Diya"}</code></div>
         </div>
       </div>`;
   } else if (curSetConcept === 1) {
@@ -1399,8 +1493,8 @@ function renderSetConcept() {
         </div>
       </div>`;
   } else if (curSetConcept === 2) {
-    const inside = ['Aarav', 'Diya', 'Kabir'];
-    const all = ['Aarav', 'Diya', 'Riya', 'Kabir', 'Meera'];
+    const inside = ['⚡ Aarav', '🎨 Diya', '🎧 Kabir'];
+    const all = ['⚡ Aarav', '🎨 Diya', '🚀 Riya', '🎧 Kabir', '🤖 Meera'];
     const sel = scState.selectedMember;
     const isIn = inside.includes(sel);
     body = `
@@ -1528,10 +1622,10 @@ function renderSetConcept() {
   } else if (curSetConcept === 7) {
     const op = scState.vennOp;
     const ops = [
-      { id:'union', label:'A ∪ B (Union)', cue:'A or B — shade both circles', res:'{Aarav, Kabir, Diya, Riya, Meera}' },
-      { id:'intersection', label:'A ∩ B (Intersection)', cue:'A and B — purple overlap only', res:'{Diya}' },
-      { id:'difference', label:'A − B (Difference)', cue:'Only A (remove B overlap)', res:'{Aarav, Kabir}' },
-      { id:'complement', label:"A' (Complement)", cue:'U − A (pale yellow region outside A)', res:'{Riya, Meera, Neha}' }
+      { id:'union', label:'A ∪ B (Union)', cue:'A or B — shade both circles', res:'{⚡ Aarav, 🎧 Kabir, 🎨 Diya, 🚀 Riya, 🤖 Meera}' },
+      { id:'intersection', label:'A ∩ B (Intersection)', cue:'A and B — purple overlap only', res:'{🎨 Diya}' },
+      { id:'difference', label:'A − B (Difference)', cue:'Only A (remove B overlap)', res:'{⚡ Aarav, 🎧 Kabir}' },
+      { id:'complement', label:"A' (Complement)", cue:'U − A (pale yellow region outside A)', res:'{🚀 Riya, 🤖 Meera, 🌿 Neha}' }
     ];
     const curOpObj = ops.find(x => x.id === op) || ops[0];
     const uBg = op === 'complement' ? 'rgba(254,240,138,0.65)' : 'rgba(148,163,184,0.12)';
@@ -1552,10 +1646,10 @@ function renderSetConcept() {
           <circle class="${(op==='union'||op==='intersection')?'pulse-ring':''}" cx="235" cy="110" r="70" fill="${interFill}" clip-path="url(#sc-clip-a)"/>
           <text x="108" y="64" font-weight="800" font-size="13" fill="#2563eb">A Cricket</text>
           <text x="235" y="64" font-weight="800" font-size="13" fill="#ea580c">B Music</text>
-          <text x="110" y="114" font-size="11" font-weight="700" text-anchor="middle" fill="var(--txt)">Aarav, Kabir</text>
-          <text x="190" y="114" font-size="11" font-weight="800" text-anchor="middle" fill="var(--txt)">Diya</text>
-          <text x="270" y="114" font-size="11" font-weight="700" text-anchor="middle" fill="var(--txt)">Riya, Meera</text>
-          <text x="332" y="190" font-size="11" font-weight="700" fill="var(--txt2)">Neha</text>
+          <text x="110" y="114" font-size="10.5" font-weight="700" text-anchor="middle" fill="var(--txt)">⚡ Aarav, 🎧 Kabir</text>
+          <text x="190" y="114" font-size="10.5" font-weight="800" text-anchor="middle" fill="var(--txt)">🎨 Diya</text>
+          <text x="270" y="114" font-size="10.5" font-weight="700" text-anchor="middle" fill="var(--txt)">🚀 Riya, 🤖 Meera</text>
+          <text x="332" y="190" font-size="10.5" font-weight="700" fill="var(--txt2)">🌿 Neha</text>
         </svg>
         <div class="glass-sm" style="padding:18px;font-size:.86rem;line-height:1.7">
           <div style="font-weight:800;font-size:1.05rem;color:var(--accent1)">${curOpObj.label}</div>
@@ -1782,6 +1876,49 @@ function formatPySet(arr) {
   return '{' + arr.map(v => typeof v === 'string' ? `"${v}"` : v).join(', ') + '}';
 }
 
+function getSetOpExplanation(opKey, left, right, setA, setB, res) {
+  const countA = setA.length, countB = setB.length, countRes = res.length;
+  if (opKey === 'union') {
+    return `<strong>CPython Hash Table Union Mechanics:</strong><br>` +
+      `1. Python allocates a fresh hash table with buckets.<br>` +
+      `2. Iterates over <code>${left}</code> (${countA} items) and computes <code>hash(x)</code> for each element to populate buckets.<br>` +
+      `3. Iterates over <code>${right}</code> (${countB} items): if <code>hash(y)</code> matches an existing bucket and passes equality check <code>x == y</code>, CPython discards it (duplicate suppression in O(1) average time).<br>` +
+      `4. Combined result contains <strong>${countRes} unique elements</strong>. Time Complexity: <strong>O(len(${left}) + len(${right}))</strong>.`;
+  } else if (opKey === 'intersection') {
+    const smaller = countA <= countB ? left : right;
+    const larger = smaller === left ? right : left;
+    return `<strong>CPython Hash Table Intersection Mechanics:</strong><br>` +
+      `1. CPython checks lengths for optimization: iterates over the <em>smaller set</em> <code>${smaller}</code> to minimize lookup operations.<br>` +
+      `2. For each element in <code>${smaller}</code>, CPython probes the hash table of <code>${larger}</code> in <strong>O(1)</strong> time.<br>` +
+      `3. Only elements found in <strong>both sets</strong> are inserted into the new result set (${countRes} matching elements). Time Complexity: <strong>O(min(len(${left}), len(${right})))</strong>.`;
+  } else if (opKey === 'difference') {
+    return `<strong>CPython Difference Mechanics (${left} − ${right}):</strong><br>` +
+      `1. Iterates over source set <code>${left}</code> (${countA} items).<br>` +
+      `2. For each item <code>x</code>, executes fast hash check <code>if x not in ${right}</code>.<br>` +
+      `3. Any overlapping elements present in <code>${right}</code> are filtered out. Result contains <strong>${countRes} items exclusive to ${left}</strong>. Time Complexity: <strong>O(len(${left}))</strong>.`;
+  } else {
+    return `<strong>CPython Symmetric Difference (${left} ^ ${right}):</strong><br>` +
+      `1. Computes the symmetric XOR difference equivalent to <code>(${left} − ${right}) | (${right} − ${left})</code>.<br>` +
+      `2. Gathers elements in either set, but strictly removes mutual overlaps.<br>` +
+      `3. Final result has <strong>${countRes} items</strong>. Time Complexity: <strong>O(len(${left}) + len(${right}))</strong>.`;
+  }
+}
+
+function getSetOpChips(opKey, setA, setB, res) {
+  const allUnique = [...new Set([...setA, ...setB])];
+  return allUnique.map(elem => {
+    const inA = setA.includes(elem);
+    const inB = setB.includes(elem);
+    const inRes = res.includes(elem);
+    const bg = inRes ? 'rgba(52,199,89,0.18)' : 'rgba(255,45,85,0.12)';
+    const border = inRes ? 'var(--accent2)' : 'rgba(255,45,85,0.3)';
+    const status = inRes ? '✓ In Result' : '✗ Discarded';
+    return `<div style="padding:6px 12px;border-radius:12px;background:${bg};border:1px solid ${border};font-size:.78rem;display:flex;align-items:center;gap:6px">` +
+      `<strong>${escHtml(String(elem))}</strong>: in A? ${inA?'Yes':'No'} | in B? ${inB?'Yes':'No'} → <span style="font-weight:700">${status}</span>` +
+      `</div>`;
+  }).join('');
+}
+
 function startSimSets() {
   clearInterval(simTimer); simPlaying = false;
   const ed = document.getElementById('sim-editor');
@@ -1821,7 +1958,18 @@ function startSimSets() {
         return;
       }
       env[assignSet[1]] = val;
-      steps.push({lines:[i], msg:`Defining ${assignSet[1]} = ${formatPySet(val)}`});
+      const chips = val.map(v => `<span class="s-badge" style="background:rgba(0,122,255,0.12);color:var(--accent1)">hash("${v}") → bucket</span>`).join(' ');
+      steps.push({
+        lines: [i],
+        msg: `Defining ${assignSet[1]} = ${formatPySet(val)}`,
+        hiw: {
+          opcode: 'BUILD_SET (0x68)',
+          complexity: `Time: O(${val.length}) · Space: O(${val.length})`,
+          stage: `Step ${i+1}: Allocating Hash Table for Set '${assignSet[1]}'`,
+          explanation: `CPython creates an empty hash table array. It evaluates each element, invokes CPython's internal <code>hash()</code> function, and inserts elements into hash buckets while discarding duplicate collisions in O(1) time.`,
+          chips: chips || '<span class="s-badge">Empty set()</span>'
+        }
+      });
       continue;
     }
 
@@ -1836,7 +1984,19 @@ function startSimSets() {
       const opKey = {'|':'union','&':'intersection','-':'difference','^':'symdiff'}[op];
       const res = computeOp(env[left], env[right], opKey);
       env[target] = res;
-      steps.push({lines:[i], msg:`Computing ${target} = ${left} ${op} ${right} → ${formatPySet(res)}`});
+      const opcodes = {'|':'BINARY_OR (0x42)','&':'BINARY_AND (0x40)','-':'BINARY_SUBTRACT (0x18)','^':'BINARY_XOR (0x41)'};
+      const complexMap = {'&':'Time: O(min(len(A), len(B)))','|':'Time: O(len(A) + len(B))','-':'Time: O(len(A))','^':'Time: O(len(A) + len(B))'};
+      steps.push({
+        lines: [i],
+        msg: `Computing ${target} = ${left} ${op} ${right} → ${formatPySet(res)}`,
+        hiw: {
+          opcode: opcodes[op] || 'SET_OPERATION',
+          complexity: complexMap[op] || 'Time: O(N)',
+          stage: `Step ${i+1}: Internal CPython Evaluation of ${left} ${op} ${right}`,
+          explanation: getSetOpExplanation(opKey, left, right, env[left], env[right], res),
+          chips: getSetOpChips(opKey, env[left], env[right], res)
+        }
+      });
       continue;
     }
 
@@ -1854,7 +2014,17 @@ function startSimSets() {
         printed = expr.replace(/^["']|["']$/g, '');
       }
       outputs.push(printed);
-      steps.push({lines:[i], msg:`Output: ${outputs.join('\n')}`});
+      steps.push({
+        lines: [i],
+        msg: `Output: ${outputs.join('\n')}`,
+        hiw: {
+          opcode: 'CALL_FUNCTION (0x83) → PRINT',
+          complexity: 'Time: O(N) linear traversal',
+          stage: `Step ${i+1}: Output Formatting & Streaming to Console`,
+          explanation: `CPython traverses the active hash table buckets, formats each element with curly braces, and emits the string representation to standard output.`,
+          chips: `<span class="s-badge" style="background:rgba(52,199,89,0.15);color:var(--accent2)">stdout: ${escHtml(printed)}</span>`
+        }
+      });
       continue;
     }
 
@@ -1888,6 +2058,21 @@ function renderSimStep() {
   document.getElementById('sim-step-info').textContent = `Step ${simCurrent+1} / ${simSteps.length}`;
   document.getElementById('sim-btn-prev').disabled = simCurrent === 0;
   document.getElementById('sim-btn-next').disabled = simCurrent === simSteps.length-1;
+
+  const hiwPanel = document.getElementById('sim-how-it-works-panel');
+  if (hiwPanel) {
+    if (step && step.hiw) {
+      hiwPanel.style.display = 'block';
+      document.getElementById('sim-hiw-opcode').textContent = step.hiw.opcode;
+      document.getElementById('sim-hiw-complexity').textContent = step.hiw.complexity;
+      document.getElementById('sim-hiw-stage-title').textContent = step.hiw.stage;
+      document.getElementById('sim-hiw-explanation').innerHTML = step.hiw.explanation;
+      document.getElementById('sim-hiw-breakdown-grid').innerHTML = step.hiw.chips;
+    } else {
+      hiwPanel.style.display = 'none';
+    }
+  }
+
   if (simCurrent === simSteps.length-1) {
     clearInterval(simTimer); simPlaying = false;
     document.getElementById('sim-btn-play').textContent = '▶ Play';
@@ -1913,6 +2098,8 @@ function resetSim() {
   document.getElementById('sim-output').textContent = '▶ Click "Start Visualizer" to run…';
   document.getElementById('sim-step-info').textContent = 'Step 0 / 0';
   document.getElementById('sim-vis-controls').style.display = 'none';
+  const hiwPanel = document.getElementById('sim-how-it-works-panel');
+  if (hiwPanel) hiwPanel.style.display = 'none';
   document.getElementById('sim-btn-play').textContent = '▶ Play';
 }
 
@@ -1920,22 +2107,22 @@ function resetSim() {
    STUDENT PROFILES + MULTI-VENN + 2D/3D VIEWS
 ══════════════════════════════════════════════════════ */
 const STUDENT_PROFILES = {
-  Aarav: { name: 'Aarav', branch: 'CSE', roll: '101', semester: '3rd', session: '2025-26', color: '#4f46e5' },
-  Kabir: { name: 'Kabir', branch: 'CSE', roll: '109', semester: '5th', session: '2024-25', color: '#06b6d4' },
-  Diya:  { name: 'Diya',  branch: 'ECE', roll: '104', semester: '3rd', session: '2025-26', color: '#8b5cf6' },
-  Riya:  { name: 'Riya',  branch: 'IT',  roll: '112', semester: '3rd', session: '2025-26', color: '#f59e0b' },
-  Meera: { name: 'Meera', branch: 'AIML',roll: '118', semester: '1st', session: '2025-26', color: '#ec4899' },
-  Neha:  { name: 'Neha',  branch: 'ME',  roll: '125', semester: '5th', session: '2024-25', color: '#10b981' }
+  Aarav: { name: 'Aarav', emoji: '⚡', displayName: '⚡ Aarav', branch: 'CSE', roll: '101', semester: '3rd', session: '2025-26', color: '#007aff' },
+  Kabir: { name: 'Kabir', emoji: '🎧', displayName: '🎧 Kabir', branch: 'CSE', roll: '109', semester: '5th', session: '2024-25', color: '#00f5d4' },
+  Diya:  { name: 'Diya',  emoji: '🎨', displayName: '🎨 Diya',  branch: 'ECE', roll: '104', semester: '3rd', session: '2025-26', color: '#af52de' },
+  Riya:  { name: 'Riya',  emoji: '🚀', displayName: '🚀 Riya',  branch: 'IT',  roll: '112', semester: '3rd', session: '2025-26', color: '#ff9500' },
+  Meera: { name: 'Meera', emoji: '🤖', displayName: '🤖 Meera', branch: 'AIML',roll: '118', semester: '1st', session: '2025-26', color: '#ff2d55' },
+  Neha:  { name: 'Neha',  emoji: '🌿', displayName: '🌿 Neha',  branch: 'ME',  roll: '125', semester: '5th', session: '2024-25', color: '#34c759' }
 };
 
-function getAvatarSVG(name, color = '#4f46e5', size = 48) {
-  const initial = (name || 'S')[0].toUpperCase();
-  return `<svg width="${size}" height="${size}" viewBox="0 0 64 64" style="border-radius:50%;flex-shrink:0;box-shadow:0 4px 12px rgba(15,23,42,.18)">
-    <defs><linearGradient id="av-${escHtml(name)}" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="${color}"/><stop offset="100%" stop-color="#06b6d4"/></linearGradient></defs>
-    <rect width="64" height="64" rx="32" fill="url(#av-${escHtml(name)})"/>
-    <circle cx="32" cy="24" r="11" fill="rgba(255,255,255,0.92)"/>
-    <path d="M14 56c2-11 10-16 18-16s16 5 18 16" fill="rgba(255,255,255,0.92)"/>
-    <text x="51" y="54" font-size="11" font-weight="900" fill="#fff" text-anchor="middle">${escHtml(initial)}</text>
+function getAvatarSVG(name, color = '#007aff', size = 48) {
+  const cleanName = String(name || 'Aarav').replace(/^[^a-zA-Z0-9]+/, '').trim();
+  const s = STUDENT_PROFILES[cleanName] || Object.values(STUDENT_PROFILES).find(p => name.includes(p.name)) || { emoji: '⚡', color: '#007aff' };
+  const safeId = 'av-' + encodeURIComponent(cleanName || 'std');
+  return `<svg width="${size}" height="${size}" viewBox="0 0 64 64" style="border-radius:50%;flex-shrink:0;box-shadow:0 6px 16px rgba(0,0,0,.15);border:2px solid rgba(255,255,255,0.4)">
+    <defs><linearGradient id="${safeId}" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="${s.color || color}"/><stop offset="100%" stop-color="#00f5d4"/></linearGradient></defs>
+    <rect width="64" height="64" rx="32" fill="url(#${safeId})"/>
+    <text x="32" y="42" font-size="28" text-anchor="middle" font-family="system-ui, -apple-system">${s.emoji || '⚡'}</text>
   </svg>`;
 }
 
@@ -1945,19 +2132,19 @@ let sets3D = null, oop3D = null;
 
 function makeLabelTex(title, sub, bgHex, accentHex) {
   const c = document.createElement('canvas');
-  c.width = 256; c.height = 192;
+  c.width = 320; c.height = 240;
   const ctx = c.getContext('2d');
-  ctx.fillStyle = bgHex;
-  ctx.fillRect(0, 0, 256, 192);
-  ctx.fillStyle = accentHex;
-  ctx.fillRect(0, 0, 256, 28);
+  ctx.fillStyle = bgHex || '#111827';
+  ctx.fillRect(0, 0, 320, 240);
+  ctx.fillStyle = accentHex || '#007aff';
+  ctx.fillRect(0, 0, 320, 36);
   ctx.fillStyle = '#ffffff';
-  ctx.font = 'bold 28px system-ui, sans-serif';
+  ctx.font = 'bold 32px system-ui, -apple-system, sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText(title, 128, 92);
-  ctx.fillStyle = 'rgba(255,255,255,0.85)';
-  ctx.font = '18px monospace';
-  ctx.fillText(sub, 128, 136);
+  ctx.fillText(title, 160, 114);
+  ctx.fillStyle = 'rgba(255,255,255,0.88)';
+  ctx.font = 'bold 20px -apple-system, monospace';
+  ctx.fillText(sub, 160, 172);
   const tex = new THREE.CanvasTexture(c);
   tex.needsUpdate = true;
   return tex;
@@ -2091,7 +2278,7 @@ function updateSets3D() {
     const isSel = selectedLabStudent === name;
     const grp = new THREE.Group();
     grp.userData.studentName = name;
-    const tex = makeLabelTex(name, `${s.branch} · #${s.roll}`, isSel ? '#312e81' : '#1e293b', s.color);
+    const tex = makeLabelTex(`${s.emoji || '⚡'} ${name}`, `${s.branch} · #${s.roll}`, isSel ? '#007aff' : '#111827', s.color);
     const mats = [
       new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.4 }),
       new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.4 }),
@@ -2108,33 +2295,80 @@ function updateSets3D() {
   });
 }
 
+let oopShowPointers = true;
+
+function trigger3DStamp() {
+  if (!oop3D || !oop3D.state) return;
+  oop3D.state.stampAnim = { active: true, progress: 0, dir: 1 };
+  stampOOPCard();
+}
+
+function flipAll3DCards() {
+  if (!oop3D || !oop3D.state || !oop3D.state.cards) return;
+  const anyFlipped = oop3D.state.cards.some(c => c.userData.targetRotY > 0.1);
+  const target = anyFlipped ? 0 : Math.PI;
+  oop3D.state.cards.forEach(c => { c.userData.targetRotY = target; });
+}
+
+function toggle3DHeapStack() {
+  oopShowPointers = !oopShowPointers;
+  if (oop3D && oop3D.state && oop3D.state.pointerGroup) {
+    oop3D.state.pointerGroup.visible = oopShowPointers;
+  }
+}
+
+function reset3DOrbit() {
+  if (!oop3D || !oop3D.state) return;
+  oop3D.state.yaw = 0.15;
+  oop3D.state.pitch = 0.28;
+  oop3D.state.dist = 7.8;
+}
+
 function initOOP3D() {
   const wrap = document.getElementById('oop-3d-canvas-wrap');
   if (!wrap || typeof THREE === 'undefined' || oop3D) return;
   try {
-    const w = wrap.clientWidth || 480, h = wrap.clientHeight || 260;
+    const w = wrap.clientWidth || 540, h = wrap.clientHeight || 380;
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(42, w / h, 0.1, 100);
+    const camera = new THREE.PerspectiveCamera(40, w / h, 0.1, 100);
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(w, h);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     wrap.appendChild(renderer.domElement);
 
     scene.add(new THREE.AmbientLight(0xffffff, 0.9));
-    const key = new THREE.DirectionalLight(0xffffff, 1.2);
-    key.position.set(4, 8, 6);
+    const key = new THREE.DirectionalLight(0xffffff, 1.4);
+    key.position.set(5, 10, 7);
     scene.add(key);
 
+    const rim = new THREE.DirectionalLight(0x007aff, 0.9);
+    rim.position.set(-7, 6, -5);
+    scene.add(rim);
+
+    // Grid Floor
     const floor = new THREE.Mesh(
-      new THREE.BoxGeometry(9.5, 0.16, 4.2),
-      new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.35, metalness: 0.35 })
+      new THREE.BoxGeometry(11.5, 0.18, 5.4),
+      new THREE.MeshStandardMaterial({ color: 0x0a0f1d, roughness: 0.3, metalness: 0.4 })
     );
-    floor.position.y = -0.9;
+    floor.position.y = -0.95;
     scene.add(floor);
+
+    const grid = new THREE.GridHelper(11, 22, 0x007aff, 0x1e293b);
+    grid.position.y = -0.85;
+    scene.add(grid);
 
     const root = new THREE.Group();
     scene.add(root);
-    const state = { yaw: 0.12, pitch: 0.24, dist: 7.4, cards: [] };
+    const state = {
+      yaw: 0.15,
+      pitch: 0.28,
+      dist: 7.8,
+      cards: [],
+      pistonGroup: null,
+      shockRing: null,
+      pointerGroup: null,
+      stampAnim: { active: false, progress: 0, dir: 1 }
+    };
     attachOrbit(wrap, state);
 
     const raycaster = new THREE.Raycaster();
@@ -2148,7 +2382,7 @@ function initOOP3D() {
       if (hits.length) {
         let obj = hits[0].object;
         while (obj && obj.userData.targetRotY === undefined) obj = obj.parent;
-        if (obj) obj.userData.targetRotY = obj.userData.targetRotY === 0 ? Math.PI : 0;
+        if (obj) obj.userData.targetRotY = (obj.userData.targetRotY || 0) < 0.1 ? Math.PI : 0;
       }
     });
 
@@ -2156,25 +2390,63 @@ function initOOP3D() {
     const animate = () => {
       requestAnimationFrame(animate);
       if (oopLabMode !== '3d') return;
-      const cw = wrap.clientWidth || 480, ch = wrap.clientHeight || 260;
+      const cw = wrap.clientWidth || 540, ch = wrap.clientHeight || 380;
       if (renderer.domElement.width !== cw || renderer.domElement.height !== ch) {
         camera.aspect = cw / ch; camera.updateProjectionMatrix(); renderer.setSize(cw, ch);
       }
       camera.position.set(
         Math.sin(state.yaw) * Math.cos(state.pitch) * state.dist,
-        Math.sin(state.pitch) * state.dist + 0.4,
+        Math.sin(state.pitch) * state.dist + 0.35,
         Math.cos(state.yaw) * Math.cos(state.pitch) * state.dist
       );
-      camera.lookAt(0.3, 0.1, 0);
-      const t = performance.now() * 0.0018;
-      root.rotation.y = Math.sin(t * 0.35) * 0.07;
+      camera.lookAt(0.2, 0.1, 0);
+
+      const t = performance.now() * 0.002;
+      root.rotation.y = Math.sin(t * 0.25) * 0.04;
+
+      // Handle 3D Stamp Press Hydraulic Animation
+      if (state.stampAnim.active && state.pistonGroup) {
+        if (state.stampAnim.dir === 1) {
+          state.stampAnim.progress += 0.08;
+          if (state.stampAnim.progress >= 1) {
+            state.stampAnim.progress = 1;
+            state.stampAnim.dir = -1;
+            if (state.shockRing) {
+              state.shockRing.visible = true;
+              state.shockRing.scale.set(0.1, 0.1, 0.1);
+              state.shockRing.material.opacity = 1.0;
+            }
+          }
+        } else {
+          state.stampAnim.progress -= 0.05;
+          if (state.stampAnim.progress <= 0) {
+            state.stampAnim.progress = 0;
+            state.stampAnim.active = false;
+            state.stampAnim.dir = 1;
+          }
+        }
+        // Move piston down from 1.6 to -0.2
+        state.pistonGroup.position.y = 1.5 - state.stampAnim.progress * 1.65;
+      }
+
+      // Animate shockwave ring
+      if (state.shockRing && state.shockRing.visible) {
+        const s = state.shockRing.scale.x + 0.08;
+        state.shockRing.scale.set(s, s, s);
+        state.shockRing.material.opacity = Math.max(0, state.shockRing.material.opacity - 0.04);
+        if (state.shockRing.material.opacity <= 0) state.shockRing.visible = false;
+      }
+
+      // Animate cards floating and smooth rotation
       state.cards.forEach((c, idx) => {
-        c.rotation.y += (c.userData.targetRotY - c.rotation.y) * 0.14;
-        c.position.y = 0.15 + Math.sin(t + idx * 0.9) * 0.06;
+        c.rotation.y += ((c.userData.targetRotY || 0) - c.rotation.y) * 0.14;
+        c.position.y = 0.15 + Math.sin(t + idx * 0.9) * 0.07;
       });
+
       renderer.render(scene, camera);
     };
     animate();
+    updateOOP3D();
   } catch (e) { oop3D = null; }
 }
 
@@ -2184,50 +2456,162 @@ function updateOOP3D() {
   while (root.children.length) root.remove(root.children[0]);
   state.cards = [];
 
-  // 3D Blueprint Stamp Press
-  const bpTex = makeLabelTex('Student', 'Blueprint (class)', '#1e3a8a', '#3b82f6');
-  const bp = new THREE.Mesh(
-    new THREE.BoxGeometry(1.7, 2.0, 0.24),
-    new THREE.MeshStandardMaterial({ map: bpTex, roughness: 0.25, emissive: 0x1d4ed8, emissiveIntensity: 0.2 })
-  );
-  bp.position.set(-2.3, 0.2, 0);
-  root.add(bp);
+  // 1. Mechanical Blueprint Stamp Press Structure (Left Anvil)
+  const pressX = -2.7, pressZ = 0;
 
+  // Stamping anvil base
+  const anvil = new THREE.Mesh(
+    new THREE.BoxGeometry(2.3, 0.32, 1.8),
+    new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.6, roughness: 0.2 })
+  );
+  anvil.position.set(pressX, -0.7, pressZ);
+  root.add(anvil);
+
+  // Chrome vertical guide columns
+  const colMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, metalness: 0.95, roughness: 0.1 });
+  const colL = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 3.2, 16), colMat);
+  colL.position.set(pressX - 0.9, 0.8, pressZ);
+  root.add(colL);
+
+  const colR = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 3.2, 16), colMat);
+  colR.position.set(pressX + 0.9, 0.8, pressZ);
+  root.add(colR);
+
+  // Top Gantry Crossbar
+  const crossbar = new THREE.Mesh(
+    new THREE.BoxGeometry(2.4, 0.35, 1.4),
+    new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.8, roughness: 0.25 })
+  );
+  crossbar.position.set(pressX, 2.3, pressZ);
+  root.add(crossbar);
+
+  // Moving Hydraulic Piston + Stamp Head Group
+  const pistonGroup = new THREE.Group();
+  pistonGroup.position.set(pressX, 1.5, pressZ);
+
+  // Hydraulic cylinder rod
+  const rod = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.16, 0.16, 1.2, 24),
+    new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 0.95, roughness: 0.08 })
+  );
+  rod.position.y = 0.55;
+  pistonGroup.add(rod);
+
+  // Stamping plate with Blueprint label
+  const bpTex = makeLabelTex('🏛️ CLASS BLUEPRINT', 'Student.__init__(self, ...)', '#007aff', '#00f5d4');
+  const stampPlate = new THREE.Mesh(
+    new THREE.BoxGeometry(1.85, 0.38, 1.5),
+    [
+      new THREE.MeshStandardMaterial({ color: 0x1e3a8a, metalness: 0.7, roughness: 0.2 }),
+      new THREE.MeshStandardMaterial({ color: 0x1e3a8a, metalness: 0.7, roughness: 0.2 }),
+      new THREE.MeshStandardMaterial({ color: 0x007aff, emissive: 0x007aff, emissiveIntensity: 0.3 }),
+      new THREE.MeshStandardMaterial({ color: 0x1e293b }),
+      new THREE.MeshStandardMaterial({ map: bpTex, roughness: 0.2 }),
+      new THREE.MeshStandardMaterial({ color: 0x1e3a8a })
+    ]
+  );
+  stampPlate.position.y = -0.15;
+  pistonGroup.add(stampPlate);
+
+  root.add(pistonGroup);
+  state.pistonGroup = pistonGroup;
+
+  // Expanding shockwave ring at anvil level
+  const shockRing = new THREE.Mesh(
+    new THREE.RingGeometry(0.3, 0.5, 32),
+    new THREE.MeshBasicMaterial({ color: 0x00f5d4, transparent: true, opacity: 0, side: THREE.DoubleSide })
+  );
+  shockRing.rotation.x = Math.PI / 2;
+  shockRing.position.set(pressX, -0.52, pressZ);
+  shockRing.visible = false;
+  root.add(shockRing);
+  state.shockRing = shockRing;
+
+  // 2. Stack Frame (main) Pedestal on the left-front
+  const stackBase = new THREE.Mesh(
+    new THREE.BoxGeometry(1.6, 0.24, 1.4),
+    new THREE.MeshStandardMaterial({ color: 0x1e1b4b, roughness: 0.35, emissive: 0x312e81, emissiveIntensity: 0.25 })
+  );
+  stackBase.position.set(-2.7, -0.7, 1.7);
+  root.add(stackBase);
+
+  const stackTex = makeLabelTex('Stack: main()', 'Reference Pointers', '#312e81', '#a855f7');
+  const stackLabel = new THREE.Mesh(
+    new THREE.PlaneGeometry(1.4, 0.5),
+    new THREE.MeshBasicMaterial({ map: stackTex, side: THREE.DoubleSide })
+  );
+  stackLabel.position.set(-2.7, -0.4, 1.7);
+  stackLabel.rotation.x = -Math.PI / 4;
+  root.add(stackLabel);
+
+  // Pointer Group for Heap Beams
+  const pointerGroup = new THREE.Group();
+  root.add(pointerGroup);
+  state.pointerGroup = pointerGroup;
+
+  // 3. Student Object Instances in Heap Memory (Center & Right)
   const list = oopObjects.length ? oopObjects : [
-    { varName: 's1', className: 'Student', attrs: { name: 'Aarav', branch: 'CSE', roll: 101 } },
-    { varName: 's2', className: 'Student', attrs: { name: 'Diya', branch: 'ECE', roll: 104 } }
+    { varName: 's1', className: 'Student', attrs: { name: '⚡ Aarav', branch: 'CSE', roll: 101, semester: '3rd', session: '2025-26' }, _heapAddr: '0x7ffd101' },
+    { varName: 's2', className: 'Student', attrs: { name: '🎨 Diya', branch: 'ECE', roll: 104, semester: '3rd', session: '2025-26' }, _heapAddr: '0x7ffd104' },
+    { varName: 's3', className: 'Student', attrs: { name: '🎧 Kabir', branch: 'CSE', roll: 109, semester: '5th', session: '2024-25' }, _heapAddr: '0x7ffd109' }
   ];
-  const palette = ['#4f46e5', '#06b6d4', '#f59e0b', '#ec4899'];
+
+  const palette = ['#007aff', '#af52de', '#00f5d4', '#ff9500', '#ff2d55', '#34c759'];
   list.slice(0, 4).forEach((o, i) => {
-    const title = String(o.attrs.name || o.varName);
-    const sub = `${o.attrs.branch || 'CSE'} · Roll ${o.attrs.roll || i + 1}`;
-    const frontTex = makeLabelTex(title, sub, '#1e293b', palette[i % palette.length]);
-    const backTex = makeLabelTex(`${o.varName}.${o.className}`, `Sem ${o.attrs.semester || '3rd'} · ${o.attrs.session || '2025-26'}`, '#312e81', '#ec4899');
+    const rawName = String(o.attrs.name || o.varName);
+    const cleanName = rawName.replace(/^[^a-zA-Z0-9]+/, '').trim();
+    const s = STUDENT_PROFILES[cleanName] || { emoji: '⚡', color: palette[i % palette.length] };
+    const displayName = rawName.includes(s.emoji) ? rawName : `${s.emoji} ${rawName}`;
+    const heapAddr = o._heapAddr || ('0x7ffd' + (100 + i * 14).toString(16));
+
+    const frontTex = makeLabelTex(
+      displayName,
+      `${o.attrs.branch || 'CSE'} · #${o.attrs.roll || i+101} · Sem ${o.attrs.semester || '3rd'}`,
+      '#111827',
+      s.color || palette[i % palette.length]
+    );
+
+    const backTex = makeLabelTex(
+      `Heap: ${heapAddr}`,
+      `introduce() -> "${displayName}"`,
+      '#1e1b4b',
+      '#a855f7'
+    );
+
     const card = new THREE.Mesh(
-      new THREE.BoxGeometry(1.38, 1.85, 0.12),
+      new THREE.BoxGeometry(1.48, 1.95, 0.15),
       [
-        new THREE.MeshStandardMaterial({ color: 0x334155 }),
-        new THREE.MeshStandardMaterial({ color: 0x334155 }),
-        new THREE.MeshStandardMaterial({ color: 0x334155 }),
-        new THREE.MeshStandardMaterial({ color: 0x334155 }),
+        new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.5, roughness: 0.2 }),
+        new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.5, roughness: 0.2 }),
+        new THREE.MeshStandardMaterial({ color: s.color || 0x007aff, emissive: s.color || 0x007aff, emissiveIntensity: 0.2 }),
+        new THREE.MeshStandardMaterial({ color: 0x1e293b }),
         new THREE.MeshStandardMaterial({ map: frontTex, roughness: 0.25 }),
         new THREE.MeshStandardMaterial({ map: backTex, roughness: 0.25 })
       ]
     );
-    card.position.set(-0.2 + i * 1.55, 0.15, 0);
+
+    const cardX = -0.2 + i * 1.72;
+    card.position.set(cardX, 0.15, 0);
     card.userData.targetRotY = 0;
     root.add(card);
     state.cards.push(card);
-  });
 
-  // Glowing self connector beam
-  const beam = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.035, 0.035, 2.0, 12),
-    new THREE.MeshStandardMaterial({ color: 0xf59e0b, emissive: 0xf59e0b, emissiveIntensity: 0.8 })
-  );
-  beam.rotation.z = Math.PI / 2;
-  beam.position.set(-1.25, 0.2, 0.18);
-  root.add(beam);
+    // Glowing pointer laser beam from Stack to Heap Card
+    const startPt = new THREE.Vector3(-2.2, -0.4 + i * 0.18, 1.4);
+    const midPt = new THREE.Vector3((-2.2 + cardX) / 2, 0.9 + i * 0.2, 0.8);
+    const endPt = new THREE.Vector3(cardX, 0.15, 0.15);
+    const curve = new THREE.QuadraticBezierCurve3(startPt, midPt, endPt);
+    const tubeGeo = new THREE.TubeGeometry(curve, 24, 0.03, 8, false);
+    const tubeMat = new THREE.MeshStandardMaterial({
+      color: s.color || palette[i % palette.length],
+      emissive: s.color || palette[i % palette.length],
+      emissiveIntensity: 0.85,
+      transparent: true,
+      opacity: 0.88
+    });
+    const tube = new THREE.Mesh(tubeGeo, tubeMat);
+    pointerGroup.add(tube);
+  });
 }
 
 function setConceptViewMode(mode, btn) {
@@ -2289,16 +2673,20 @@ function selectLabStudent(name) {
 function renderStudentIDCard(name) {
   const box = document.getElementById('sets-student-card');
   if (!box) return;
-  const s = STUDENT_PROFILES[name] || { name, branch: 'CSE', roll: '105', semester: '3rd', session: '2025-26', color: '#4f46e5' };
+  const cleanName = String(name || 'Aarav').replace(/^[^a-zA-Z0-9]+/, '').trim();
+  const s = STUDENT_PROFILES[cleanName] || { name: cleanName, emoji: '⚡', displayName: '⚡ ' + cleanName, branch: 'CSE', roll: '105', semester: '3rd', session: '2025-26', color: '#007aff' };
   box.innerHTML = `
-    <div class="student-id-card jtr-pop">
-      ${getAvatarSVG(s.name, s.color, 56)}
+    <div class="student-id-card jtr-pop" style="border-radius:20px;padding:16px;background:var(--glass-bg);backdrop-filter:var(--blur);border:1.5px solid var(--glass-border);box-shadow:var(--glass-shadow)">
+      ${getAvatarSVG(s.name, s.color, 62)}
       <div style="flex:1;min-width:0">
-        <div style="font-size:.7rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--accent1)">Student Profile</div>
-        <div style="font-size:1.15rem;font-weight:900">${escHtml(s.name)}</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
+          <span class="nomonkey-sticker" style="font-size:.65rem;padding:2px 8px;transform:none">${s.emoji} Student ID</span>
+          <span style="font-size:.72rem;color:var(--txt2);font-weight:700">Verified</span>
+        </div>
+        <div style="font-size:1.25rem;font-weight:900;letter-spacing:-0.02em;margin:2px 0 6px">${escHtml(s.displayName || (s.emoji + ' ' + s.name))}</div>
         <div class="student-badge-row">
-          <span class="s-badge">Branch: ${escHtml(s.branch)}</span>
-          <span class="s-badge">Roll: ${escHtml(s.roll)}</span>
+          <span class="s-badge" style="background:rgba(0,122,255,0.12);color:var(--accent1)">Branch: ${escHtml(s.branch)}</span>
+          <span class="s-badge">Roll: #${escHtml(s.roll)}</span>
           <span class="s-badge">Sem: ${escHtml(s.semester)}</span>
           <span class="s-badge">Session: ${escHtml(s.session)}</span>
         </div>
@@ -2313,10 +2701,12 @@ function renderLabVenn() {
   const chip = (name, x, y, fill) => {
     const active = selectedLabStudent === name;
     const delay = (chipIdx++) * 0.07;
+    const s = STUDENT_PROFILES[name];
+    const display = s ? `${s.emoji} ${name}` : name;
     return `<g style="cursor:pointer" onclick="selectLabStudent('${name}')">
       <g class="chip-anim" style="animation-delay:${delay}s;transform-origin:${x}px ${y}px">
-        <circle class="${active?'pulse-ring':''}" cx="${x}" cy="${y}" r="${active?22:18}" fill="${fill}" stroke="#fff" stroke-width="${active?3:1.8}"/>
-        <text x="${x}" y="${y+4}" text-anchor="middle" font-size="10.5" font-weight="800" fill="#fff">${name}</text>
+        <circle class="${active?'pulse-ring':''}" cx="${x}" cy="${y}" r="${active?24:20}" fill="${fill}" stroke="#fff" stroke-width="${active?3.2:2}"/>
+        <text x="${x}" y="${y+4}" text-anchor="middle" font-size="10" font-weight="900" fill="#fff">${display}</text>
       </g>
     </g>`;
   };
@@ -2395,10 +2785,12 @@ const DEFAULT_OOP_CODE = `class Student:
     def introduce(self):
         return f"{self.name} ({self.branch}, Roll {self.roll}, Sem {self.semester}, {self.session})"
 
-s1 = Student("Aarav", "CSE", 101, "3rd", "2025-26")
-s2 = Student("Diya", "ECE", 104, "3rd", "2025-26")
+s1 = Student("⚡ Aarav", "CSE", 101, "3rd", "2025-26")
+s2 = Student("🎨 Diya", "ECE", 104, "3rd", "2025-26")
+s3 = Student("🎧 Kabir", "CSE", 109, "5th", "2024-25")
 print(s1.introduce())
-print(s2.introduce())`;
+print(s2.introduce())
+print(s3.introduce())`;
 
 let oopObjects = [], oopSteps = [], oopCurrent = -1, oopPlaying = false, oopTimer = null;
 let oopCodeLines = DEFAULT_OOP_CODE.split('\n');
@@ -2412,10 +2804,12 @@ function initOOPSim() {
 }
 
 const STAMP_SAMPLES = [
-  { name: 'Aarav', course: 'B.Tech' },
-  { name: 'Diya', course: 'B.Sc CS' },
-  { name: 'Kabir', course: 'BCA' },
-  { name: 'Meera', course: 'MCA' }
+  { name: '⚡ Aarav', course: 'B.Tech CSE' },
+  { name: '🎨 Diya', course: 'B.Tech ECE' },
+  { name: '🎧 Kabir', course: 'B.Tech CSE' },
+  { name: '🚀 Riya', course: 'B.Tech IT' },
+  { name: '🤖 Meera', course: 'B.Tech AIML' },
+  { name: '🌿 Neha', course: 'B.Tech ME' }
 ];
 let stampIdx = 0;
 
@@ -2598,7 +2992,14 @@ function runOOPCode() {
         mainVars: mainSnapshot(),
         initShow: false,
         frameTitle: '',
-        frameVars: {}
+        frameVars: {},
+        hiw: {
+          opcode: 'LOAD_BUILD_CLASS (0x47)',
+          mem: `Heap: ClassObject<${item.name}>`,
+          stage: `Stage 1: Compiling Class Blueprint in Heap`,
+          explanation: `CPython creates a class object in Heap memory. It evaluates the class body and stores method references (<code>__init__</code>, <code>introduce</code>) inside <code>${item.name}.__dict__</code>. No instances exist yet.`,
+          chips: `<span class="s-badge">Class: ${item.name}</span> <span class="s-badge">Type: type</span>`
+        }
       });
       continue;
     }
@@ -2619,6 +3020,8 @@ function runOOPCode() {
       mainVars[varName] = obj;
       oopObjects.push(obj);
 
+      const heapAddr = '0x7ffd' + Math.floor(Math.random()*89999 + 10000).toString(16);
+      obj._heapAddr = heapAddr;
       steps.push({
         lines: [item.line],
         msg: `Creating ${varName} = ${clsName}(${args.map(formatPyVal).join(', ')})`,
@@ -2626,7 +3029,14 @@ function runOOPCode() {
         mainVars: mainSnapshot(),
         initShow: false,
         frameTitle: '',
-        frameVars: {}
+        frameVars: {},
+        hiw: {
+          opcode: 'CALL_FUNCTION (0x83)',
+          mem: `Heap: ${heapAddr}`,
+          stage: `Stage 2: Allocating Instance on Heap (${clsName}.__new__)`,
+          explanation: `CPython executes <code>${clsName}.__new__()</code> to allocate an uninitialized instance at address <code>${heapAddr}</code> on the Heap. Stack variable <code>${varName}</code> receives this 64-bit reference pointer.`,
+          chips: `<span class="s-badge">Stack Ref: ${varName}</span> <span class="s-badge">Heap Addr: ${heapAddr}</span>`
+        }
       });
 
       const initM = cls.methods['__init__'];
@@ -2640,7 +3050,14 @@ function runOOPCode() {
           mainVars: mainSnapshot(),
           initShow: true,
           frameTitle: `⚙️ ${clsName}.__init__(${initM.params.join(', ')})`,
-          frameVars: { ...locals }
+          frameVars: { ...locals },
+          hiw: {
+            opcode: 'CALL_METHOD (0xA1)',
+            mem: `Frame: __init__ at ${obj._heapAddr || '0x7ffd9a'}`,
+            stage: `Stage 3: Entering Constructor & Binding 'self'`,
+            explanation: `CPython pushes a new Stack Frame for <code>__init__</code>. The newly allocated heap block is passed explicitly as the first argument <code>self</code> to bind instance attributes.`,
+            chips: `<span class="s-badge">self: ${varName}</span> <span class="s-badge">Params: ${initM.params.slice(1).join(', ')}</span>`
+          }
         });
 
         for (const b of initM.body) {
@@ -2659,7 +3076,14 @@ function runOOPCode() {
               mainVars: mainSnapshot(),
               initShow: true,
               frameTitle: `⚙️ ${clsName}.__init__(${initM.params.join(', ')})`,
-              frameVars: { ...locals }
+              frameVars: { ...locals },
+              hiw: {
+                opcode: 'STORE_ATTR (0x5F)',
+                mem: `Instance __dict__`,
+                stage: `Stage 4: Populating ${varName}.__dict__['${attrName}']`,
+                explanation: `CPython binds the attribute into the instance dictionary: <code>${varName}.__dict__['${attrName}'] = ${formatPyVal(val)}</code>. This guarantees ${varName} has its own private state isolated from other student instances.`,
+                chips: `<span class="s-badge">${attrName} = ${formatPyVal(val)}</span>`
+              }
             });
           }
         }
@@ -2700,7 +3124,14 @@ function runOOPCode() {
           mainVars: mainSnapshot(),
           initShow: true,
           frameTitle: `⚙️ ${obj.className}.${methodName}(self)`,
-          frameVars: { self: `<${obj.className}: ${varName}>`, return: `"${retVal}"` }
+          frameVars: { self: `<${obj.className}: ${varName}>`, return: `"${retVal}"` },
+          hiw: {
+            opcode: 'LOAD_METHOD → CALL_METHOD',
+            mem: `Heap Dispatch: ${obj.className}.${methodName}`,
+            stage: `Stage 5: Method Dispatch with Implicit 'self'`,
+            explanation: `Writing <code>${varName}.${methodName}()</code> causes CPython to retrieve function <code>${obj.className}.${methodName}</code> from the class dictionary, binding instance <code>${varName}</code> as the first argument <code>self</code>.`,
+            chips: `<span class="s-badge">self: ${varName}</span> <span class="s-badge">Returned: "${retVal}"</span>`
+          }
         });
         continue;
       }
@@ -2768,6 +3199,20 @@ function renderOOPStep() {
   renderOOPCode(step.lines, oopCurrent === oopSteps.length - 1);
   document.getElementById('oop-output').textContent = step.msg;
   document.getElementById('oop-step-info').textContent = `Step ${oopCurrent+1} / ${oopSteps.length}`;
+
+  const hiwPanel = document.getElementById('oop-how-it-works-panel');
+  if (hiwPanel) {
+    if (step && step.hiw) {
+      hiwPanel.style.display = 'block';
+      document.getElementById('oop-hiw-opcode').textContent = step.hiw.opcode;
+      document.getElementById('oop-hiw-mem-tag').textContent = step.hiw.mem;
+      document.getElementById('oop-hiw-stage-title').textContent = step.hiw.stage;
+      document.getElementById('oop-hiw-explanation').innerHTML = step.hiw.explanation;
+      document.getElementById('oop-hiw-breakdown-grid').innerHTML = step.hiw.chips;
+    } else {
+      hiwPanel.style.display = 'none';
+    }
+  }
 
   /* Call frames */
   const initBlock = document.getElementById('cf-init-block');
