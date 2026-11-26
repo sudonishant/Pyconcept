@@ -1606,27 +1606,27 @@ CSE
 
 <!-- ═══ FAQ & FOOTER (SEO + Semantic HTML) ═══ -->
 <footer style="max-width:1040px;margin:0 auto;padding:24px 24px 96px;position:relative;z-index:1">
-  <section aria-labelledby="faq-heading" class="glass" style="padding:26px;margin-bottom:24px">
+  <section id="footer-faq-section" aria-labelledby="faq-heading" class="glass" style="padding:26px;margin-bottom:24px">
     <div style="color:var(--red);font:900 10px/1.4 'JetBrains Mono',monospace;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px">FREQUENTLY ASKED QUESTIONS</div>
     <h2 id="faq-heading" style="font:950 26px/1.05 Impact,'Arial Black',sans-serif;text-transform:uppercase;margin-bottom:16px">Python Sets &amp; OOP FAQ</h2>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px">
-      <div class="glass-sm" style="padding:14px">
+      <div class="glass-sm faq-item" data-faq-topic="sets" style="padding:14px">
         <div style="font-weight:800;font-size:.9rem;margin-bottom:4px">1. What are Python Sets?</div>
         <div style="font-size:.82rem;color:var(--txt2);line-height:1.55">A Set is an unordered collection of unique, hashable items supporting O(1) membership checks and math operations like Union (<code>|</code>), Intersection (<code>&amp;</code>), and Difference (<code>-</code>).</div>
       </div>
-      <div class="glass-sm" style="padding:14px">
+      <div class="glass-sm faq-item" data-faq-topic="oop" style="padding:14px">
         <div style="font-weight:800;font-size:.9rem;margin-bottom:4px">2. What is OOP in Python?</div>
         <div style="font-size:.82rem;color:var(--txt2);line-height:1.55">Object-Oriented Programming organizes code into <code>class</code> blueprints and independent <code>object</code> instances using the 4 pillars: Inheritance, Encapsulation, Abstraction, and Polymorphism.</div>
       </div>
-      <div class="glass-sm" style="padding:14px">
+      <div class="glass-sm faq-item" data-faq-topic="all" style="padding:14px">
         <div style="font-weight:800;font-size:.9rem;margin-bottom:4px">3. How does the Python 3 Compiler work live?</div>
         <div style="font-size:.82rem;color:var(--txt2);line-height:1.55">On localhost it uses the Python 3 backend; on static hosting (Vercel) it automatically falls back to Pyodide (CPython WebAssembly) inside your browser with full <code>input()</code> support.</div>
       </div>
-      <div class="glass-sm" style="padding:14px">
+      <div class="glass-sm faq-item" data-faq-topic="oop" style="padding:14px">
         <div style="font-weight:800;font-size:.9rem;margin-bottom:4px">4. What is the difference between self and __init__?</div>
         <div style="font-size:.82rem;color:var(--txt2);line-height:1.55"><code>__init__</code> is the constructor method invoked on object creation, while <code>self</code> refers to the newly allocated object instance so attributes are stored privately in <code>self.__dict__</code>.</div>
       </div>
-      <div class="glass-sm" style="padding:14px">
+      <div class="glass-sm faq-item" data-faq-topic="all" style="padding:14px">
         <div style="font-weight:800;font-size:.9rem;margin-bottom:4px">5. Is the 100-question Quiz free?</div>
         <div style="font-size:.82rem;color:var(--txt2);line-height:1.55">Yes! You can customize 5 to 100 questions across Sets, OOP, or Mixed mode with a live countdown timer, detailed explanations, and local activity history.</div>
       </div>
@@ -1720,6 +1720,17 @@ function showPage(name) {
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
   document.getElementById('nav-'+name).classList.add('active');
+
+  // Keep Sets and OOP strictly separate in FAQ too
+  const faqHeading = document.getElementById('faq-heading');
+  if (faqHeading) {
+    faqHeading.textContent = name === 'sets' ? 'Python Sets FAQ' : name === 'oop' ? 'Python OOP FAQ' : 'Python Sets & OOP FAQ';
+  }
+  document.querySelectorAll('.faq-item').forEach(el => {
+    const t = el.getAttribute('data-faq-topic');
+    el.style.display = (name === 'landing' || t === 'all' || t === name) ? '' : 'none';
+  });
+
   if (name === 'quiz') initQuizPage('sets');
   window.scrollTo({top:0, behavior:'smooth'});
 }
