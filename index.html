@@ -2715,6 +2715,204 @@ function resetSets3DOrbit() {
 }
 
 
+
+/* ══════════════════════════════════════════════════════
+   ANIM3D-WEB-STUDIO PROCEDURAL TEXTURES & MATERIALS
+══════════════════════════════════════════════════════ */
+function createContactShadowTexture() {
+  const c = document.createElement('canvas');
+  c.width = 256; c.height = 256;
+  const ctx = c.getContext('2d');
+  const grad = ctx.createRadialGradient(128, 128, 16, 128, 128, 124);
+  grad.addColorStop(0, 'rgba(15, 23, 42, 0.45)');
+  grad.addColorStop(0.55, 'rgba(15, 23, 42, 0.18)');
+  grad.addColorStop(1, 'rgba(15, 23, 42, 0.0)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, 256, 256);
+  const tex = new THREE.CanvasTexture(c);
+  tex.needsUpdate = true;
+  return tex;
+}
+
+function createBrushedMetalRoughnessMap() {
+  const c = document.createElement('canvas');
+  c.width = 256; c.height = 256;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#404040';
+  ctx.fillRect(0, 0, 256, 256);
+  for (let y = 0; y < 256; y += 2) {
+    const v = 48 + ((y * 37) % 34);
+    ctx.fillStyle = `rgb(${v},${v},${v})`;
+    ctx.fillRect(0, y, 256, 1);
+  }
+  const tex = new THREE.CanvasTexture(c);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.needsUpdate = true;
+  return tex;
+}
+
+function createTokenCapTexture(value, accentHex, emphasized, subLabel) {
+  const c = document.createElement('canvas');
+  c.width = 256; c.height = 256;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = emphasized ? '#FFFFFF' : '#E2E8F0';
+  ctx.fillRect(0, 0, 256, 256);
+
+  ctx.strokeStyle = accentHex;
+  ctx.lineWidth = emphasized ? 24 : 16;
+  ctx.strokeRect(12, 12, 232, 232);
+
+  const fontSize = value.length <= 3 ? 64 : value.length <= 7 ? 42 : 34;
+  ctx.fillStyle = '#0F172A';
+  ctx.font = `800 ${fontSize}px "Plus Jakarta Sans", system-ui, sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(value, 128, 118);
+
+  ctx.fillStyle = emphasized ? accentHex : '#475569';
+  ctx.font = '800 24px "JetBrains Mono", monospace';
+  ctx.fillText(subLabel || (emphasized ? 'ACTIVE' : 'SET ITEM'), 128, 198);
+
+  const tex = new THREE.CanvasTexture(c);
+  tex.needsUpdate = true;
+  return tex;
+}
+
+function createBlueprintPlateTexture() {
+  const c = document.createElement('canvas');
+  c.width = 720; c.height = 520;
+  const ctx = c.getContext('2d');
+  const grad = ctx.createLinearGradient(0, 0, 720, 520);
+  grad.addColorStop(0, '#2563EB');
+  grad.addColorStop(1, '#0F2A6B');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, 720, 520);
+
+  ctx.strokeStyle = 'rgba(191, 219, 254, 0.18)';
+  ctx.lineWidth = 1.5;
+  for (let x = 0; x <= 720; x += 36) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 520); ctx.stroke(); }
+  for (let y = 0; y <= 520; y += 36) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(720, y); ctx.stroke(); }
+
+  ctx.strokeStyle = 'rgba(219, 234, 254, 0.85)';
+  ctx.lineWidth = 5;
+  ctx.strokeRect(20, 20, 680, 480);
+
+  ctx.fillStyle = '#BFDBFE';
+  ctx.font = '700 22px "Plus Jakarta Sans", sans-serif';
+  ctx.fillText('CLASS = REUSABLE BLUEPRINT (TEMPLATE)', 44, 68);
+
+  ctx.fillStyle = '#FFFFFF';
+  ctx.font = '800 50px "Plus Jakarta Sans", sans-serif';
+  ctx.fillText('class Student:', 44, 134);
+
+  ctx.strokeStyle = 'rgba(219, 234, 254, 0.5)';
+  ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.moveTo(44, 162); ctx.lineTo(676, 162); ctx.stroke();
+
+  ctx.fillStyle = '#FDE68A';
+  ctx.font = '700 25px "JetBrains Mono", monospace';
+  ctx.fillText('def __init__(self, name, branch, roll):', 44, 218);
+
+  ctx.fillStyle = '#FFFFFF';
+  ctx.font = '600 25px "JetBrains Mono", monospace';
+  ctx.fillText('self.name = name', 86, 268);
+  ctx.fillText('self.branch = branch', 86, 312);
+
+  ctx.fillStyle = '#6EE7B7';
+  ctx.font = '700 25px "JetBrains Mono", monospace';
+  ctx.fillText('def introduce(self):', 44, 382);
+
+  ctx.fillStyle = '#E2E8F0';
+  ctx.font = '600 22px "JetBrains Mono", monospace';
+  ctx.fillText('return f"{self.name} ({self.branch})"', 86, 428);
+
+  const tex = new THREE.CanvasTexture(c);
+  tex.needsUpdate = true;
+  return tex;
+}
+
+function createOopCardFrontTexture(displayName, branch, roll, sem, session, accentHex) {
+  const c = document.createElement('canvas');
+  c.width = 360; c.height = 480;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillRect(0, 0, 360, 480);
+
+  ctx.fillStyle = accentHex || '#ce0505';
+  ctx.fillRect(0, 0, 360, 74);
+  ctx.fillStyle = '#FFFFFF';
+  ctx.font = '800 22px "JetBrains Mono", monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText('STUDENT OBJECT', 180, 46);
+
+  ctx.fillStyle = '#0F172A';
+  ctx.font = '800 36px "Plus Jakarta Sans", system-ui, sans-serif';
+  ctx.fillText(displayName, 180, 148);
+
+  ctx.strokeStyle = '#CBD5E1';
+  ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(28, 185); ctx.lineTo(332, 185); ctx.stroke();
+
+  const rows = [
+    ['BRANCH', branch || 'CSE'],
+    ['ROLL NO', '#' + (roll || '101')],
+    ['SEMESTER', sem || '3rd'],
+    ['SESSION', session || '2025-26']
+  ];
+  ctx.textAlign = 'left';
+  rows.forEach(([k, v], i) => {
+    const y = 236 + i * 54;
+    ctx.fillStyle = '#64748B';
+    ctx.font = '700 17px "JetBrains Mono", monospace';
+    ctx.fillText(k, 34, y);
+    ctx.fillStyle = '#0F172A';
+    ctx.font = '800 22px "Plus Jakarta Sans", sans-serif';
+    ctx.fillText(String(v), 156, y);
+  });
+
+  const tex = new THREE.CanvasTexture(c);
+  tex.needsUpdate = true;
+  return tex;
+}
+
+function createOopCardBackTexture(varName, displayName, heapAddr, accentHex) {
+  const c = document.createElement('canvas');
+  c.width = 360; c.height = 480;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#0F172A';
+  ctx.fillRect(0, 0, 360, 480);
+
+  ctx.fillStyle = accentHex || '#c7c911';
+  ctx.fillRect(0, 0, 360, 68);
+  ctx.fillStyle = '#11100f';
+  ctx.font = '800 22px "JetBrains Mono", monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText(`${varName}.__dict__`, 180, 42);
+
+  ctx.fillStyle = '#93C5FD';
+  ctx.font = '700 22px "JetBrains Mono", monospace';
+  ctx.fillText('HEAP ADDRESS', 180, 140);
+  ctx.fillStyle = '#FFFFFF';
+  ctx.font = '800 30px "JetBrains Mono", monospace';
+  ctx.fillText(heapAddr, 180, 185);
+
+  ctx.fillStyle = '#6EE7B7';
+  ctx.font = '700 20px "JetBrains Mono", monospace';
+  ctx.fillText(`${varName}.introduce()`, 180, 275);
+  ctx.fillStyle = '#FDE68A';
+  ctx.font = '700 22px "Plus Jakarta Sans", sans-serif';
+  ctx.fillText(`"Hi, I'm ${displayName}!"`, 180, 322);
+
+  ctx.fillStyle = '#94A3B8';
+  ctx.font = '600 17px "JetBrains Mono", monospace';
+  ctx.fillText('Click card to flip', 180, 430);
+
+  const tex = new THREE.CanvasTexture(c);
+  tex.needsUpdate = true;
+  return tex;
+}
+
 let _threePromise = null;
 function ensureThreeJS() {
   if (typeof THREE !== 'undefined') return Promise.resolve(window.THREE);
@@ -2861,8 +3059,17 @@ function updateSets3D() {
   const inA = ['Aarav', 'Kabir', 'Diya'];
   const inB = ['Diya', 'Riya', 'Meera'];
 
+  const brushedRoughness = createBrushedMetalRoughnessMap();
+  const tokenBaseRingGeo = new THREE.CylinderGeometry(0.46, 0.5, 0.1, 28);
+  const tokenBodyGeo = new THREE.BoxGeometry(0.76, 0.42, 0.72);
+  const tokenAccentBandGeo = new THREE.BoxGeometry(0.8, 0.08, 0.76);
+  const tokenDisplayFrameGeo = new THREE.BoxGeometry(0.78, 0.72, 0.1);
+  const tokenDisplayFaceGeo = new THREE.PlaneGeometry(0.68, 0.64);
+  const tokenHaloGeo = new THREE.TorusGeometry(0.54, 0.032, 12, 36);
+  tokenHaloGeo.rotateX(Math.PI / 2);
+
   coords.forEach(([name, x, z]) => {
-    const s = STUDENT_PROFILES[name] || { emoji: '⚡', color: '#007aff' };
+    const s = STUDENT_PROFILES[name] || { emoji: '⚡', color: '#2563EB' };
     const isSel = selectedLabStudent === name;
     const aHas = inA.includes(name);
     const bHas = inB.includes(name);
@@ -2876,35 +3083,63 @@ function updateSets3D() {
     grp.userData.studentName = name;
     grp.userData.inOpResult = inOpResult;
 
-    const statusSub = inOpResult ? '✓ In Result' : (aHas ? '∈ Set A' : (bHas ? '∈ Set B' : '∈ U'));
-    const tex = makeLabelTex(
-      `${s.emoji || '⚡'} ${name}`,
-      statusSub,
-      isSel ? '#ce0505' : (inOpResult ? '#14532d' : '#11100f'),
-      inOpResult ? '#c7c911' : s.color
-    );
-    const mats = [
-      new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.4 }),
-      new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.4 }),
-      new THREE.MeshStandardMaterial({ map: tex, roughness: 0.25 }),
-      new THREE.MeshStandardMaterial({ color: 0x1e293b }),
-      new THREE.MeshStandardMaterial({ color: inOpResult ? 0xc7c911 : 0x475569 }),
-      new THREE.MeshStandardMaterial({ color: inOpResult ? 0xc7c911 : 0x475569 })
-    ];
-    const blk = new THREE.Mesh(new THREE.BoxGeometry(0.98, 0.36, 0.76), mats);
-    grp.add(blk);
+    const accentHex = isSel ? '#ce0505' : (inOpResult ? '#10b981' : s.color);
+    const subLabel = inOpResult ? 'IN RESULT' : (aHas ? 'IN SET A' : (bHas ? 'IN SET B' : 'IN U'));
 
-    if (inOpResult) {
+    // Part 1: Cylindrical base pedestal
+    const baseMesh = new THREE.Mesh(
+      tokenBaseRingGeo,
+      new THREE.MeshStandardMaterial({ color: '#1E293B', metalness: 0.7, roughness: 0.3, roughnessMap: brushedRoughness })
+    );
+    baseMesh.position.y = -0.2;
+    grp.add(baseMesh);
+
+    // Part 2: Brushed metal body block
+    const bodyMesh = new THREE.Mesh(
+      tokenBodyGeo,
+      new THREE.MeshStandardMaterial({ color: inOpResult ? '#334155' : '#1E293B', metalness: 0.55, roughness: 0.35, roughnessMap: brushedRoughness })
+    );
+    bodyMesh.position.y = 0.04;
+    grp.add(bodyMesh);
+
+    // Part 3: Semantic accent band
+    const bandMesh = new THREE.Mesh(
+      tokenAccentBandGeo,
+      new THREE.MeshStandardMaterial({ color: accentHex, emissive: accentHex, emissiveIntensity: inOpResult ? 0.55 : 0.2 })
+    );
+    bandMesh.position.y = 0.22;
+    grp.add(bandMesh);
+
+    // Part 4 & 5: Angled 3D Display Frame + High-Contrast Tile Face tilted toward camera
+    const displayPivot = new THREE.Group();
+    displayPivot.position.set(0, 0.54, 0.06);
+    displayPivot.rotation.x = -0.38;
+    const frameMesh = new THREE.Mesh(
+      tokenDisplayFrameGeo,
+      new THREE.MeshStandardMaterial({ color: '#0F172A', metalness: 0.8, roughness: 0.2 })
+    );
+    displayPivot.add(frameMesh);
+
+    const faceTex = createTokenCapTexture(`${s.emoji || '⚡'} ${name}`, accentHex, inOpResult || isSel, subLabel);
+    const faceMesh = new THREE.Mesh(
+      tokenDisplayFaceGeo,
+      new THREE.MeshStandardMaterial({ map: faceTex, roughness: 0.25, metalness: 0.05 })
+    );
+    faceMesh.position.z = 0.055;
+    displayPivot.add(faceMesh);
+    grp.add(displayPivot);
+
+    // Glowing halo torus ring for active result tokens
+    if (inOpResult || isSel) {
       const halo = new THREE.Mesh(
-        new THREE.TorusGeometry(0.62, 0.035, 10, 32),
-        new THREE.MeshBasicMaterial({ color: 0xc7c911 })
+        tokenHaloGeo,
+        new THREE.MeshStandardMaterial({ color: accentHex, emissive: accentHex, emissiveIntensity: 0.8 })
       );
-      halo.rotation.x = Math.PI / 2;
-      halo.position.y = -0.24;
+      halo.position.y = -0.22;
       grp.add(halo);
     }
 
-    grp.position.set(x, inOpResult ? 0.62 : 0.16, z);
+    grp.position.set(x, inOpResult ? 0.52 : 0.16, z);
     root.add(grp);
     state.pickables.push(grp);
   });
@@ -3121,7 +3356,7 @@ function updateOOP3D() {
   pistonGroup.add(rod);
 
   // Stamping plate with Blueprint label
-  const bpTex = makeLabelTex('🏛️ CLASS BLUEPRINT', 'Student.__init__(self, ...)', '#007aff', '#00f5d4');
+  const bpTex = createBlueprintPlateTexture();
   const stampPlate = new THREE.Mesh(
     new THREE.BoxGeometry(1.85, 0.38, 1.5),
     [
@@ -3179,45 +3414,76 @@ function updateOOP3D() {
     { varName: 's3', className: 'Student', attrs: { name: '🎧 Kabir', branch: 'CSE', roll: 109, semester: '5th', session: '2024-25' }, _heapAddr: '0x7ffd109' }
   ];
 
-  const palette = ['#007aff', '#af52de', '#00f5d4', '#ff9500', '#ff2d55', '#34c759'];
+  const cardBezelGeo = new THREE.BoxGeometry(1.56, 2.12, 0.14);
+  const cardCoreGeo = new THREE.BoxGeometry(1.46, 2.02, 0.16);
+  const cardHeaderGeo = new THREE.BoxGeometry(1.58, 0.16, 0.18);
+  const cardFaceGeo = new THREE.PlaneGeometry(1.38, 1.88);
+  const cardDockRingGeo = new THREE.TorusGeometry(0.68, 0.036, 12, 36);
+  cardDockRingGeo.rotateX(Math.PI / 2);
+
+  const palette = ['#ce0505', '#2563EB', '#10b981', '#f59e0b', '#af52de', '#ec4899'];
   list.slice(0, 4).forEach((o, i) => {
     const rawName = String(o.attrs.name || o.varName);
     const cleanName = rawName.replace(/^[^a-zA-Z0-9]+/, '').trim();
     const s = STUDENT_PROFILES[cleanName] || { emoji: '⚡', color: palette[i % palette.length] };
     const displayName = rawName.includes(s.emoji) ? rawName : `${s.emoji} ${rawName}`;
     const heapAddr = o._heapAddr || ('0x7ffd' + (100 + i * 14).toString(16));
+    const accentHex = s.color || palette[i % palette.length];
 
-    const frontTex = makeLabelTex(
-      displayName,
-      `${o.attrs.branch || 'CSE'} · #${o.attrs.roll || i+101} · Sem ${o.attrs.semester || '3rd'}`,
-      '#111827',
-      s.color || palette[i % palette.length]
+    const cardGroup = new THREE.Group();
+    const cardPivot = new THREE.Group();
+
+    const bezelMesh = new THREE.Mesh(
+      cardBezelGeo,
+      new THREE.MeshStandardMaterial({ color: '#1E293B', metalness: 0.72, roughness: 0.3 })
     );
+    cardPivot.add(bezelMesh);
 
-    const backTex = makeLabelTex(
-      `Heap: ${heapAddr}`,
-      `introduce() -> "${displayName}"`,
-      '#1e1b4b',
-      '#a855f7'
+    const coreMesh = new THREE.Mesh(
+      cardCoreGeo,
+      new THREE.MeshStandardMaterial({ color: '#F8FAFC', roughness: 0.25 })
     );
+    cardPivot.add(coreMesh);
 
-    const card = new THREE.Mesh(
-      new THREE.BoxGeometry(1.48, 1.95, 0.15),
-      [
-        new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.5, roughness: 0.2 }),
-        new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.5, roughness: 0.2 }),
-        new THREE.MeshStandardMaterial({ color: s.color || 0x007aff, emissive: s.color || 0x007aff, emissiveIntensity: 0.2 }),
-        new THREE.MeshStandardMaterial({ color: 0x1e293b }),
-        new THREE.MeshStandardMaterial({ map: frontTex, roughness: 0.25 }),
-        new THREE.MeshStandardMaterial({ map: backTex, roughness: 0.25 })
-      ]
+    const headerMesh = new THREE.Mesh(
+      cardHeaderGeo,
+      new THREE.MeshStandardMaterial({ color: accentHex, emissive: accentHex, emissiveIntensity: 0.35 })
     );
+    headerMesh.position.y = 1.02;
+    cardPivot.add(headerMesh);
 
-    const cardX = -0.2 + i * 1.72;
-    card.position.set(cardX, 0.15, 0);
-    card.userData.targetRotY = 0;
-    root.add(card);
-    state.cards.push(card);
+    const frontTex = createOopCardFrontTexture(displayName, o.attrs.branch, o.attrs.roll, o.attrs.semester, o.attrs.session, accentHex);
+    const frontFace = new THREE.Mesh(
+      cardFaceGeo,
+      new THREE.MeshStandardMaterial({ map: frontTex, roughness: 0.22 })
+    );
+    frontFace.position.z = 0.085;
+    cardPivot.add(frontFace);
+
+    const backTex = createOopCardBackTexture(o.varName, displayName, heapAddr, '#c7c911');
+    const backFace = new THREE.Mesh(
+      cardFaceGeo,
+      new THREE.MeshStandardMaterial({ map: backTex, roughness: 0.22 })
+    );
+    backFace.position.z = -0.085;
+    backFace.rotation.y = Math.PI;
+    cardPivot.add(backFace);
+
+    cardGroup.add(cardPivot);
+
+    // Dock Ring at the base of each standing 3D Object Card
+    const dockRing = new THREE.Mesh(
+      cardDockRingGeo,
+      new THREE.MeshStandardMaterial({ color: accentHex, emissive: accentHex, emissiveIntensity: 0.65 })
+    );
+    dockRing.position.y = -1.08;
+    cardGroup.add(dockRing);
+
+    const cardX = -0.15 + i * 1.75;
+    cardGroup.position.set(cardX, 0.15, 0);
+    cardGroup.userData.targetRotY = 0;
+    root.add(cardGroup);
+    state.cards.push(cardGroup);
 
     // Glowing pointer laser beam from Stack to Heap Card
     const startPt = new THREE.Vector3(-2.2, -0.4 + i * 0.18, 1.4);
@@ -3226,8 +3492,8 @@ function updateOOP3D() {
     const curve = new THREE.QuadraticBezierCurve3(startPt, midPt, endPt);
     const tubeGeo = new THREE.TubeGeometry(curve, 24, 0.03, 8, false);
     const tubeMat = new THREE.MeshStandardMaterial({
-      color: s.color || palette[i % palette.length],
-      emissive: s.color || palette[i % palette.length],
+      color: accentHex,
+      emissive: accentHex,
       emissiveIntensity: 0.85,
       transparent: true,
       opacity: 0.88
@@ -3235,7 +3501,6 @@ function updateOOP3D() {
     const tube = new THREE.Mesh(tubeGeo, tubeMat);
     pointerGroup.add(tube);
 
-    // Energy pulse sphere traveling along pointer curve
     if (!state.pulses) state.pulses = [];
     const pulseMesh = new THREE.Mesh(
       new THREE.SphereGeometry(0.08, 16, 16),
