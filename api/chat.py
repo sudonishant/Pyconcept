@@ -46,7 +46,7 @@ class handler(BaseHTTPRequestHandler):
             sys_prompt += f"\n\nCurrent code in the user's editor:\n```python\n{code}\n```"
 
         req_payload = json.dumps({
-            "model": body.get("model") or "openrouter/auto",
+            "model": body.get("model") or "google/gemini-2.0-flash-exp:free",
             "messages": [{"role": "system", "content": sys_prompt}, *messages[-8:]],
             "max_tokens": 420,
             "temperature": 0.6,
