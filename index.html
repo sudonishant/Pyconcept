@@ -945,7 +945,7 @@ header .icon-btn{
 }
 .code-panel{max-height:250px;overflow:auto;max-width:100%}
 #oop-editor,#sim-editor{max-width:100%}
-#oop-intro pre{max-width:100%;overflow-x:auto}
+#oop-intro pre,#sets-intro pre{max-width:100%;overflow-x:auto}
 .step-prog-bar{
   flex-basis:100%;width:100%;height:7px;border-radius:99px;
   background:var(--paper);border:1.5px solid var(--ink);overflow:hidden;margin-top:4px;
@@ -1171,6 +1171,59 @@ header .icon-btn{
         <div class="glass-sm" style="padding:14px"><div style="font-weight:800;font-size:.86rem;margin-bottom:4px">3. Complement &amp; U</div><div style="font-size:.8rem;color:var(--txt2)"><code>A'</code> is always defined relative to the Universal Set <code>U</code>.</div></div>
         <div class="glass-sm" style="padding:14px"><div style="font-weight:800;font-size:.86rem;margin-bottom:4px">4. Difference Order</div><div style="font-size:.8rem;color:var(--txt2)"><code>A - B</code> and <code>B - A</code> are not necessarily equal.</div></div>
         <div class="glass-sm" style="padding:14px"><div style="font-weight:800;font-size:.86rem;margin-bottom:4px">5. Equal vs Equivalent</div><div style="font-size:.8rem;color:var(--txt2)">Equal = identical elements; Equivalent = same count <code>n(A)=n(B)</code>.</div></div>
+      </div>
+    </div>
+
+
+    <!-- COMPLETE PYTHON SETS PRACTICAL GUIDE -->
+    <div class="glass" style="padding:26px;margin-bottom:24px">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px">
+        <div>
+          <div style="font-size:.72rem;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:var(--red)">Python Sets Reference</div>
+          <div style="font-size:1.35rem;font-weight:900">🐍 Python Sets — Complete Practical Guide</div>
+          <p style="font-size:.86rem;color:var(--txt2);margin-top:4px">Everything you need to use <code>set</code> in real Python code: creation, methods, operators, comprehensions, and <code>frozenset</code>.</p>
+        </div>
+        <button class="vis-btn primary" style="padding:6px 14px;font-size:.78rem" onclick="showTopicTab('sets','lab')">Try in Sets Lab ⚗️</button>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px">
+        <div class="glass-sm" style="padding:15px">
+          <div style="font-weight:900;font-size:.95rem;color:var(--red);margin-bottom:6px">1. Creating Sets &amp; Empty Set</div>
+          <p style="font-size:.8rem;color:var(--txt2);line-height:1.5;margin-bottom:8px">Sets automatically remove duplicates and store only hashable items. Always use <code>set()</code> for an empty set because <code>{}</code> creates a <code>dict</code>.</p>
+          <pre style="padding:10px;border-radius:8px;background:#11100f;color:#f4f1e9;font-family:'JetBrains Mono',monospace;font-size:.73rem;overflow-x:auto">nums = {1, 2, 2, 3}     # {1, 2, 3}
+empty = set()           # NOT {} (that's dict!)
+from_list = set(["a", "b", "a"])  # {"a", "b"}</pre>
+        </div>
+
+        <div class="glass-sm" style="padding:15px">
+          <div style="font-weight:900;font-size:.95rem;color:var(--red);margin-bottom:6px">2. Adding &amp; Removing Items</div>
+          <p style="font-size:.8rem;color:var(--txt2);line-height:1.5;margin-bottom:8px"><code>.add()</code> adds one item; <code>.update()</code> adds many. Use <code>.discard()</code> for safe removal (no error if missing), vs <code>.remove()</code> which raises <code>KeyError</code>.</p>
+          <pre style="padding:10px;border-radius:8px;background:#11100f;color:#f4f1e9;font-family:'JetBrains Mono',monospace;font-size:.73rem;overflow-x:auto">s = {"A", "B"}
+s.add("C")              # {"A", "B", "C"}
+s.update(["D", "E"])    # add multiple items
+s.discard("Z")          # safe! no KeyError
+s.remove("A")           # KeyError if absent</pre>
+        </div>
+
+        <div class="glass-sm" style="padding:15px">
+          <div style="font-weight:900;font-size:.95rem;color:var(--red);margin-bottom:6px">3. Set Math Operators &amp; Methods</div>
+          <p style="font-size:.8rem;color:var(--txt2);line-height:1.5;margin-bottom:8px">Operators (<code>|</code>, <code>&amp;</code>, <code>-</code>, <code>^</code>) require two sets, while methods (<code>.union()</code>, etc.) also accept lists or tuples.</p>
+          <pre style="padding:10px;border-radius:8px;background:#11100f;color:#f4f1e9;font-family:'JetBrains Mono',monospace;font-size:.73rem;overflow-x:auto">A, B = {1, 2, 3}, {3, 4}
+A | B   # Union: {1, 2, 3, 4}
+A &amp; B   # Intersection: {3}
+A - B   # Difference: {1, 2}
+A ^ B   # Sym Diff: {1, 2, 4}</pre>
+        </div>
+
+        <div class="glass-sm" style="padding:15px">
+          <div style="font-weight:900;font-size:.95rem;color:var(--red);margin-bottom:6px">4. Membership, Subsets &amp; Frozenset</div>
+          <p style="font-size:.8rem;color:var(--txt2);line-height:1.5;margin-bottom:8px"><code>x in A</code> runs in <strong>O(1)</strong> average time via hashing. Use <code>frozenset</code> when you need an immutable set (e.g. as a dict key).</p>
+          <pre style="padding:10px;border-radius:8px;background:#11100f;color:#f4f1e9;font-family:'JetBrains Mono',monospace;font-size:.73rem;overflow-x:auto">3 in A                  # True (O(1) lookup)
+{1, 2}.issubset(A)      # True
+A.isdisjoint({8, 9})    # True (no overlap)
+evens = {x for x in range(6) if x % 2 == 0}
+fs = frozenset([1, 2])  # immutable set</pre>
+        </div>
       </div>
     </div>
 
@@ -1476,6 +1529,61 @@ for p in [s1, mentor1]: print(p.introduce())</pre>
         <div class="glass-sm" style="padding:12px"><strong>@classmethod &amp; @staticmethod:</strong> <code>@classmethod</code> takes <code>cls</code> (factory methods); <code>@staticmethod</code> takes neither <code>self</code> nor <code>cls</code>.</div>
         <div class="glass-sm" style="padding:12px"><strong>@property:</strong> Lets you access a getter method like an attribute (<code>s1.grade</code> without parentheses).</div>
         <div class="glass-sm" style="padding:12px"><strong>MRO &amp; Multiple Inheritance:</strong> Python uses C3 Linearization (<code>Class.__mro__</code>) to resolve method lookup order; check with <code>issubclass(Child, Parent)</code>.</div>
+      </div>
+    </div>
+
+
+    <!-- COMPLETE PYTHON OOP PRACTICAL GUIDE -->
+    <div class="glass" style="padding:26px;margin-bottom:24px">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px">
+        <div>
+          <div style="font-size:.72rem;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:var(--red)">Python OOP Reference</div>
+          <div style="font-size:1.35rem;font-weight:900">🐍 Python OOP — Complete Practical Guide</div>
+          <p style="font-size:.86rem;color:var(--txt2);margin-top:4px">Step-by-step reference for every Python OOP concept: attributes, methods, decorators, magic methods, and <code>@dataclass</code>.</p>
+        </div>
+        <button class="vis-btn primary" style="padding:6px 14px;font-size:.78rem" onclick="showTopicTab('oop','lab')">Try in OOP Lab ⚗️</button>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px">
+        <div class="glass-sm" style="padding:15px">
+          <div style="font-weight:900;font-size:.95rem;color:var(--red);margin-bottom:6px">1. Class vs Instance Attributes</div>
+          <p style="font-size:.8rem;color:var(--txt2);line-height:1.5;margin-bottom:8px"><strong>Class attributes</strong> are shared across all objects; <strong>instance attributes</strong> (<code>self.x</code>) belong uniquely to each object.</p>
+          <pre style="padding:10px;border-radius:8px;background:#11100f;color:#f4f1e9;font-family:'JetBrains Mono',monospace;font-size:.73rem;overflow-x:auto">class Student:
+  college = "NIT"         # shared class attr
+  def __init__(self, name):
+    self.name = name      # unique per object</pre>
+        </div>
+
+        <div class="glass-sm" style="padding:15px">
+          <div style="font-weight:900;font-size:.95rem;color:var(--red);margin-bottom:6px">2. Method Types &amp; @property</div>
+          <p style="font-size:.8rem;color:var(--txt2);line-height:1.5;margin-bottom:8px">Instance methods use <code>self</code>, <code>@classmethod</code> uses <code>cls</code> (alternative constructors), <code>@staticmethod</code> is a helper utility, and <code>@property</code> creates read-only/validated fields.</p>
+          <pre style="padding:10px;border-radius:8px;background:#11100f;color:#f4f1e9;font-family:'JetBrains Mono',monospace;font-size:.73rem;overflow-x:auto">@classmethod
+def from_str(cls, text):
+  name, br = text.split("-")
+  return cls(name, br)
+@staticmethod
+def is_valid_roll(r): return r &gt; 0</pre>
+        </div>
+
+        <div class="glass-sm" style="padding:15px">
+          <div style="font-weight:900;font-size:.95rem;color:var(--red);margin-bottom:6px">3. Dunder (Magic) Methods</div>
+          <p style="font-size:.8rem;color:var(--txt2);line-height:1.5;margin-bottom:8px">Special double-underscore methods let your custom objects work with built-in Python functions like <code>print()</code>, <code>len()</code>, and <code>==</code>.</p>
+          <pre style="padding:10px;border-radius:8px;background:#11100f;color:#f4f1e9;font-family:'JetBrains Mono',monospace;font-size:.73rem;overflow-x:auto">def __str__(self):
+  return f"{self.name} ({self.branch})"
+def __len__(self): return len(self.courses)
+def __eq__(self, other):
+  return self.roll == other.roll</pre>
+        </div>
+
+        <div class="glass-sm" style="padding:15px">
+          <div style="font-weight:900;font-size:.95rem;color:var(--red);margin-bottom:6px">4. Duck Typing &amp; @dataclass</div>
+          <p style="font-size:.8rem;color:var(--txt2);line-height:1.5;margin-bottom:8px">Python focuses on whether an object <em>has</em> a method (Duck Typing), and <code>@dataclass</code> auto-generates <code>__init__</code>, <code>__repr__</code>, and <code>__eq__</code> cleanly.</p>
+          <pre style="padding:10px;border-radius:8px;background:#11100f;color:#f4f1e9;font-family:'JetBrains Mono',monospace;font-size:.73rem;overflow-x:auto">from dataclasses import dataclass
+@dataclass
+class Course:
+  code: str
+  credits: int = 4</pre>
+        </div>
       </div>
     </div>
 
