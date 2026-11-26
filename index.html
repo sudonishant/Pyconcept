@@ -91,7 +91,7 @@ html,body{
 body{
   background:linear-gradient(145deg,var(--bg-from),var(--bg-to));
   min-height:100vh;
-  overflow-x:hidden;
+  overflow-x:clip;
 }
 
 /* iOS Touch Haptic feedback on active elements */
@@ -914,6 +914,28 @@ header .icon-btn{
   header #tts-status-txt{display:none}
   header #tts-status-pill{padding:6px 8px}
   .topic-tabs-bar{top:128px !important}
+}
+
+
+/* Fix .topic-tabs-bar so it never floats transparently over 3D canvases */
+.topic-tabs-bar{
+  position:static !important;top:auto !important;z-index:10 !important;
+  display:flex;justify-content:center;gap:8px;flex-wrap:wrap;
+  max-width:1048px;margin:16px auto 0;padding:10px 16px;
+  background:var(--white) !important;backdrop-filter:none !important;
+  border:2px solid var(--ink) !important;border-radius:12px !important;
+  box-shadow:4px 4px 0 var(--ink);
+}
+@media(max-width:1080px){.topic-tabs-bar{margin:14px 16px 0}}
+.tp-tab{
+  padding:8px 20px !important;border-radius:8px !important;border:1.5px solid transparent !important;
+  font-family:'JetBrains Mono',monospace;font-size:.82rem !important;font-weight:800 !important;
+  color:var(--txt2);background:transparent;
+}
+.tp-tab:hover{color:var(--red);background:var(--paper)}
+.tp-tab.active{
+  background:var(--ink) !important;color:var(--white) !important;
+  border-bottom:none !important;border-color:var(--ink) !important;
 }
 
 </style>
