@@ -640,44 +640,53 @@ input[type=range]{accent-color:var(--accent1)}
 @media(max-width:860px){.responsive-2col,.oop-lab-grid{grid-template-columns:1fr}}
 #ai-fab{
   position:fixed;right:24px;bottom:24px;z-index:250;
-  display:flex;align-items:center;gap:8px;padding:12px 20px;border-radius:50px;
-  border:1.5px solid rgba(255,255,255,0.5);cursor:pointer;font-weight:800;font-size:.88rem;
-  color:#fff;background:linear-gradient(135deg,var(--accent1),var(--accent5));
-  animation:fabPulse 3s ease-in-out infinite;transition:transform .28s var(--spring);
+  display:flex;align-items:center;gap:8px;padding:12px 22px;border-radius:10px;
+  border:2px solid #11100f;cursor:pointer;font-weight:900;font-size:.88rem;
+  color:#ffffff;background:#ce0505;
+  box-shadow:4px 4px 0 #11100f;transition:transform .2s var(--spring),box-shadow .2s;
 }
-#ai-fab:hover{transform:translateY(-3px) scale(1.06)}
+#ai-fab:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 #11100f;background:#11100f;color:#ffffff}
 #ai-drawer{
   position:fixed;right:24px;bottom:84px;width:370px;max-width:calc(100vw - 32px);
   height:470px;max-height:calc(100vh - 120px);z-index:260;display:none;flex-direction:column;
   overflow:hidden;animation:jtrPop .3s var(--spring);
-  background:rgba(255,255,255,0.92);backdrop-filter:blur(28px);
+  background:#ffffff !important;color:#11100f !important;
+  border:2px solid #11100f !important;border-radius:12px !important;
+  box-shadow:8px 8px 0 #11100f !important;backdrop-filter:none !important;
 }
-[data-theme="dark"] #ai-drawer{background:rgba(15,23,42,0.94)}
 #ai-drawer.open{display:flex}
 .ai-head{
   display:flex;align-items:center;justify-content:space-between;padding:12px 16px;
-  border-bottom:1px solid var(--glass-border);background:rgba(79,70,229,0.10);
+  border-bottom:2px solid #ce0505;background:#11100f;color:#ffffff;
 }
-.ai-msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+.ai-head .icon-btn{
+  background:#ffffff !important;color:#11100f !important;border:1.5px solid #ce0505 !important;
+}
+.ai-head .icon-btn:hover{background:#ce0505 !important;color:#ffffff !important}
+.ai-msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;background:#ffffff}
 .ai-msg{
-  max-width:88%;padding:10px 14px;border-radius:14px;font-size:.84rem;line-height:1.55;
+  max-width:88%;padding:10px 14px;border-radius:10px;font-size:.84rem;line-height:1.55;
   white-space:pre-wrap;word-break:break-word;animation:jtrPop .25s var(--spring);
 }
-.ai-msg.user{align-self:flex-end;background:linear-gradient(135deg,var(--accent1),#6366f1);color:#fff;border-bottom-right-radius:4px}
-.ai-msg.bot{align-self:flex-start;background:rgba(241,245,249,0.85);border:1px solid var(--glass-border);color:var(--txt);border-bottom-left-radius:4px}
-[data-theme="dark"] .ai-msg.bot{background:rgba(30,41,59,0.85)}
-.ai-chips{display:flex;gap:6px;padding:8px 12px;flex-wrap:wrap;border-top:1px solid var(--glass-border)}
+.ai-msg.user{align-self:flex-end;background:#ce0505;color:#ffffff;border:1.5px solid #11100f;border-bottom-right-radius:2px;font-weight:600}
+.ai-msg.bot{align-self:flex-start;background:#ffffff;border:1.5px solid #11100f;color:#11100f;box-shadow:2px 2px 0 #11100f;border-bottom-left-radius:2px}
+.ai-chips{display:flex;gap:6px;padding:8px 12px;flex-wrap:wrap;border-top:2px solid #11100f;background:#ffffff}
 .ai-chip{
-  white-space:nowrap;padding:4px 10px;border-radius:20px;border:1px solid var(--glass-border);
-  background:var(--glass-bg);font-size:.72rem;font-weight:700;color:var(--accent1);cursor:pointer;
-  transition:transform .2s var(--spring);
+  white-space:nowrap;padding:4px 10px;border-radius:6px;border:1.5px solid #11100f;
+  background:#ffffff;font-size:.72rem;font-weight:800;color:#ce0505;cursor:pointer;
+  transition:transform .2s var(--spring),background .15s,color .15s;
 }
-.ai-chip:hover{transform:scale(1.05)}
-.ai-foot{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--glass-border)}
+.ai-chip:hover{transform:scale(1.05);background:#ce0505;color:#ffffff}
+.ai-foot{display:flex;gap:8px;padding:10px 12px;border-top:2px solid #11100f;background:#ffffff}
+.ai-foot button,.ai-foot .vis-btn{
+  background:#ce0505 !important;color:#ffffff !important;border:1.5px solid #11100f !important;
+  box-shadow:2px 2px 0 #11100f !important;font-weight:900 !important;
+}
 #ai-input{
-  flex:1;padding:9px 12px;border-radius:12px;border:1.5px solid var(--glass-border);
-  background:var(--glass-bg);color:var(--txt);font-size:.85rem;outline:none;
+  flex:1;padding:9px 12px;border-radius:8px;border:1.5px solid #11100f;
+  background:#ffffff;color:#11100f;font-size:.85rem;outline:none;font-weight:600;
 }
+#ai-input:focus{border-color:#ce0505}
 
 /* ═══════════════════════════════════════════════════════
    MASS BUNK BUREAU (massbunkreport.neeshant.in) EDITORIAL UI
@@ -1075,8 +1084,20 @@ nav{
           <div class="stage-3d-shell" id="sets-lab-3d-shell">
             <div class="stage-3d-inner" id="sets-lab-venn-stage"></div>
           </div>
-          <div id="sets-3d-canvas-wrap" style="display:none;height:270px;border-radius:16px;overflow:hidden;position:relative;background:radial-gradient(circle at 50% 35%,#1e293b,#090d16);border:1.5px solid rgba(255,255,255,.22);cursor:grab">
-            <div style="position:absolute;bottom:8px;left:12px;z-index:2;font-size:.7rem;color:rgba(255,255,255,.7);pointer-events:none">Drag to orbit 3D · Click any element block to inspect membership</div>
+          <div id="sets-3d-canvas-wrap" style="display:none;height:360px;border-radius:14px;overflow:hidden;position:relative;background:radial-gradient(circle at 50% 30%,#111827,#050811);border:2px solid var(--ink);box-shadow:5px 5px 0 var(--ink);cursor:grab">
+            <div style="position:absolute;top:10px;left:10px;right:10px;z-index:10;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;pointer-events:auto">
+              <div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap">
+                <span id="sets-3d-op-badge" class="nomonkey-sticker" style="transform:none;font-size:.7rem;padding:4px 10px">Op: A ∪ B</span>
+                <button class="vis-btn" style="padding:3px 9px;font-size:.7rem;background:rgba(255,255,255,0.9);color:#111" onclick="document.querySelector('[data-op=union]').click()">∪</button>
+                <button class="vis-btn" style="padding:3px 9px;font-size:.7rem;background:rgba(255,255,255,0.9);color:#111" onclick="document.querySelector('[data-op=intersection]').click()">∩</button>
+                <button class="vis-btn" style="padding:3px 9px;font-size:.7rem;background:rgba(255,255,255,0.9);color:#111" onclick="document.querySelector('[data-op=difference]').click()">A−B</button>
+                <button class="vis-btn" style="padding:3px 9px;font-size:.7rem;background:rgba(255,255,255,0.9);color:#111" onclick="document.querySelector('[data-op=symdiff]').click()">⊕</button>
+              </div>
+              <button class="vis-btn" style="padding:3px 10px;font-size:.7rem;background:rgba(255,255,255,0.9);color:#111" onclick="resetSets3DOrbit()">⟲ Reset Orbit</button>
+            </div>
+            <div style="position:absolute;bottom:8px;left:12px;z-index:2;font-size:.7rem;color:rgba(255,255,255,.8);pointer-events:none;background:rgba(0,0,0,0.55);padding:4px 10px;border-radius:20px">
+              🖱 Drag to orbit 3D · Highlighted blocks match active operation · Click block for membership
+            </div>
           </div>
         </div>
         <div id="sets-student-card"></div>
@@ -1455,7 +1476,7 @@ nav{
       <span style="font-size:1.15rem">🤖</span>
       <div>
         <div style="font-weight:800;font-size:.9rem">PyBot AI Tutor</div>
-        <div id="ai-mode-badge" style="font-size:.68rem;color:var(--accent2);font-weight:700">Checking OpenRouter…</div>
+        <div id="ai-mode-badge" style="font-size:.68rem;color:#ce0505;font-weight:800">Checking OpenRouter…</div>
       </div>
     </div>
     <div style="display:flex;gap:6px">
@@ -2018,6 +2039,16 @@ function selectSimOp(el) {
   el.classList.add('selected');
   simOp = el.dataset.op;
   syncSetsEditorFromInputs();
+  startSimSets();
+  if (typeof simSteps !== 'undefined' && simSteps.length > 0) {
+    const opIdx = simSteps.findIndex(s => s.hiw && s.hiw.opcode && s.hiw.opcode.includes('BINARY_'));
+    if (opIdx >= 0) {
+      simCurrent = opIdx;
+      renderSimStep();
+    }
+  }
+  renderLabVenn();
+  if (setsLabMode === '3d') updateSets3D();
 }
 
 function parseSet(str) {
@@ -2356,11 +2387,18 @@ function attachOrbit(el, state) {
   });
 }
 
+function resetSets3DOrbit() {
+  if (!sets3D || !sets3D.state) return;
+  sets3D.state.yaw = 0.25;
+  sets3D.state.pitch = 0.68;
+  sets3D.state.dist = 9.0;
+}
+
 function initSets3D() {
   const wrap = document.getElementById('sets-3d-canvas-wrap');
   if (!wrap || typeof THREE === 'undefined' || sets3D) return;
   try {
-    const w = wrap.clientWidth || 520, h = wrap.clientHeight || 270;
+    const w = wrap.clientWidth || 520, h = wrap.clientHeight || 360;
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(42, w / h, 0.1, 100);
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -2368,24 +2406,28 @@ function initSets3D() {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     wrap.appendChild(renderer.domElement);
 
-    scene.add(new THREE.AmbientLight(0xffffff, 0.85));
-    const key = new THREE.DirectionalLight(0xffffff, 1.2);
-    key.position.set(5, 9, 6);
+    scene.add(new THREE.AmbientLight(0xffffff, 0.9));
+    const key = new THREE.DirectionalLight(0xffffff, 1.3);
+    key.position.set(5, 10, 6);
     scene.add(key);
-    const rim = new THREE.DirectionalLight(0x818cf8, 0.7);
-    rim.position.set(-6, 4, -5);
+    const rim = new THREE.DirectionalLight(0xc7c911, 0.8);
+    rim.position.set(-6, 5, -5);
     scene.add(rim);
 
     const floor = new THREE.Mesh(
-      new THREE.CylinderGeometry(5.6, 5.8, 0.16, 48),
-      new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.35, metalness: 0.35 })
+      new THREE.CylinderGeometry(5.8, 6.0, 0.16, 48),
+      new THREE.MeshStandardMaterial({ color: 0x0a0f1d, roughness: 0.35, metalness: 0.45 })
     );
     floor.position.y = -0.35;
     scene.add(floor);
 
+    const grid = new THREE.GridHelper(11, 22, 0xc7c911, 0x1e293b);
+    grid.position.y = -0.26;
+    scene.add(grid);
+
     const root = new THREE.Group();
     scene.add(root);
-    const state = { yaw: 0.25, pitch: 0.72, dist: 9.2, pickables: [] };
+    const state = { yaw: 0.25, pitch: 0.68, dist: 9.0, pickables: [] };
     attachOrbit(wrap, state);
 
     const raycaster = new THREE.Raycaster();
@@ -2407,7 +2449,7 @@ function initSets3D() {
     const animate = () => {
       requestAnimationFrame(animate);
       if (setsLabMode !== '3d') return;
-      const cw = wrap.clientWidth || 520, ch = wrap.clientHeight || 270;
+      const cw = wrap.clientWidth || 520, ch = wrap.clientHeight || 360;
       if (renderer.domElement.width !== cw || renderer.domElement.height !== ch) {
         camera.aspect = cw / ch; camera.updateProjectionMatrix(); renderer.setSize(cw, ch);
       }
@@ -2416,11 +2458,14 @@ function initSets3D() {
         Math.sin(state.pitch) * state.dist,
         Math.cos(state.yaw) * Math.cos(state.pitch) * state.dist
       );
-      camera.lookAt(0, 0.2, 0);
-      const t = performance.now() * 0.002;
-      root.rotation.y = Math.sin(t * 0.35) * 0.08;
+      camera.lookAt(0, 0.25, 0);
+      const t = performance.now() * 0.0022;
+      root.rotation.y = Math.sin(t * 0.3) * 0.07;
       state.pickables.forEach((g, idx) => {
-        g.position.y = 0.25 + Math.sin(t + idx) * 0.08 + (g.userData.studentName === selectedLabStudent ? 0.28 : 0);
+        const baseH = g.userData.inOpResult ? 0.62 : 0.16;
+        const selBoost = g.userData.studentName === selectedLabStudent ? 0.26 : 0;
+        g.position.y = baseH + selBoost + Math.sin(t + idx * 0.8) * 0.07;
+        g.rotation.y = Math.sin(t * 0.5 + idx) * 0.08;
       });
       renderer.render(scene, camera);
     };
@@ -2434,29 +2479,40 @@ function updateSets3D() {
   while (root.children.length) root.remove(root.children[0]);
   state.pickables = [];
 
-  const addRing = (x, z, r, hex) => {
+  const opLabels = { union: 'Op: A ∪ B (Union)', intersection: 'Op: A ∩ B (Intersection)', difference: 'Op: A − B (Difference)', symdiff: 'Op: A ⊕ B (Sym Diff)' };
+  const badge = document.getElementById('sets-3d-op-badge');
+  if (badge) badge.textContent = opLabels[simOp] || 'Op: A ∪ B';
+
+  const addHoloRing = (x, z, r, hex) => {
     const ring = new THREE.Mesh(
-      new THREE.TorusGeometry(r, 0.09, 16, 64),
-      new THREE.MeshStandardMaterial({ color: hex, emissive: hex, emissiveIntensity: 0.35, roughness: 0.25, metalness: 0.5 })
+      new THREE.TorusGeometry(r, 0.08, 16, 64),
+      new THREE.MeshStandardMaterial({ color: hex, emissive: hex, emissiveIntensity: 0.45, roughness: 0.2, metalness: 0.6 })
     );
     ring.rotation.x = Math.PI / 2;
-    ring.position.set(x, -0.18, z);
+    ring.position.set(x, -0.14, z);
     root.add(ring);
+
+    const disk = new THREE.Mesh(
+      new THREE.CylinderGeometry(r, r, 0.03, 48),
+      new THREE.MeshStandardMaterial({ color: hex, emissive: hex, emissiveIntensity: 0.25, transparent: true, opacity: 0.22, roughness: 0.1 })
+    );
+    disk.position.set(x, -0.18, z);
+    root.add(disk);
   };
 
   if (labVennType === 'two') {
-    addRing(-1.1, 0, 2.0, 0x4f46e5);
-    addRing(1.1, 0, 2.0, 0xf59e0b);
+    addHoloRing(-1.1, 0, 2.05, 0x007aff);
+    addHoloRing(1.1, 0, 2.05, 0xff9500);
   } else if (labVennType === 'three') {
-    addRing(-1.0, -0.6, 1.75, 0x4f46e5);
-    addRing(1.0, -0.6, 1.75, 0xf59e0b);
-    addRing(0, 1.0, 1.75, 0x10b981);
+    addHoloRing(-1.0, -0.6, 1.8, 0x007aff);
+    addHoloRing(1.0, -0.6, 1.8, 0xff9500);
+    addHoloRing(0, 1.0, 1.8, 0x34c759);
   } else if (labVennType === 'subset') {
-    addRing(0, 0, 2.5, 0xf59e0b);
-    addRing(-0.4, 0.1, 1.35, 0x4f46e5);
+    addHoloRing(0, 0, 2.55, 0xff9500);
+    addHoloRing(-0.4, 0.1, 1.4, 0x007aff);
   } else {
-    addRing(-1.9, 0, 1.6, 0x4f46e5);
-    addRing(1.9, 0, 1.6, 0xf59e0b);
+    addHoloRing(-1.9, 0, 1.65, 0x007aff);
+    addHoloRing(1.9, 0, 1.65, 0xff9500);
   }
 
   const coords = labVennType === 'three'
@@ -2467,29 +2523,57 @@ function updateSets3D() {
     ? [['Aarav', -2.2, -0.2], ['Kabir', -1.5, 0.3], ['Riya', 1.6, -0.2], ['Meera', 2.2, 0.3]]
     : [['Aarav', -1.8, -0.3], ['Kabir', -1.6, 0.6], ['Diya', 0, 0.1], ['Riya', 1.7, -0.3], ['Meera', 1.6, 0.6], ['Neha', 3.4, 1.2]];
 
+  const inA = ['Aarav', 'Kabir', 'Diya'];
+  const inB = ['Diya', 'Riya', 'Meera'];
+
   coords.forEach(([name, x, z]) => {
-    const s = STUDENT_PROFILES[name] || { branch: 'CSE', roll: '101', color: '#4f46e5' };
+    const s = STUDENT_PROFILES[name] || { emoji: '⚡', color: '#007aff' };
     const isSel = selectedLabStudent === name;
+    const aHas = inA.includes(name);
+    const bHas = inB.includes(name);
+    let inOpResult = false;
+    if (simOp === 'union') inOpResult = aHas || bHas;
+    else if (simOp === 'intersection') inOpResult = aHas && bHas;
+    else if (simOp === 'difference') inOpResult = aHas && !bHas;
+    else inOpResult = (aHas && !bHas) || (!aHas && bHas);
+
     const grp = new THREE.Group();
     grp.userData.studentName = name;
-    const inA = ['Aarav', 'Kabir', 'Diya'].includes(name); const tex = makeLabelTex(`${s.emoji || '⚡'} ${name}`, inA ? '∈ Set A' : '∈ Set B / U', isSel ? '#ce0505' : '#11100f', s.color);
+    grp.userData.inOpResult = inOpResult;
+
+    const statusSub = inOpResult ? '✓ In Result' : (aHas ? '∈ Set A' : (bHas ? '∈ Set B' : '∈ U'));
+    const tex = makeLabelTex(
+      `${s.emoji || '⚡'} ${name}`,
+      statusSub,
+      isSel ? '#ce0505' : (inOpResult ? '#14532d' : '#11100f'),
+      inOpResult ? '#c7c911' : s.color
+    );
     const mats = [
       new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.4 }),
       new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.4 }),
       new THREE.MeshStandardMaterial({ map: tex, roughness: 0.25 }),
       new THREE.MeshStandardMaterial({ color: 0x1e293b }),
-      new THREE.MeshStandardMaterial({ color: isSel ? 0x818cf8 : 0x475569 }),
-      new THREE.MeshStandardMaterial({ color: isSel ? 0x818cf8 : 0x475569 })
+      new THREE.MeshStandardMaterial({ color: inOpResult ? 0xc7c911 : 0x475569 }),
+      new THREE.MeshStandardMaterial({ color: inOpResult ? 0xc7c911 : 0x475569 })
     ];
-    const blk = new THREE.Mesh(new THREE.BoxGeometry(0.92, 0.34, 0.72), mats);
+    const blk = new THREE.Mesh(new THREE.BoxGeometry(0.98, 0.36, 0.76), mats);
     grp.add(blk);
-    grp.position.set(x, 0.25, z);
+
+    if (inOpResult) {
+      const halo = new THREE.Mesh(
+        new THREE.TorusGeometry(0.62, 0.035, 10, 32),
+        new THREE.MeshBasicMaterial({ color: 0xc7c911 })
+      );
+      halo.rotation.x = Math.PI / 2;
+      halo.position.y = -0.24;
+      grp.add(halo);
+    }
+
+    grp.position.set(x, inOpResult ? 0.62 : 0.16, z);
     root.add(grp);
     state.pickables.push(grp);
   });
 }
-
-let oopShowPointers = true;
 
 function trigger3DStamp() {
   if (!oop3D || !oop3D.state) return;
@@ -2637,6 +2721,15 @@ function initOOP3D() {
         c.position.y = 0.15 + Math.sin(t + idx * 0.9) * 0.07;
       });
 
+      // Animate energy pulse spheres flowing along Stack -> Heap bezier curves
+      if (state.pulses && state.pointerGroup && state.pointerGroup.visible) {
+        state.pulses.forEach((p, idx) => {
+          const u = ((t * 0.45 + idx * 0.25) % 1);
+          const pt = p.curve.getPointAt(u);
+          p.mesh.position.copy(pt);
+        });
+      }
+
       renderer.render(scene, camera);
     };
     animate();
@@ -2649,6 +2742,7 @@ function updateOOP3D() {
   const { root, state } = oop3D;
   while (root.children.length) root.remove(root.children[0]);
   state.cards = [];
+  state.pulses = [];
 
   // 1. Mechanical Blueprint Stamp Press Structure (Left Anvil)
   const pressX = -2.7, pressZ = 0;
@@ -2805,6 +2899,15 @@ function updateOOP3D() {
     });
     const tube = new THREE.Mesh(tubeGeo, tubeMat);
     pointerGroup.add(tube);
+
+    // Energy pulse sphere traveling along pointer curve
+    if (!state.pulses) state.pulses = [];
+    const pulseMesh = new THREE.Mesh(
+      new THREE.SphereGeometry(0.08, 16, 16),
+      new THREE.MeshBasicMaterial({ color: 0xc7c911 })
+    );
+    pointerGroup.add(pulseMesh);
+    state.pulses.push({ mesh: pulseMesh, curve });
   });
 }
 
