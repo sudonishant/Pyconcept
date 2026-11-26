@@ -1,0 +1,2305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Python Concept Explorer</title>
+<style>
+/* ═══════════════════════════════════════════════════════
+   GLOBAL RESET & TOKENS
+═══════════════════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --glass-bg:rgba(255,255,255,0.18);
+  --glass-border:rgba(255,255,255,0.45);
+  --glass-shadow:0 8px 40px rgba(80,60,180,0.13);
+  --blur:blur(22px) saturate(1.6);
+  --accent1:#6c63ff;
+  --accent2:#43e97b;
+  --accent3:#f7971e;
+  --accent4:#f953c6;
+  --txt:#1a1a2e;
+  --txt2:#555;
+  --bg-from:#e8e0ff;
+  --bg-to:#d0f0ff;
+  --card-radius:22px;
+  --spring:cubic-bezier(0.34,1.4,0.64,1);
+}
+[data-theme="dark"]{
+  --glass-bg:rgba(20,10,50,0.55);
+  --glass-border:rgba(255,255,255,0.12);
+  --glass-shadow:0 8px 40px rgba(0,0,0,0.5);
+  --txt:#f0eeff;
+  --txt2:#bbb;
+  --bg-from:#0f0a2e;
+  --bg-to:#0a1a2e;
+}
+html,body{height:100%;font-family:'Segoe UI',system-ui,sans-serif;color:var(--txt);transition:background 0.5s}
+body{background:linear-gradient(135deg,var(--bg-from),var(--bg-to));min-height:100vh;overflow-x:hidden}
+
+/* Ambient orbs */
+.orb{position:fixed;border-radius:50%;filter:blur(80px);opacity:0.35;pointer-events:none;z-index:0;animation:orbFloat 10s ease-in-out infinite alternate}
+.orb1{width:420px;height:420px;background:radial-gradient(circle,#a78bfa,#6c63ff);top:-80px;left:-80px}
+.orb2{width:320px;height:320px;background:radial-gradient(circle,#43e97b,#38f9d7);bottom:50px;right:-60px;animation-delay:-4s}
+.orb3{width:260px;height:260px;background:radial-gradient(circle,#f7971e,#f953c6);top:40%;left:40%;animation-delay:-7s}
+@keyframes orbFloat{from{transform:translate(0,0) scale(1)}to{transform:translate(30px,20px) scale(1.1)}}
+
+/* ═══════════════════════════════════════════════════════
+   GLASS UTILITY
+═══════════════════════════════════════════════════════ */
+.glass{
+  background:var(--glass-bg);
+  backdrop-filter:var(--blur);
+  -webkit-backdrop-filter:var(--blur);
+  border:1.5px solid var(--glass-border);
+  border-radius:var(--card-radius);
+  box-shadow:var(--glass-shadow);
+}
+.glass-sm{
+  background:var(--glass-bg);
+  backdrop-filter:blur(12px) saturate(1.4);
+  -webkit-backdrop-filter:blur(12px) saturate(1.4);
+  border:1px solid var(--glass-border);
+  border-radius:14px;
+  box-shadow:var(--glass-shadow);
+}
+
+/* ═══════════════════════════════════════════════════════
+   TOP NAV
+═══════════════════════════════════════════════════════ */
+nav{
+  position:sticky;top:0;z-index:100;
+  display:flex;align-items:center;gap:12px;
+  padding:14px 32px;
+  background:rgba(255,255,255,0.22);
+  backdrop-filter:blur(28px);
+  border-bottom:1.5px solid var(--glass-border);
+  box-shadow:0 2px 24px rgba(80,60,180,0.08);
+}
+.nav-logo{font-size:1.1rem;font-weight:800;background:linear-gradient(90deg,#6c63ff,#43e97b);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav-tabs{display:flex;gap:6px;margin-left:auto}
+.nav-tab{
+  padding:8px 20px;border:none;border-radius:40px;cursor:pointer;
+  font-size:.88rem;font-weight:600;transition:all .28s var(--spring);
+  background:transparent;color:var(--txt2);letter-spacing:.4px;
+}
+.nav-tab:hover{background:var(--glass-bg);color:var(--accent1)}
+.nav-tab.active{background:linear-gradient(135deg,var(--accent1),#9d50ff);color:#fff;box-shadow:0 4px 20px rgba(108,99,255,0.35)}
+.nav-right{display:flex;gap:8px;margin-left:16px}
+.icon-btn{
+  width:38px;height:38px;border-radius:50%;border:1.5px solid var(--glass-border);
+  background:var(--glass-bg);color:var(--txt);font-size:1rem;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .25s var(--spring);
+}
+.icon-btn:hover{background:var(--accent1);color:#fff;border-color:var(--accent1);transform:scale(1.12)}
+#tts-status-pill{
+  display:flex;align-items:center;gap:6px;padding:6px 14px;
+  border-radius:40px;font-size:.75rem;font-weight:600;
+  background:rgba(67,233,123,0.15);border:1px solid rgba(67,233,123,0.4);color:#2a7a4b;
+}
+[data-theme="dark"] #tts-status-pill{color:#43e97b}
+.tts-dot{width:7px;height:7px;border-radius:50%;background:#43e97b;animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(0.8)}}
+
+/* ═══════════════════════════════════════════════════════
+   PAGE / SECTION SYSTEM
+═══════════════════════════════════════════════════════ */
+.page{display:none;animation:pageIn .4s var(--spring)}
+.page.active{display:block}
+@keyframes pageIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+
+/* ═══════════════════════════════════════════════════════
+   LANDING PAGE
+═══════════════════════════════════════════════════════ */
+#page-landing{padding:60px 24px 80px;text-align:center;position:relative;z-index:1}
+.landing-hero{max-width:700px;margin:0 auto 60px}
+.landing-badge{
+  display:inline-block;padding:6px 18px;border-radius:40px;font-size:.8rem;font-weight:700;
+  background:linear-gradient(90deg,rgba(108,99,255,.15),rgba(67,233,123,.15));
+  border:1px solid rgba(108,99,255,.3);color:var(--accent1);margin-bottom:20px;letter-spacing:1px;
+}
+.landing-title{font-size:clamp(2.2rem,6vw,3.8rem);font-weight:900;line-height:1.1;margin-bottom:18px}
+.landing-title span{background:linear-gradient(135deg,#6c63ff,#43e97b,#f953c6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.landing-sub{font-size:1.05rem;color:var(--txt2);line-height:1.7;max-width:540px;margin:0 auto 36px}
+.topic-cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:28px;max-width:900px;margin:0 auto}
+.topic-card{
+  padding:36px 32px;text-align:left;cursor:pointer;
+  transition:transform .35s var(--spring),box-shadow .35s;
+  position:relative;overflow:hidden;
+}
+.topic-card::before{
+  content:'';position:absolute;inset:0;border-radius:var(--card-radius);
+  background:linear-gradient(135deg,var(--c1,.15),var(--c2,.08));opacity:.18;
+  transition:opacity .3s;
+}
+.topic-card:hover{transform:translateY(-8px) scale(1.02);box-shadow:0 24px 60px rgba(108,99,255,0.22)}
+.topic-card:hover::before{opacity:0.32}
+.tc-module{font-size:.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--txt2);margin-bottom:8px}
+.tc-num{font-size:3rem;font-weight:900;line-height:1;margin-bottom:4px;background:var(--grad,linear-gradient(135deg,#6c63ff,#9d50ff));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.tc-title{font-size:1.4rem;font-weight:800;margin-bottom:12px}
+.tc-desc{font-size:.9rem;color:var(--txt2);line-height:1.6;margin-bottom:24px}
+.tc-tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:28px}
+.tag{padding:4px 12px;border-radius:40px;font-size:.72rem;font-weight:600;background:var(--glass-bg);border:1px solid var(--glass-border)}
+.tc-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:12px 24px;border-radius:40px;border:none;cursor:pointer;
+  font-size:.9rem;font-weight:700;color:#fff;
+  background:var(--grad,linear-gradient(135deg,#6c63ff,#9d50ff));
+  transition:all .28s var(--spring);box-shadow:0 4px 20px rgba(108,99,255,0.3);
+}
+.tc-btn:hover{transform:scale(1.06);box-shadow:0 8px 32px rgba(108,99,255,0.45)}
+.tc-icon{font-size:2.5rem;margin-bottom:16px}
+
+/* ═══════════════════════════════════════════════════════
+   TOPIC PAGES — 3-part layout
+═══════════════════════════════════════════════════════ */
+.topic-page{padding:0;position:relative;z-index:1}
+.topic-tabs-bar{
+  display:flex;gap:0;padding:0 24px;border-bottom:1.5px solid var(--glass-border);
+  background:rgba(255,255,255,0.1);backdrop-filter:blur(16px);
+  position:sticky;top:65px;z-index:90;
+}
+.tp-tab{
+  padding:14px 28px;border:none;background:transparent;cursor:pointer;
+  font-size:.9rem;font-weight:600;color:var(--txt2);border-bottom:3px solid transparent;
+  transition:all .25s var(--spring);
+}
+.tp-tab:hover{color:var(--accent1)}
+.tp-tab.active{color:var(--accent1);border-bottom-color:var(--accent1)}
+.tp-section{display:none;padding:40px 24px;max-width:1100px;margin:0 auto}
+.tp-section.active{display:block;animation:pageIn .4s var(--spring)}
+
+/* ═══════════════════════════════════════════════════════
+   INTRO SECTION
+═══════════════════════════════════════════════════════ */
+.intro-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-bottom:32px}
+@media(max-width:700px){.intro-grid{grid-template-columns:1fr}}
+.intro-concept-card{padding:32px}
+.ic-label{font-size:.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent1);margin-bottom:10px}
+.ic-title{font-size:1.5rem;font-weight:800;margin-bottom:14px}
+.ic-desc{font-size:.95rem;color:var(--txt2);line-height:1.75}
+.bullet-list{list-style:none;margin-top:14px}
+.bullet-list li{display:flex;align-items:flex-start;gap:10px;padding:6px 0;font-size:.9rem;color:var(--txt2)}
+.bullet-list li::before{content:'●';color:var(--accent1);font-size:.6rem;margin-top:5px;flex-shrink:0}
+.ops-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:14px}
+.op-chip{
+  padding:14px 16px;border-radius:14px;cursor:pointer;text-align:center;
+  border:2px solid transparent;transition:all .25s var(--spring);
+  background:var(--glass-bg);
+}
+.op-chip:hover,.op-chip.selected{border-color:var(--accent1);background:rgba(108,99,255,0.12);transform:scale(1.03)}
+.op-chip .op-sym{font-size:1.5rem;font-weight:900;color:var(--accent1)}
+.op-chip .op-name{font-size:.8rem;font-weight:600;color:var(--txt2);margin-top:2px}
+
+/* ═══════════════════════════════════════════════════════
+   SETS VENN DIAGRAM (SVG)
+═══════════════════════════════════════════════════════ */
+.venn-wrap{padding:28px;display:flex;flex-direction:column;align-items:center;gap:20px}
+.venn-controls{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.op-btn{
+  padding:10px 20px;border-radius:40px;border:1.5px solid var(--glass-border);
+  background:var(--glass-bg);color:var(--txt);font-weight:700;cursor:pointer;font-size:.9rem;
+  transition:all .25s var(--spring);
+}
+.op-btn:hover,.op-btn.active{background:var(--accent1);color:#fff;border-color:var(--accent1);transform:scale(1.07)}
+#venn-svg{width:100%;max-width:420px;height:260px;overflow:visible}
+.venn-result-box{
+  padding:14px 28px;border-radius:14px;font-weight:700;font-size:1.05rem;
+  background:linear-gradient(135deg,rgba(108,99,255,.12),rgba(67,233,123,.08));
+  border:1.5px solid rgba(108,99,255,.25);text-align:center;min-width:200px;
+}
+/* chip animation */
+.venn-chip{
+  font-size:13px;font-weight:700;fill:var(--txt);
+  transition:all .5s var(--spring);cursor:default;
+}
+/* ═══════════════════════════════════════════════════════
+   CODE PANEL (shared)
+═══════════════════════════════════════════════════════ */
+.code-panel{
+  font-family:'JetBrains Mono','Fira Mono',monospace;font-size:.87rem;line-height:1.75;
+  padding:24px;overflow-x:auto;border-radius:var(--card-radius);
+  background:rgba(10,5,30,0.78);color:#e0d7ff;position:relative;
+}
+[data-theme="dark"] .code-panel{background:rgba(5,2,18,0.9)}
+.code-line{padding:0 8px;border-radius:5px;transition:background .3s,border .3s}
+.code-line.hl{background:rgba(108,99,255,.22);border-left:3px solid var(--accent1)}
+.code-line.hl-out{background:rgba(67,233,123,.15);border-left:3px solid var(--accent2)}
+.line-num{color:#555;user-select:none;margin-right:14px;min-width:22px;display:inline-block;text-align:right}
+/* keyword colors */
+.kw{color:#c792ea}.fn{color:#82aaff}.st{color:#c3e88d}.num{color:#f78c6c}.cm{color:#546e7a;font-style:italic}.op2{color:#89ddff}
+
+/* ═══════════════════════════════════════════════════════
+   VISUALIZER / SIMULATOR CONTROLS
+═══════════════════════════════════════════════════════ */
+.vis-controls{
+  display:flex;align-items:center;gap:10px;padding:16px 24px;
+  border-top:1.5px solid var(--glass-border);flex-wrap:wrap;
+}
+.vis-btn{
+  padding:9px 20px;border-radius:40px;border:1.5px solid var(--glass-border);
+  background:var(--glass-bg);color:var(--txt);font-weight:700;cursor:pointer;
+  transition:all .25s var(--spring);font-size:.85rem;
+}
+.vis-btn:hover{background:var(--accent1);color:#fff;border-color:var(--accent1);transform:scale(1.07)}
+.vis-btn.primary{background:linear-gradient(135deg,var(--accent1),#9d50ff);color:#fff;border:none}
+.speed-wrap{display:flex;align-items:center;gap:8px;font-size:.82rem;color:var(--txt2)}
+input[type=range]{accent-color:var(--accent1)}
+.step-info{font-size:.82rem;color:var(--txt2);padding:6px 14px;border-radius:40px;background:var(--glass-bg);font-weight:600}
+.output-terminal{
+  margin:16px 24px;padding:16px 20px;border-radius:14px;
+  background:rgba(10,5,30,0.78);font-family:monospace;font-size:.88rem;
+  color:#43e97b;min-height:50px;border-left:4px solid var(--accent2);
+}
+[data-theme="dark"] .output-terminal{background:rgba(5,2,18,0.9)}
+
+/* ═══════════════════════════════════════════════════════
+   SETS SIMULATOR
+═══════════════════════════════════════════════════════ */
+.sets-sim-grid{display:grid;grid-template-columns:1fr 1.3fr;gap:20px;padding:24px}
+@media(max-width:650px){.sets-sim-grid{grid-template-columns:1fr}}
+.sim-input-col{display:flex;flex-direction:column;gap:14px}
+.sim-label{font-size:.8rem;font-weight:700;color:var(--txt2);margin-bottom:4px;letter-spacing:.5px}
+.sim-input{
+  width:100%;padding:12px 16px;border-radius:12px;border:1.5px solid var(--glass-border);
+  background:var(--glass-bg);color:var(--txt);font-size:.95rem;font-family:inherit;
+  backdrop-filter:blur(8px);
+}
+.sim-input:focus{outline:none;border-color:var(--accent1);box-shadow:0 0 0 3px rgba(108,99,255,.15)}
+
+/* ═══════════════════════════════════════════════════════
+   OOP BLUEPRINT SECTION
+═══════════════════════════════════════════════════════ */
+.oop-intro-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:28px}
+@media(max-width:700px){.oop-intro-grid{grid-template-columns:1fr}}
+.blueprint-card{
+  padding:28px;position:relative;overflow:hidden;
+}
+.blueprint-card::after{
+  content:'';position:absolute;inset:0;border-radius:var(--card-radius);
+  background:repeating-linear-gradient(90deg,rgba(108,99,255,.04) 0,rgba(108,99,255,.04) 1px,transparent 1px,transparent 32px),
+             repeating-linear-gradient(0deg,rgba(108,99,255,.04) 0,rgba(108,99,255,.04) 1px,transparent 1px,transparent 32px);
+  pointer-events:none;
+}
+.bp-title{font-size:.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent1);margin-bottom:14px}
+.bp-class-box{
+  border:2px dashed var(--accent1);border-radius:14px;padding:18px;position:relative;
+}
+.bp-class-name{
+  position:absolute;top:-12px;left:16px;background:var(--glass-bg);backdrop-filter:blur(8px);
+  padding:2px 12px;border-radius:40px;font-weight:800;color:var(--accent1);font-size:.9rem;
+  border:1.5px solid var(--glass-border);
+}
+.bp-row{display:flex;gap:8px;padding:7px 0;border-bottom:1px solid var(--glass-border);font-size:.87rem;align-items:center}
+.bp-row:last-child{border:none}
+.bp-attr{color:#82aaff;font-family:monospace}
+.bp-val{color:#c3e88d;font-family:monospace}
+.bp-sep{color:var(--txt2)}
+/* flip cards */
+.obj-cards-row{display:flex;gap:16px;flex-wrap:wrap;justify-content:center}
+.flip-card{
+  width:200px;height:160px;perspective:800px;cursor:pointer;
+}
+.flip-inner{
+  width:100%;height:100%;position:relative;transform-style:preserve-3d;
+  transition:transform .6s var(--spring);
+}
+.flip-card:hover .flip-inner,.flip-card.flipped .flip-inner{transform:rotateY(180deg)}
+.flip-face{
+  position:absolute;inset:0;backface-visibility:hidden;border-radius:18px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:16px;
+  border:1.5px solid var(--glass-border);background:var(--glass-bg);backdrop-filter:var(--blur);
+}
+.flip-back{transform:rotateY(180deg);background:linear-gradient(135deg,rgba(108,99,255,.18),rgba(249,83,198,.12))}
+.flip-face .fi-icon{font-size:2rem}
+.flip-face .fi-name{font-weight:800;font-size:1rem}
+.flip-face .fi-attr{font-size:.78rem;color:var(--txt2);font-family:monospace;text-align:center;line-height:1.6}
+
+/* ═══════════════════════════════════════════════════════
+   OOP SIMULATOR
+═══════════════════════════════════════════════════════ */
+.oop-sim-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:24px}
+@media(max-width:650px){.oop-sim-grid{grid-template-columns:1fr}}
+.oop-form{display:flex;flex-direction:column;gap:12px}
+.oop-form-row{display:flex;gap:10px}
+.oop-form-row label{font-size:.82rem;font-weight:600;color:var(--txt2);min-width:70px;padding-top:12px}
+.oop-object-panel{
+  padding:20px;border-radius:16px;
+  background:rgba(108,99,255,.08);border:1.5px solid rgba(108,99,255,.22);
+  display:flex;flex-direction:column;gap:10px;min-height:160px;
+}
+.obj-instance{
+  padding:14px 16px;border-radius:12px;background:var(--glass-bg);backdrop-filter:blur(8px);
+  border:1.5px solid var(--glass-border);animation:objPop .4s var(--spring);
+}
+@keyframes objPop{from{opacity:0;transform:scale(.8) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.obj-instance .oi-title{font-weight:800;font-size:.9rem;margin-bottom:8px;color:var(--accent1)}
+.obj-instance .oi-attr{font-family:monospace;font-size:.82rem;color:var(--txt2)}
+/* call frames panel */
+.call-frames-panel{
+  position:relative;overflow:hidden;border-radius:14px;
+  background:rgba(10,5,30,0.78);padding:16px;margin-top:12px;
+}
+.cf-block{
+  border:1.5px dashed rgba(108,99,255,.5);border-radius:10px;padding:12px;margin-bottom:10px;
+  position:relative;font-family:monospace;font-size:.82rem;color:#e0d7ff;
+}
+.cf-block .cf-title{color:#82aaff;font-weight:700;margin-bottom:6px;font-size:.8rem}
+.cf-block .cf-var{display:flex;justify-content:space-between;padding:2px 0}
+.cf-block .cf-var-name{color:#c792ea}
+.cf-block .cf-var-val{color:#c3e88d}
+/* SVG arrow */
+#cf-arrow-svg{position:absolute;pointer-events:none;width:100%;height:100%;top:0;left:0}
+
+/* ═══════════════════════════════════════════════════════
+   QUIZ PORTAL
+═══════════════════════════════════════════════════════ */
+.quiz-portal{
+  display:grid;grid-template-columns:1fr 220px;gap:20px;padding:28px 24px;
+  max-width:1000px;margin:0 auto;
+}
+@media(max-width:700px){.quiz-portal{grid-template-columns:1fr}}
+.q-main-col{display:flex;flex-direction:column;gap:16px}
+.q-header-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 20px;border-radius:14px;
+}
+.q-topic-badge{font-size:.8rem;font-weight:700;color:var(--accent1)}
+.q-timer{font-size:1.1rem;font-weight:800;font-family:monospace;color:var(--accent1)}
+.q-num{font-size:.8rem;color:var(--txt2);font-weight:600}
+.q-question-box{padding:28px 24px;border-radius:18px}
+.q-question-txt{font-size:1.1rem;font-weight:700;line-height:1.6;margin-bottom:24px}
+.q-options-list{list-style:none;display:flex;flex-direction:column;gap:12px}
+.option-card{
+  padding:14px 20px;border-radius:14px;cursor:pointer;border:2px solid var(--glass-border);
+  background:var(--glass-bg);transition:all .25s var(--spring);display:flex;align-items:center;gap:14px;
+  font-size:.95rem;font-weight:500;
+}
+.option-card:hover{border-color:var(--accent1);background:rgba(108,99,255,.08);transform:translateX(4px)}
+.option-card.selected{border-color:var(--accent1);background:rgba(108,99,255,.14)}
+.option-card.correct{border-color:#43e97b;background:rgba(67,233,123,.12)}
+.option-card.wrong{border-color:#f953c6;background:rgba(249,83,198,.10)}
+.opt-label{
+  width:30px;height:30px;border-radius:50%;border:2px solid var(--glass-border);
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.85rem;flex-shrink:0;
+  transition:.25s;
+}
+.option-card.selected .opt-label{background:var(--accent1);border-color:var(--accent1);color:#fff}
+.option-card.correct .opt-label{background:#43e97b;border-color:#43e97b;color:#fff}
+.option-card.wrong .opt-label{background:#f953c6;border-color:#f953c6;color:#fff}
+.q-action-bar{display:flex;gap:10px;flex-wrap:wrap;padding:16px 0}
+.q-btn{
+  padding:10px 20px;border-radius:40px;border:1.5px solid var(--glass-border);
+  background:var(--glass-bg);color:var(--txt);font-weight:700;cursor:pointer;font-size:.85rem;
+  transition:all .25s var(--spring);
+}
+.q-btn:hover{transform:scale(1.05)}
+.q-btn.primary{background:linear-gradient(135deg,var(--accent1),#9d50ff);color:#fff;border:none}
+.q-btn.danger{background:linear-gradient(135deg,#f953c6,#c850c0);color:#fff;border:none}
+.q-btn.success{background:linear-gradient(135deg,#43e97b,#38f9d7);color:#111;border:none}
+/* palette */
+.q-palette-col{display:flex;flex-direction:column;gap:14px}
+.palette-card{padding:18px}
+.palette-title{font-size:.78rem;font-weight:700;letter-spacing:1px;color:var(--txt2);margin-bottom:12px}
+.palette-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
+.pal-btn{
+  width:34px;height:34px;border-radius:8px;border:1.5px solid var(--glass-border);
+  background:var(--glass-bg);cursor:pointer;font-size:.82rem;font-weight:700;
+  display:flex;align-items:center;justify-content:center;transition:all .22s var(--spring);
+}
+.pal-btn:hover{transform:scale(1.12)}
+.pal-btn.not-visited{background:var(--glass-bg)}
+.pal-btn.not-answered{background:rgba(249,83,198,.2);border-color:#f953c6}
+.pal-btn.answered{background:rgba(67,233,123,.2);border-color:#43e97b}
+.pal-btn.marked{background:rgba(108,99,255,.3);border-color:var(--accent1)}
+.pal-btn.current{outline:2.5px solid var(--accent3);outline-offset:1px}
+.palette-legend{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.leg-row{display:flex;align-items:center;gap:8px;font-size:.75rem;color:var(--txt2)}
+.leg-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+/* score screen */
+.score-screen{
+  display:none;flex-direction:column;align-items:center;gap:24px;
+  padding:60px 24px;text-align:center;
+}
+.score-screen.show{display:flex;animation:pageIn .5s var(--spring)}
+.score-circle{
+  width:140px;height:140px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent1),var(--accent2));
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  box-shadow:0 12px 50px rgba(108,99,255,.4);
+}
+.score-num{font-size:2.4rem;font-weight:900;color:#fff}
+.score-label{font-size:.8rem;font-weight:700;color:rgba(255,255,255,0.8)}
+.score-breakdown{display:flex;flex-direction:column;gap:10px;width:100%;max-width:500px}
+.review-item{
+  display:flex;gap:12px;align-items:flex-start;padding:14px 18px;border-radius:14px;
+  text-align:left;background:var(--glass-bg);border:1.5px solid var(--glass-border);
+}
+.ri-status{font-size:1.1rem}
+.ri-q{font-size:.88rem;font-weight:600;flex:1}
+.ri-ans{font-size:.78rem;color:var(--txt2)}
+/* tts read-aloud */
+.tts-read-btn{
+  background:none;border:none;cursor:pointer;font-size:1.1rem;
+  color:var(--txt2);transition:.2s;padding:4px 8px;border-radius:8px;
+}
+.tts-read-btn:hover{color:var(--accent1);background:rgba(108,99,255,.1)}
+
+/* ═══════════════════════════════════════════════════════
+   SPARKLE / CONFETTI (victory)
+═══════════════════════════════════════════════════════ */
+.sparkle{
+  position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:999;
+  overflow:hidden;
+}
+.spark-dot{
+  position:absolute;width:10px;height:10px;border-radius:50%;
+  animation:sparkFall 1.8s ease-out forwards;
+}
+@keyframes sparkFall{
+  0%{opacity:1;transform:translateY(-20px) scale(1)}
+  100%{opacity:0;transform:translateY(100vh) scale(.4)}
+}
+
+/* ═══════════════════════════════════════════════════════
+   TOPIC PICKER TABS (top of topic page)
+═══════════════════════════════════════════════════════ */
+.topic-switcher{
+  display:flex;gap:12px;padding:20px 24px 0;
+}
+.ts-btn{
+  padding:8px 20px;border-radius:40px;border:1.5px solid var(--glass-border);
+  background:var(--glass-bg);color:var(--txt2);font-weight:700;cursor:pointer;font-size:.88rem;
+  transition:all .28s var(--spring);
+}
+.ts-btn:hover{color:var(--accent1)}
+.ts-btn.active{background:linear-gradient(135deg,var(--accent1),#9d50ff);color:#fff;border:none;box-shadow:0 4px 20px rgba(108,99,255,.3)}
+
+/* ═══════════════════════════════════════════════════════
+   SCROLLBAR STYLING
+═══════════════════════════════════════════════════════ */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(108,99,255,.3);border-radius:40px}
+
+</style>
+</head>
+<body>
+
+<!-- Ambient orbs -->
+<div class="orb orb1" aria-hidden="true"></div>
+<div class="orb orb2" aria-hidden="true"></div>
+<div class="orb orb3" aria-hidden="true"></div>
+
+<!-- ═══ NAV ═══ -->
+<nav>
+  <div class="nav-logo">🐍 PyConcept Explorer</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" id="nav-landing" onclick="showPage('landing')">Home</button>
+    <button class="nav-tab" id="nav-sets" onclick="showPage('sets')">Sets</button>
+    <button class="nav-tab" id="nav-oop" onclick="showPage('oop')">OOP</button>
+    <button class="nav-tab" id="nav-quiz" onclick="showPage('quiz')">Quiz</button>
+  </div>
+  <div class="nav-right">
+    <div id="tts-status-pill"><span class="tts-dot"></span><span id="tts-status-txt">TTS Loading…</span></div>
+    <button class="icon-btn" id="theme-btn" title="Toggle Dark/Light" onclick="toggleTheme()">🌙</button>
+  </div>
+</nav>
+
+<!-- ═══ LANDING PAGE ═══ -->
+<div class="page active" id="page-landing">
+  <div id="page-landing-inner" style="position:relative;z-index:1">
+    <div class="landing-hero" style="max-width:700px;margin:0 auto;padding:60px 24px 40px;text-align:center">
+      <div class="landing-badge">MODULE 3 &amp; 5 · PYTHON CONCEPTS</div>
+      <div class="landing-title" style="font-size:clamp(2.2rem,6vw,3.4rem);font-weight:900;line-height:1.1;margin:16px 0">
+        <span>Python Concept</span><br>Challenge
+      </div>
+      <p class="landing-sub">Interactive visual explainers for Python Data Structures &amp; OOP. Pick a topic, explore visually, then test your understanding.</p>
+    </div>
+    <div class="topic-cards-grid" style="max-width:860px;margin:0 auto;padding:0 24px 80px;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:28px">
+
+      <!-- SETS CARD -->
+      <div class="glass topic-card" style="--grad:linear-gradient(135deg,#6c63ff,#43e97b)" onclick="showPage('sets')">
+        <div class="tc-module">Module 3 · Python Data Structures</div>
+        <div class="tc-num" style="--grad:linear-gradient(135deg,#6c63ff,#43e97b)">14</div>
+        <div class="tc-title">Sets</div>
+        <div class="tc-desc">Explore unordered unique collections with animated Venn diagrams and step-by-step set operation simulators.</div>
+        <div class="tc-tags">
+          <span class="tag">Venn Diagram</span>
+          <span class="tag">Union ∪</span>
+          <span class="tag">Intersection ∩</span>
+          <span class="tag">Difference −</span>
+        </div>
+        <button class="tc-btn" style="--grad:linear-gradient(135deg,#6c63ff,#43e97b)">Explore Sets →</button>
+      </div>
+
+      <!-- OOP CARD -->
+      <div class="glass topic-card" style="--grad:linear-gradient(135deg,#f7971e,#f953c6)" onclick="showPage('oop')">
+        <div class="tc-module">Module 5 · Advanced Python</div>
+        <div class="tc-num" style="--grad:linear-gradient(135deg,#f7971e,#f953c6)">23</div>
+        <div class="tc-title">Object-Oriented Programming</div>
+        <div class="tc-desc">From blueprint (class) to object — animated flip cards, live class simulator with call frames and highlighted code.</div>
+        <div class="tc-tags">
+          <span class="tag">Classes</span>
+          <span class="tag">Objects</span>
+          <span class="tag">__init__</span>
+          <span class="tag">self</span>
+        </div>
+        <button class="tc-btn" style="--grad:linear-gradient(135deg,#f7971e,#f953c6)">Explore OOP →</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SETS PAGE
+═══════════════════════════════════════════════════════ -->
+<div class="page topic-page" id="page-sets">
+  <div class="topic-tabs-bar">
+    <button class="tp-tab active" onclick="showTopicTab('sets','intro')">📖 Intro</button>
+    <button class="tp-tab" onclick="showTopicTab('sets','lab')">⚗️ Lab</button>
+    <button class="tp-tab" onclick="showTopicTab('sets','quiz-sets')">🎯 Quiz</button>
+  </div>
+
+  <!-- INTRO TAB -->
+  <div class="tp-section active" id="sets-intro" style="max-width:1040px;margin:0 auto;padding:36px 24px">
+    <div style="margin-bottom:24px;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:14px">
+      <div>
+        <div style="font-size:.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent1);margin-bottom:6px">Module 3 · Python Data Structures &amp; Visual Math</div>
+        <div style="font-size:2rem;font-weight:900;margin-bottom:8px">Topic 14 — Sets</div>
+        <p style="color:var(--txt2);font-size:.96rem;line-height:1.7;max-width:650px">Explore all <strong>12 core Set concepts</strong> step-by-step using one connected theme — <strong>Students &amp; Activities</strong> (A = Cricket, B = Music, U = All Students).</p>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;font-size:.76rem;font-weight:700">
+        <span style="padding:4px 10px;border-radius:20px;background:rgba(59,130,246,.18);color:#2563eb;border:1px solid rgba(59,130,246,.4)">● A (Blue)</span>
+        <span style="padding:4px 10px;border-radius:20px;background:rgba(249,115,22,.18);color:#ea580c;border:1px solid rgba(249,115,22,.4)">● B (Orange)</span>
+        <span style="padding:4px 10px;border-radius:20px;background:rgba(139,92,246,.18);color:#7c3aed;border:1px solid rgba(139,92,246,.4)">● A∩B (Purple)</span>
+      </div>
+    </div>
+
+    <!-- Concept Stepper Navigation (1-12) -->
+    <div class="glass" style="padding:14px 16px;margin-bottom:22px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:10px;flex-wrap:wrap">
+        <span style="font-size:.75rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--accent1)" id="sc-progress-label">Concept 1 of 12 · Teaching Sequence</span>
+        <div style="display:flex;gap:8px">
+          <button class="vis-btn" style="padding:5px 14px;font-size:.78rem" onclick="stepSetConcept(-1)">◀ Prev</button>
+          <button class="vis-btn primary" style="padding:5px 14px;font-size:.78rem" onclick="stepSetConcept(1)">Next ▶</button>
+          <button class="icon-btn tts-read-btn" style="width:32px;height:32px;font-size:.9rem" title="Read Concept Aloud" onclick="speakSetConcept()">🔊</button>
+        </div>
+      </div>
+      <div id="sc-pills" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+    </div>
+
+    <!-- Active Concept Stage -->
+    <div class="glass" id="sc-stage" style="padding:28px;margin-bottom:24px;min-height:400px"></div>
+
+    <!-- Common Mistakes Quick Card -->
+    <div class="glass" style="padding:24px;margin-bottom:24px">
+      <div style="font-size:.78rem;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--accent4);margin-bottom:14px">⚠️ 5 Common Mistakes to Avoid</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px">
+        <div class="glass-sm" style="padding:14px"><div style="font-weight:800;font-size:.86rem;margin-bottom:4px">1. ∈ vs ⊆</div><div style="font-size:.8rem;color:var(--txt2)"><code>2 ∈ A</code> is for an element; <code>{2} ⊆ A</code> is for a subset.</div></div>
+        <div class="glass-sm" style="padding:14px"><div style="font-weight:800;font-size:.86rem;margin-bottom:4px">2. Union vs Intersection</div><div style="font-size:.8rem;color:var(--txt2)">Union (∪) = all of A or B; Intersection (∩) = only the purple overlap.</div></div>
+        <div class="glass-sm" style="padding:14px"><div style="font-weight:800;font-size:.86rem;margin-bottom:4px">3. Complement &amp; U</div><div style="font-size:.8rem;color:var(--txt2)"><code>A'</code> is always defined relative to the Universal Set <code>U</code>.</div></div>
+        <div class="glass-sm" style="padding:14px"><div style="font-weight:800;font-size:.86rem;margin-bottom:4px">4. Difference Order</div><div style="font-size:.8rem;color:var(--txt2)"><code>A - B</code> and <code>B - A</code> are not necessarily equal.</div></div>
+        <div class="glass-sm" style="padding:14px"><div style="font-weight:800;font-size:.86rem;margin-bottom:4px">5. Equal vs Equivalent</div><div style="font-size:.8rem;color:var(--txt2)">Equal = identical elements; Equivalent = same count <code>n(A)=n(B)</code>.</div></div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:14px;margin-top:20px">
+      <button class="tc-btn" style="--grad:linear-gradient(135deg,#6c63ff,#43e97b)" onclick="showTopicTab('sets','lab')">Open Python Lab ⚗️</button>
+      <button class="tc-btn" style="--grad:linear-gradient(135deg,#43e97b,#38f9d7);color:#111" onclick="showTopicTab('sets','quiz-sets')">Take Quiz 🎯</button>
+    </div>
+  </div>
+
+  <!-- LAB TAB -->
+  <div class="tp-section" id="sets-lab" style="max-width:1000px;margin:0 auto;padding:40px 24px">
+    <div style="margin-bottom:20px">
+      <div style="font-size:1.3rem;font-weight:800;margin-bottom:8px">⚗️ Sets Simulator</div>
+      <p style="color:var(--txt2);font-size:.9rem">Enter two sets, choose an operation, then step through the Python execution.</p>
+    </div>
+    <div class="glass" style="overflow:hidden">
+      <!-- Input row -->
+      <div class="sets-sim-grid">
+        <div class="sim-input-col">
+          <div>
+            <div class="sim-label">Set A (comma separated)</div>
+            <input class="sim-input" id="sim-set-a" value="1, 2, 3" placeholder="e.g. 1, 2, 3"/>
+          </div>
+          <div>
+            <div class="sim-label">Set B (comma separated)</div>
+            <input class="sim-input" id="sim-set-b" value="2, 3, 4" placeholder="e.g. 2, 3, 4"/>
+          </div>
+          <div>
+            <div class="sim-label">Operation</div>
+            <div class="ops-grid" id="sim-ops-grid">
+              <div class="op-chip selected" data-op="union" onclick="selectSimOp(this)"><div class="op-sym">∪</div><div class="op-name">Union</div></div>
+              <div class="op-chip" data-op="intersection" onclick="selectSimOp(this)"><div class="op-sym">∩</div><div class="op-name">Intersection</div></div>
+              <div class="op-chip" data-op="difference" onclick="selectSimOp(this)"><div class="op-sym">A−B</div><div class="op-name">Difference</div></div>
+              <div class="op-chip" data-op="symdiff" onclick="selectSimOp(this)"><div class="op-sym">⊕</div><div class="op-name">Sym Diff</div></div>
+            </div>
+          </div>
+          <button class="tc-btn" style="--grad:linear-gradient(135deg,#6c63ff,#43e97b)" onclick="startSimSets()">▶ Start Visualizer</button>
+        </div>
+        <!-- Code panel -->
+        <div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+            <span style="font-size:.8rem;font-weight:700;color:var(--txt2)">Editable Python Code</span>
+            <div style="display:flex;gap:6px">
+              <button class="vis-btn" style="padding:4px 12px;font-size:.75rem" onclick="syncSetsEditorFromInputs()">↺ Reset Code</button>
+              <button class="vis-btn" style="padding:4px 12px;font-size:.75rem" onclick="copyEditor('sim-editor')">Copy</button>
+            </div>
+          </div>
+          <div style="position:relative;border-radius:14px;overflow:hidden;background:rgba(10,5,30,0.88)">
+            <div id="sim-line-nums" style="position:absolute;left:0;top:0;width:34px;padding:14px 4px;font-family:monospace;font-size:.84rem;line-height:1.7;color:#555;text-align:right;user-select:none;border-right:1px solid rgba(255,255,255,0.08)"></div>
+            <textarea id="sim-editor" spellcheck="false" autocomplete="off"
+              style="width:100%;min-height:150px;padding:14px 14px 14px 44px;font-family:'JetBrains Mono','Fira Mono',monospace;font-size:.84rem;line-height:1.7;background:transparent;color:#e0d7ff;border:none;outline:none;resize:vertical;tab-size:4;caret-color:#a78bfa"></textarea>
+          </div>
+          <div id="sim-syntax-err" style="display:none;margin-top:8px;padding:10px 14px;border-radius:10px;background:rgba(249,83,198,.1);border:1.5px solid rgba(249,83,198,.4);font-family:monospace;font-size:.8rem;color:#f953c6"></div>
+          <div style="font-size:.78rem;font-weight:700;color:var(--txt2);margin:10px 0 6px">Step Trace</div>
+          <div class="code-panel" id="sim-code-panel" style="min-height:120px;padding:14px"></div>
+        </div>
+      </div>
+      <!-- Output -->
+      <div class="output-terminal" id="sim-output">▶ Click "Start Visualizer" to run…</div>
+      <!-- Controls -->
+      <div class="vis-controls" id="sim-vis-controls" style="display:none">
+        <button class="vis-btn" id="sim-btn-prev" onclick="simStep(-1)">◀ Prev</button>
+        <button class="vis-btn primary" id="sim-btn-play" onclick="simTogglePlay()">▶ Play</button>
+        <button class="vis-btn" id="sim-btn-next" onclick="simStep(1)">Next ▶</button>
+        <button class="vis-btn" onclick="resetSim()">↺ Reset</button>
+        <div class="step-info" id="sim-step-info">Step 0 / 0</div>
+        <div class="speed-wrap">Speed<input type="range" id="sim-speed" min="300" max="2000" value="900" step="100">Auto</div>
+        <button class="icon-btn tts-read-btn" title="Read aloud" onclick="speakText(document.getElementById('sim-output').textContent)">🔊</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUIZ TAB (Sets) -->
+  <div class="tp-section" id="sets-quiz-sets">
+    <!-- injected by JS -->
+  </div>
+
+</div><!-- /page-sets -->
+
+<!-- ═══════════════════════════════════════════════════════
+     OOP PAGE
+═══════════════════════════════════════════════════════ -->
+<div class="page topic-page" id="page-oop">
+  <div class="topic-tabs-bar">
+    <button class="tp-tab active" onclick="showTopicTab('oop','intro')">📖 Intro</button>
+    <button class="tp-tab" onclick="showTopicTab('oop','lab')">⚗️ Lab</button>
+    <button class="tp-tab" onclick="showTopicTab('oop','quiz-oop')">🎯 Quiz</button>
+  </div>
+
+  <!-- INTRO TAB -->
+  <div class="tp-section active" id="oop-intro" style="max-width:1000px;margin:0 auto;padding:40px 24px">
+    <div style="margin-bottom:28px">
+      <div style="font-size:.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent3);margin-bottom:8px">Module 5 · Advanced Python</div>
+      <div style="font-size:2rem;font-weight:900;margin-bottom:12px">Topic 23 — Object-Oriented Programming</div>
+      <p style="color:var(--txt2);font-size:1rem;line-height:1.75;max-width:620px">OOP organises code into <strong>classes</strong> (blueprints) and <strong>objects</strong> (real instances). Each object has its own <em>attributes</em> (data) and <em>methods</em> (actions).</p>
+    </div>
+
+    <!-- Blueprint + Object cards -->
+    <div class="oop-intro-grid">
+      <div class="glass blueprint-card">
+        <div class="bp-title">🏛️ The Blueprint (Class)</div>
+        <div class="bp-class-box">
+          <div class="bp-class-name">Student</div>
+          <div style="margin-top:16px">
+            <div class="bp-row"><span class="bp-attr">__init__</span><span class="bp-sep">(self, name, course)</span></div>
+            <div class="bp-row"><span class="bp-attr">self.name</span><span class="bp-sep"> = </span><span class="bp-val">name</span></div>
+            <div class="bp-row"><span class="bp-attr">self.course</span><span class="bp-sep"> = </span><span class="bp-val">course</span></div>
+            <div class="bp-row"><span class="bp-attr">introduce</span><span class="bp-sep">(self)</span></div>
+          </div>
+        </div>
+        <div style="margin-top:16px;font-size:.82rem;color:var(--txt2);line-height:1.6">
+          <span style="color:var(--accent3)">class</span> = blueprint · <span style="color:var(--accent3)">object</span> = real instance<br>
+          <span style="color:var(--accent3)">__init__</span> runs when object is created<br>
+          <span style="color:var(--accent3)">self</span> refers to the object itself
+        </div>
+      </div>
+
+      <!-- Flip cards -->
+      <div class="glass" style="padding:28px">
+        <div style="font-size:.72rem;font-weight:700;letter-spacing:1.3px;text-transform:uppercase;color:var(--accent3);margin-bottom:16px">Objects (Hover to Reveal Attributes)</div>
+        <div class="obj-cards-row">
+          <div class="flip-card">
+            <div class="flip-inner">
+              <div class="flip-face"><span class="fi-icon">🎓</span><span class="fi-name">Rohan</span><span style="font-size:.75rem;color:var(--txt2)">click to flip</span></div>
+              <div class="flip-face flip-back"><span class="fi-attr">name = "Rohan"<br>course = "B.Tech"<br>introduce() → "Hi, I'm Rohan…"</span></div>
+            </div>
+          </div>
+          <div class="flip-card">
+            <div class="flip-inner">
+              <div class="flip-face"><span class="fi-icon">🎓</span><span class="fi-name">Priya</span><span style="font-size:.75rem;color:var(--txt2)">click to flip</span></div>
+              <div class="flip-face flip-back"><span class="fi-attr">name = "Priya"<br>course = "MCA"<br>introduce() → "Hi, I'm Priya…"</span></div>
+            </div>
+          </div>
+          <div class="flip-card" id="flip-new" style="opacity:.4">
+            <div class="flip-inner">
+              <div class="flip-face"><span class="fi-icon">➕</span><span class="fi-name">New Object</span><span style="font-size:.72rem;color:var(--txt2)">Create in Lab</span></div>
+              <div class="flip-face flip-back"><span class="fi-attr">Use the Lab tab to create a new Student object!</span></div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:18px;font-size:.82rem;color:var(--txt2)">Each object is independent — Rohan's data doesn't affect Priya's.</div>
+      </div>
+    </div>
+
+    <!-- OOP code -->
+    <div class="glass" style="margin-top:24px;overflow:hidden">
+      <div style="padding:20px 24px 0;font-size:.8rem;font-weight:700;color:var(--txt2);letter-spacing:1px">OOP Code Example</div>
+      <div class="code-panel" style="margin:16px;border-radius:14px;font-size:.85rem">
+<span class="line-num">1</span>  <span class="kw">class</span> <span class="fn">Student</span>:<br>
+<span class="line-num">2</span>      <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, <span class="st">name</span>, <span class="st">course</span>):<br>
+<span class="line-num">3</span>          <span class="kw">self</span>.<span class="fn">name</span> <span class="op2">=</span> name<br>
+<span class="line-num">4</span>          <span class="kw">self</span>.<span class="fn">course</span> <span class="op2">=</span> course<br>
+<span class="line-num">5</span>  <br>
+<span class="line-num">6</span>      <span class="kw">def</span> <span class="fn">introduce</span>(<span class="kw">self</span>):<br>
+<span class="line-num">7</span>          <span class="kw">return</span> <span class="st">f"Hi, I'm {<span class="kw">self</span>.name} in {<span class="kw">self</span>.course}"</span><br>
+<span class="line-num">8</span>  <br>
+<span class="line-num">9</span>  s1 <span class="op2">=</span> <span class="fn">Student</span>(<span class="st">"Rohan"</span>, <span class="st">"B.Tech"</span>)<br>
+<span class="line-num">10</span> <span class="fn">print</span>(s1.<span class="fn">introduce</span>())
+      </div>
+    </div>
+
+    <div style="display:flex;gap:14px;margin-top:28px">
+      <button class="tc-btn" style="--grad:linear-gradient(135deg,#f7971e,#f953c6)" onclick="showTopicTab('oop','lab')">Open Lab ⚗️</button>
+      <button class="tc-btn" style="--grad:linear-gradient(135deg,#f953c6,#c850c0)" onclick="showTopicTab('oop','quiz-oop')">Take Quiz 🎯</button>
+    </div>
+  </div>
+
+  <!-- OOP LAB TAB -->
+  <div class="tp-section" id="oop-lab" style="max-width:1100px;margin:0 auto;padding:40px 24px">
+    <div style="margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+      <div>
+        <div style="font-size:1.3rem;font-weight:800;margin-bottom:4px">⚗️ OOP Code Lab</div>
+        <p style="color:var(--txt2);font-size:.9rem">Edit the Python code below, then run it step-by-step to see OOP in action.</p>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="vis-btn" onclick="resetOOPCode()" title="Reset to default code">↺ Reset Code</button>
+        <button class="tc-btn" style="--grad:linear-gradient(135deg,#f7971e,#f953c6);padding:10px 22px" onclick="runOOPCode()">▶ Run &amp; Visualize</button>
+      </div>
+    </div>
+
+    <!-- Main 2-col layout -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+
+      <!-- LEFT: Editable Code Editor -->
+      <div style="display:flex;flex-direction:column;gap:0">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:rgba(10,5,30,0.9);border-radius:14px 14px 0 0;border-bottom:1px solid rgba(255,255,255,0.08)">
+          <div style="display:flex;gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:#ff5f57;display:inline-block"></span><span style="width:12px;height:12px;border-radius:50%;background:#febc2e;display:inline-block"></span><span style="width:12px;height:12px;border-radius:50%;background:#28c840;display:inline-block"></span></div>
+          <span style="font-size:.75rem;color:#666;font-family:monospace">student_class.py</span>
+          <button onclick="copyOOPCode()" style="background:none;border:1px solid rgba(255,255,255,0.15);color:#888;padding:3px 10px;border-radius:6px;cursor:pointer;font-size:.72rem">Copy</button>
+        </div>
+        <div style="position:relative;flex:1;overflow:hidden;border-radius:0 0 14px 14px">
+          <div id="oop-line-nums" style="position:absolute;left:0;top:0;bottom:0;width:38px;padding:16px 0 16px 8px;font-family:monospace;font-size:.85rem;line-height:1.75;color:#555;background:rgba(10,5,30,0.9);text-align:right;user-select:none;z-index:2;border-right:1px solid rgba(255,255,255,0.06)"></div>
+          <textarea id="oop-editor"
+            spellcheck="false"
+            autocomplete="off"
+            style="width:100%;min-height:320px;padding:16px 16px 16px 50px;font-family:'JetBrains Mono','Fira Mono','Courier New',monospace;font-size:.85rem;line-height:1.75;background:rgba(10,5,30,0.88);color:#e0d7ff;border:none;outline:none;resize:vertical;border-radius:0 0 14px 14px;tab-size:4;caret-color:#a78bfa;"></textarea>
+        </div>
+
+        <!-- Syntax error box -->
+        <div id="oop-syntax-err" style="display:none;margin-top:8px;padding:12px 16px;border-radius:10px;background:rgba(249,83,198,.1);border:1.5px solid rgba(249,83,198,.4);font-family:monospace;font-size:.82rem;color:#f953c6"></div>
+
+        <!-- Call Frames panel (Programiz-style) -->
+        <div class="call-frames-panel" id="oop-call-frames" style="margin-top:14px;min-height:110px;position:relative">
+          <svg id="cf-arrow-svg" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1"></svg>
+          <div class="cf-block" id="cf-main-block">
+            <div class="cf-title">▶ Main Block</div>
+            <div id="cf-main-vars"><span style="color:#555;font-size:.78rem">No variables yet</span></div>
+          </div>
+          <div class="cf-block" id="cf-init-block" style="display:none;border-color:rgba(249,83,198,.5)">
+            <div class="cf-title" style="color:#f953c6">⚙️ Student.__init__(self, name, course)</div>
+            <div id="cf-init-vars"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Visualizer -->
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <!-- Code execution highlight panel -->
+        <div>
+          <div style="font-size:.78rem;font-weight:700;color:var(--txt2);margin-bottom:6px;letter-spacing:.5px;display:flex;align-items:center;gap:8px">
+            CODE EXECUTION
+            <span id="oop-exec-pill" style="display:none;padding:2px 10px;border-radius:40px;font-size:.7rem;background:rgba(108,99,255,.2);border:1px solid rgba(108,99,255,.4);color:var(--accent1)">Running…</span>
+          </div>
+          <div class="code-panel" id="oop-code-panel" style="min-height:200px;font-size:.82rem;border-radius:14px"></div>
+        </div>
+
+        <!-- Object panel -->
+        <div>
+          <div style="font-size:.78rem;font-weight:700;color:var(--txt2);margin-bottom:6px;letter-spacing:.5px">OBJECT PANEL</div>
+          <div class="oop-object-panel" id="oop-obj-panel">
+            <div style="font-size:.85rem;color:var(--txt2);text-align:center;margin:auto;padding:16px">No objects yet — write code and run it!</div>
+          </div>
+        </div>
+
+        <!-- Output terminal -->
+        <div>
+          <div style="font-size:.78rem;font-weight:700;color:var(--txt2);margin-bottom:6px;letter-spacing:.5px">OUTPUT</div>
+          <div class="output-terminal" id="oop-output" style="margin:0">▶ Click "Run &amp; Visualize" to start…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step Controls -->
+    <div class="vis-controls glass" id="oop-vis-controls" style="display:none;margin-top:16px;border-radius:14px">
+      <button class="vis-btn" id="oop-btn-prev" onclick="oopStep(-1)">◀ Prev</button>
+      <button class="vis-btn primary" id="oop-btn-play" onclick="oopTogglePlay()">▶ Play</button>
+      <button class="vis-btn" id="oop-btn-next" onclick="oopStep(1)">Next ▶</button>
+      <button class="vis-btn" onclick="resetOOP()">↺ Reset</button>
+      <div class="step-info" id="oop-step-info">Step 0 / 0</div>
+      <div class="speed-wrap">Speed<input type="range" id="oop-speed" min="300" max="2000" value="900" step="100">Auto</div>
+      <button class="icon-btn tts-read-btn" onclick="speakText(document.getElementById('oop-output').textContent)">🔊</button>
+    </div>
+  </div>
+
+  <!-- QUIZ TAB (OOP) -->
+  <div class="tp-section" id="oop-quiz-oop">
+    <!-- injected by JS -->
+  </div>
+
+</div><!-- /page-oop -->
+
+<!-- ═══════════════════════════════════════════════════════
+     COMBINED QUIZ PAGE (via nav)
+═══════════════════════════════════════════════════════ -->
+<div class="page" id="page-quiz">
+  <div style="max-width:1000px;margin:0 auto;padding:32px 24px 16px">
+    <div style="font-size:1.5rem;font-weight:900;margin-bottom:8px">🎯 Quiz Portal</div>
+    <p style="color:var(--txt2);font-size:.9rem;margin-bottom:20px">Test your knowledge — 5 questions from each topic. One question at a time.</p>
+    <div style="display:flex;gap:12px;margin-bottom:28px">
+      <button class="ts-btn active" id="q-topic-sets" onclick="selectQuizTopic('sets')">Topic 14: Sets</button>
+      <button class="ts-btn" id="q-topic-oop" onclick="selectQuizTopic('oop')">Topic 23: OOP</button>
+    </div>
+  </div>
+  <div id="quiz-container"></div>
+</div>
+
+<!-- Sparkle overlay -->
+<div class="sparkle" id="sparkle-overlay" style="display:none"></div>
+
+<!-- ═══════════════════════════════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════════════════════════════ -->
+<script>
+/* ─── TTS ─── */
+let ttsMode = 'browser';
+const ttsStatusTxt = document.getElementById('tts-status-txt');
+
+async function checkTTS() {
+  try {
+    const r = await fetch('/api/health', {signal: AbortSignal.timeout(2000)});
+    if (r.ok) { ttsMode = 'server'; ttsStatusTxt.textContent = 'Python TTS Active'; return; }
+  } catch(e) {}
+  ttsMode = 'browser';
+  ttsStatusTxt.textContent = 'Browser TTS';
+}
+checkTTS();
+
+function speakText(txt) {
+  if (!txt || txt.length < 2) return;
+  const clean = txt.replace(/[🎓🏗️▶◀↺🔊⚗️🎯📖]/g,'').substring(0,300);
+  if (ttsMode === 'server') {
+    fetch('/api/tts?text=' + encodeURIComponent(clean)).then(r=>r.arrayBuffer()).then(buf=>{
+      const ctx = new AudioContext();
+      ctx.decodeAudioData(buf, b=>{ const src=ctx.createBufferSource(); src.buffer=b; src.connect(ctx.destination); src.start(); });
+    }).catch(()=>browserSpeak(clean));
+  } else { browserSpeak(clean); }
+}
+function browserSpeak(t) {
+  if (!window.speechSynthesis) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(t);
+  u.rate = 1; u.pitch = 1;
+  speechSynthesis.speak(u);
+}
+
+/* ─── THEME ─── */
+function toggleTheme() {
+  const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  document.documentElement.setAttribute('data-theme', dark ? '' : 'dark');
+  document.getElementById('theme-btn').textContent = dark ? '🌙' : '☀️';
+}
+
+/* ─── PAGE ROUTER ─── */
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.getElementById('nav-'+name).classList.add('active');
+  if (name === 'quiz') initQuizPage('sets');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+/* ─── TOPIC TAB ROUTER ─── */
+function showTopicTab(topic, tab) {
+  const page = document.getElementById('page-'+topic);
+  page.querySelectorAll('.tp-section').forEach(s=>s.classList.remove('active'));
+  page.querySelectorAll('.tp-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(topic+'-'+tab).classList.add('active');
+  const tabs = page.querySelectorAll('.tp-tab');
+  const mapping = {intro:0, lab:1};
+  const tabMap = {'quiz-sets':2,'quiz-oop':2};
+  const idx = (tab in mapping) ? mapping[tab] : (tab in tabMap ? tabMap[tab] : 0);
+  if (tabs[idx]) tabs[idx].classList.add('active');
+  if (tab === 'quiz-sets' || tab === 'quiz-oop') {
+    const qtype = tab.includes('oop') ? 'oop' : 'sets';
+    renderInlineQuiz(topic+'-'+tab, qtype);
+  }
+  if (tab === 'lab' && topic === 'sets') initSetsSim();
+  if (tab === 'lab' && topic === 'oop') initOOPSim();
+}
+
+/* ══════════════════════════════════════════════════════
+   SETS VENN DIAGRAM
+══════════════════════════════════════════════════════ */
+function computeOp(A, B, op) {
+  if (op === 'union') return [...new Set([...A,...B])].sort();
+  if (op === 'intersection') return A.filter(x=>B.includes(x));
+  if (op === 'difference') return A.filter(x=>!B.includes(x));
+  if (op === 'symdiff') return [...A.filter(x=>!B.includes(x)), ...B.filter(x=>!A.includes(x))].sort();
+  return [];
+}
+
+/* ══════════════════════════════════════════════════════
+   12-CONCEPT INTERACTIVE SETS EXPLORER
+══════════════════════════════════════════════════════ */
+let curSetConcept = 0;
+let scState = {
+  wellDefined: true,
+  filterRun: false,
+  selectedMember: 'Aarav',
+  setType: 'empty',
+  subsetEqual: false,
+  powerElems: ['a', 'b'],
+  vennOp: 'union',
+  lawType: 'commutative',
+  cardAOnly: 3,
+  cardInter: 2,
+  cardBOnly: 3,
+  intervalType: '[2,5]',
+  cartSwap: false
+};
+
+const SET_CONCEPTS = [
+  { short: '1. Idea', title: '1. What is a Set?', meaning: 'A set is a well-defined collection of distinct objects — membership can be decided clearly without ambiguity.' },
+  { short: '2. Forms', title: '2. Ways to Write a Set', meaning: 'Roster form lists all elements inside braces; Set-builder form defines a selection rule (filter).' },
+  { short: '3. ∈ / ∉', title: '3. Elements & Notation (∈ vs ∉)', meaning: 'Inside the circle = ∈ (belongs to); outside the circle = ∉ (does not belong).' },
+  { short: '4. Types', title: '4. Types of Sets', meaning: 'Empty (∅), Singleton, Finite, Infinite, Equal vs Equivalent, and Disjoint sets.' },
+  { short: '5. Subset', title: '5. Subset (⊆) vs Proper Subset (⊂)', meaning: 'If every element of A is in B, then A ⊆ B. If A ≠ B as well, then A ⊂ B (Proper subset).' },
+  { short: '6. Universal', title: '6. Universal Set (U)', meaning: 'The big rectangle U holds all elements under consideration in the current discussion.' },
+  { short: '7. Power Set', title: '7. Power Set P(A)', meaning: 'The set of all possible subsets of A — 2 choices per element (include or exclude), giving 2ⁿ subsets.' },
+  { short: '8. Venn Ops', title: '8. Set Operations (Venn Diagram)', meaning: 'A = Cricket (Blue), B = Music (Orange), Overlap = Both (Purple), U = All Students, A\' = Complement (Yellow).' },
+  { short: '9. Laws', title: '9. Venn Diagram & Set Identities', meaning: 'Verify Commutative, Associative (3 circles), Distributive, and De Morgan\'s Laws by comparing LHS and RHS shading.' },
+  { short: '10. Cardinality', title: '10. Cardinality & Counting', meaning: 'n(A ∪ B) = n(A) + n(B) − n(A ∩ B), subtracting the purple overlap once so it is not counted twice.' },
+  { short: '11. Intervals', title: '11. Intervals & Number Line', meaning: 'Square bracket [ ] = endpoint included (filled dot ●); Round bracket ( ) = excluded (hollow dot ○).' },
+  { short: '12. A × B', title: '12. Cartesian Product (A × B)', meaning: 'Grid of ordered pairs: Rows = A, Columns = B. Order matters, so generally A × B ≠ B × A.' }
+];
+
+function renderSetPills() {
+  const wrap = document.getElementById('sc-pills');
+  if (!wrap) return;
+  wrap.innerHTML = SET_CONCEPTS.map((c, i) => `
+    <button onclick="goSetConcept(${i})" class="vis-btn${i === curSetConcept ? ' primary' : ''}" style="padding:5px 11px;font-size:.75rem">${c.short}</button>
+  `).join('');
+  const lbl = document.getElementById('sc-progress-label');
+  if (lbl) lbl.textContent = `Concept ${curSetConcept + 1} of ${SET_CONCEPTS.length} · Teaching Sequence`;
+}
+
+function goSetConcept(idx) {
+  curSetConcept = Math.max(0, Math.min(SET_CONCEPTS.length - 1, idx));
+  renderSetPills();
+  renderSetConcept();
+}
+
+function stepSetConcept(dir) {
+  goSetConcept(curSetConcept + dir);
+}
+
+function speakSetConcept() {
+  const c = SET_CONCEPTS[curSetConcept];
+  if (c) speakText(c.title + '. ' + c.meaning);
+}
+
+function renderSetConcept() {
+  const stage = document.getElementById('sc-stage');
+  if (!stage) return;
+  const c = SET_CONCEPTS[curSetConcept];
+  let body = '';
+
+  if (curSetConcept === 0) {
+    const wd = scState.wellDefined;
+    body = `
+      <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+        <button class="op-btn${wd?' active':''}" onclick="scState.wellDefined=true;renderSetConcept()">✅ Well-Defined: Cricket Lovers</button>
+        <button class="op-btn${!wd?' active':''}" onclick="scState.wellDefined=false;renderSetConcept()">❌ Unclear: "Intelligent Students"</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:20px;align-items:center">
+        <svg viewBox="0 0 380 210" style="width:100%;max-height:220px">
+          <rect x="10" y="10" width="360" height="190" rx="18" fill="rgba(59,130,246,0.08)" stroke="${wd?'#3b82f6':'#f953c6'}" stroke-width="2" stroke-dasharray="${wd?'none':'6,4'}"/>
+          <text x="190" y="36" text-anchor="middle" font-weight="800" font-size="13" fill="${wd?'#2563eb':'#db2777'}">${wd ? 'A = {Students who like Cricket}' : 'Unclear: "Intelligent students in class"'}</text>
+          ${wd ? `
+            <circle cx="190" cy="118" r="68" fill="rgba(59,130,246,0.18)" stroke="#3b82f6" stroke-width="2.5"/>
+            <g font-size="12" font-weight="700" fill="var(--txt)" text-anchor="middle">
+              <circle cx="155" cy="100" r="18" fill="#3b82f6"/><text x="155" y="104" fill="#fff">Aarav</text>
+              <circle cx="222" cy="100" r="18" fill="#3b82f6"/><text x="222" y="104" fill="#fff">Kabir</text>
+              <circle cx="188" cy="148" r="18" fill="#3b82f6"/><text x="188" y="152" fill="#fff">Diya</text>
+            </g>
+            <text x="315" y="120" font-size="11" fill="var(--txt2)" text-anchor="middle">Riya (Music)</text>
+          ` : `
+            <text x="190" y="105" text-anchor="middle" font-size="28">🤔❓</text>
+            <text x="190" y="138" text-anchor="middle" font-size="12" fill="var(--txt2)">Every person defines "intelligent" differently —</text>
+            <text x="190" y="158" text-anchor="middle" font-size="12" font-weight="700" fill="#db2777">So this is NOT a well-defined Set!</text>
+          `}
+        </svg>
+        <div class="glass-sm" style="padding:18px;font-size:.86rem;line-height:1.7">
+          <div><strong>Notation:</strong> <code>A = {Aarav, Kabir, Diya}</code></div>
+          <div style="margin-top:8px"><strong>Rule:</strong> Membership must be a clear yes/no for every student (e.g. "Students under age 18" ✅).</div>
+          <div style="margin-top:8px;color:var(--accent1)"><strong>Python:</strong> <code>A = {"Aarav", "Kabir", "Diya"}</code></div>
+        </div>
+      </div>`;
+  } else if (curSetConcept === 1) {
+    const ran = scState.filterRun;
+    body = `
+      <div style="display:grid;grid-template-columns:1fr 1.2fr;gap:20px;align-items:center">
+        <div class="glass-sm" style="padding:20px">
+          <div style="font-size:.75rem;font-weight:800;color:#2563eb;text-transform:uppercase;margin-bottom:8px">A. Roster / Tabular Form</div>
+          <div style="font-family:monospace;font-size:1.1rem;font-weight:800;margin-bottom:12px">A = {2, 4, 6, 8}</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            ${[2,4,6,8].map(n => `<span style="width:40px;height:40px;border-radius:12px;background:#3b82f6;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800">${n}</span>`).join('')}
+          </div>
+          <div style="font-size:.8rem;color:var(--txt2);margin-top:12px">Final selected objects listed inside braces.</div>
+        </div>
+        <div class="glass-sm" style="padding:20px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <span style="font-size:.75rem;font-weight:800;color:#7c3aed;text-transform:uppercase">B. Set-Builder Filter Machine</span>
+            <button class="vis-btn primary" style="padding:4px 12px;font-size:.75rem" onclick="scState.filterRun=!scState.filterRun;renderSetConcept()">${ran?'↺ Reset Filter':'⚡ Run Filter'}</button>
+          </div>
+          <div style="font-family:monospace;font-size:.9rem;font-weight:700;margin-bottom:12px">A = {x | x even natural &amp; x &lt; 10}</div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:12px;border-radius:12px;background:rgba(139,92,246,.1);border:1.5px dashed #8b5cf6">
+            <span style="font-size:.78rem;font-weight:700">Input: {1..9} →</span>
+            <span style="padding:4px 10px;border-radius:8px;background:#8b5cf6;color:#fff;font-size:.75rem;font-weight:700">Filter: Even &amp; &lt;10</span>
+            <span style="font-size:.78rem;font-weight:700">→</span>
+            <span style="font-weight:800;color:${ran?'#16a34a':'var(--txt2)'}">${ran ? '{2, 4, 6, 8} ✅' : '(click Run Filter)'}</span>
+          </div>
+        </div>
+      </div>`;
+  } else if (curSetConcept === 2) {
+    const inside = ['Aarav', 'Diya', 'Kabir'];
+    const all = ['Aarav', 'Diya', 'Riya', 'Kabir', 'Meera'];
+    const sel = scState.selectedMember;
+    const isIn = inside.includes(sel);
+    body = `
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+        <span style="font-size:.82rem;font-weight:700;padding-top:6px">Pick a student:</span>
+        ${all.map(s => `<button class="op-btn${sel===s?' active':''}" style="padding:6px 14px;font-size:.82rem" onclick="scState.selectedMember='${s}';renderSetConcept()">${s}</button>`).join('')}
+      </div>
+      <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:20px;align-items:center">
+        <svg viewBox="0 0 380 200" style="width:100%;max-height:210px">
+          <rect x="8" y="8" width="364" height="184" rx="16" fill="rgba(148,163,184,0.12)" stroke="#94a3b8" stroke-width="1.5"/>
+          <circle cx="155" cy="104" r="76" fill="rgba(59,130,246,0.2)" stroke="#3b82f6" stroke-width="2.5"/>
+          <text x="155" y="46" text-anchor="middle" font-weight="800" font-size="13" fill="#2563eb">A (Cricket)</text>
+          ${inside.map((s,i)=>{
+            const pts = [[118,95],[188,95],[153,142]][i];
+            const active = sel === s;
+            return `<circle cx="${pts[0]}" cy="${pts[1]}" r="${active?22:18}" fill="${active?'#7c3aed':'#3b82f6'}" stroke="#fff" stroke-width="2"/><text x="${pts[0]}" y="${pts[1]+4}" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">${s}</text>`;
+          }).join('')}
+          ${['Riya','Meera'].map((s,i)=>{
+            const pts = [[295,75],[295,135]][i];
+            const active = sel === s;
+            return `<circle cx="${pts[0]}" cy="${pts[1]}" r="${active?22:18}" fill="${active?'#f97316':'#64748b'}" stroke="#fff" stroke-width="2"/><text x="${pts[0]}" y="${pts[1]+4}" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">${s}</text>`;
+          }).join('')}
+        </svg>
+        <div class="glass-sm" style="padding:20px;text-align:center">
+          <div style="font-size:2.1rem;font-weight:900;color:${isIn?'#2563eb':'#ea580c'}">${sel} ${isIn ? '∈' : '∉'} A</div>
+          <div style="font-size:.9rem;color:var(--txt2);margin-top:8px">${isIn ? `${sel} is <strong>inside</strong> the circle — a member!` : `${sel} is <strong>outside</strong> the circle — not a member!`}</div>
+          <div style="margin-top:12px;font-family:monospace;font-size:.84rem;color:var(--accent1)">"${sel}" in A → ${isIn ? 'True' : 'False'}</div>
+        </div>
+      </div>`;
+  } else if (curSetConcept === 3) {
+    const types = [
+      { id:'empty', label:'Empty (∅)', ex:'A = ∅ = {}', desc:'No students inside — an empty circle.' },
+      { id:'singleton', label:'Singleton', ex:'A = {Aarav}', desc:'Exactly one element inside the circle.' },
+      { id:'finite', label:'Finite', ex:'A = {a, b, c}', desc:'Countable number of elements (n = 3).' },
+      { id:'infinite', label:'Infinite', ex:'N = {1, 2, 3, …}', desc:'Endless number line / arrow — never terminates.' },
+      { id:'equal', label:'Equal vs Equivalent', ex:'Equal: {1,2}={2,1} | Equiv: |A|=|B|', desc:'Equal = identical labels & colours; Equivalent = same count, different labels.' },
+      { id:'disjoint', label:'Disjoint', ex:'A ∩ B = ∅', desc:'Two separate circles — zero overlap.' }
+    ];
+    const t = scState.setType;
+    const cur = types.find(x => x.id === t) || types[0];
+    let svg = '';
+    if (t === 'empty') svg = `<circle cx="180" cy="95" r="65" fill="rgba(148,163,184,0.1)" stroke="#94a3b8" stroke-width="2.5" stroke-dasharray="6,4"/><text x="180" y="102" text-anchor="middle" font-size="24" font-weight="800" fill="var(--txt2)">∅</text>`;
+    else if (t === 'singleton') svg = `<circle cx="180" cy="95" r="65" fill="rgba(59,130,246,0.16)" stroke="#3b82f6" stroke-width="2.5"/><circle cx="180" cy="95" r="18" fill="#3b82f6"/><text x="180" y="99" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">5</text>`;
+    else if (t === 'finite') svg = `<circle cx="180" cy="95" r="68" fill="rgba(59,130,246,0.16)" stroke="#3b82f6" stroke-width="2.5"/>${['a','b','c'].map((v,i)=>`<circle cx="${142+i*38}" cy="95" r="14" fill="#3b82f6"/><text x="${142+i*38}" y="99" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">${v}</text>`).join('')}`;
+    else if (t === 'infinite') svg = `<line x1="40" y1="95" x2="320" y2="95" stroke="#8b5cf6" stroke-width="3"/><polygon points="320,88 338,95 320,102" fill="#8b5cf6"/>${[1,2,3,4,5].map((n,i)=>`<circle cx="${70+i*50}" cy="95" r="14" fill="#8b5cf6"/><text x="${70+i*50}" y="99" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">${n}</text>`).join('')}<text x="302" y="75" font-size="16" font-weight="800" fill="#8b5cf6">…</text>`;
+    else if (t === 'equal') svg = `
+      <text x="95" y="24" text-anchor="middle" font-size="11" font-weight="800" fill="#2563eb">Equal: Same Labels</text>
+      <circle cx="60" cy="65" r="28" fill="rgba(59,130,246,.2)" stroke="#3b82f6" stroke-width="2"/><text x="60" y="69" text-anchor="middle" font-size="11" font-weight="700">1, 2</text>
+      <circle cx="130" cy="65" r="28" fill="rgba(59,130,246,.2)" stroke="#3b82f6" stroke-width="2"/><text x="130" y="69" text-anchor="middle" font-size="11" font-weight="700">2, 1</text>
+      <text x="270" y="24" text-anchor="middle" font-size="11" font-weight="800" fill="#ea580c">Equivalent: Same Count (3)</text>
+      <circle cx="230" cy="65" r="30" fill="rgba(59,130,246,.2)" stroke="#3b82f6" stroke-width="2"/><text x="230" y="69" text-anchor="middle" font-size="11" font-weight="700">1, 2, 3</text>
+      <circle cx="310" cy="65" r="30" fill="rgba(249,115,22,.2)" stroke="#f97316" stroke-width="2"/><text x="310" y="69" text-anchor="middle" font-size="11" font-weight="700">a, b, c</text>`;
+    else svg = `<circle cx="115" cy="95" r="58" fill="rgba(59,130,246,0.2)" stroke="#3b82f6" stroke-width="2.5"/><text x="115" y="99" text-anchor="middle" font-weight="800" fill="#2563eb">A</text><circle cx="255" cy="95" r="58" fill="rgba(249,115,22,0.2)" stroke="#f97316" stroke-width="2.5"/><text x="255" y="99" text-anchor="middle" font-weight="800" fill="#ea580c">B</text>`;
+
+    body = `
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+        ${types.map(x => `<button class="op-btn${t===x.id?' active':''}" style="padding:6px 14px;font-size:.8rem" onclick="scState.setType='${x.id}';renderSetConcept()">${x.label}</button>`).join('')}
+      </div>
+      <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:20px;align-items:center">
+        <svg viewBox="0 0 360 ${t==='equal'?115:185}" style="width:100%;max-height:200px">${svg}</svg>
+        <div class="glass-sm" style="padding:18px">
+          <div style="font-weight:800;font-size:1.05rem;color:var(--accent1)">${cur.label}</div>
+          <div style="font-family:monospace;font-size:.9rem;margin:8px 0;font-weight:700">${cur.ex}</div>
+          <div style="font-size:.86rem;color:var(--txt2);line-height:1.6">${cur.desc}</div>
+        </div>
+      </div>`;
+  } else if (curSetConcept === 4) {
+    const eq = scState.subsetEqual;
+    body = `
+      <div style="display:flex;gap:10px;margin-bottom:16px">
+        <button class="op-btn${!eq?' active':''}" onclick="scState.subsetEqual=false;renderSetConcept()">A ⊂ B (Proper Subset: A ≠ B)</button>
+        <button class="op-btn${eq?' active':''}" onclick="scState.subsetEqual=true;renderSetConcept()">A = B (⊆ True, ⊂ False)</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:20px;align-items:center">
+        <svg viewBox="0 0 360 200" style="width:100%;max-height:210px">
+          <circle cx="180" cy="100" r="85" fill="rgba(249,115,22,0.16)" stroke="#f97316" stroke-width="2.5"/>
+          <text x="180" y="34" text-anchor="middle" font-weight="800" font-size="13" fill="#ea580c">B = ${eq?'{1, 2}':'{1, 2, 3}'}</text>
+          <circle cx="${eq?180:162}" cy="110" r="${eq?78:50}" fill="rgba(59,130,246,0.22)" stroke="#3b82f6" stroke-width="2.5"/>
+          <text x="${eq?180:162}" y="${eq?105:105}" text-anchor="middle" font-weight="800" font-size="13" fill="#2563eb">A = {1, 2}</text>
+          ${!eq ? `<circle cx="235" cy="120" r="14" fill="#f97316"/><text x="235" y="124" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">3</text>` : ''}
+        </svg>
+        <div class="glass-sm" style="padding:18px;font-size:.88rem;line-height:1.7">
+          <div><strong>A ⊆ B:</strong> <span style="color:#16a34a;font-weight:800">True ✅</span></div>
+          <div><strong>A ⊂ B:</strong> <span style="color:${eq?'#db2777':'#16a34a'};font-weight:800">${eq?'False ❌ (A == B)':'True ✅ (3 is outside A)'}</span></div>
+          <div style="margin-top:10px;font-family:monospace;font-size:.82rem;color:var(--accent1)">Python: A.issubset(B) → True</div>
+        </div>
+      </div>`;
+  } else if (curSetConcept === 5) {
+    body = `
+      <div style="display:grid;grid-template-columns:1.3fr 1fr;gap:20px;align-items:center">
+        <svg viewBox="0 0 380 210" style="width:100%;max-height:220px">
+          <rect x="10" y="10" width="360" height="190" rx="16" fill="rgba(148,163,184,0.22)" stroke="#64748b" stroke-width="2.5"/>
+          <text x="26" y="34" font-weight="800" font-size="13" fill="var(--txt)">U = All students in the class</text>
+          <circle cx="135" cy="115" r="56" fill="rgba(59,130,246,0.28)" stroke="#3b82f6" stroke-width="2.5"/>
+          <text x="135" y="119" text-anchor="middle" font-weight="800" fill="#2563eb">A (Cricket)</text>
+          <circle cx="245" cy="115" r="56" fill="rgba(249,115,22,0.28)" stroke="#f97316" stroke-width="2.5"/>
+          <text x="245" y="119" text-anchor="middle" font-weight="800" fill="#ea580c">B (Music)</text>
+          <text x="295" y="185" font-size="11" fill="var(--txt2)">Nothing outside U</text>
+        </svg>
+        <div class="glass-sm" style="padding:18px;font-size:.86rem;line-height:1.7">
+          <div><strong>Rectangle U:</strong> Every student in the class.</div>
+          <div style="margin-top:8px"><strong>Subsets A &amp; B:</strong> Bright blue and orange circles live inside U.</div>
+          <div style="margin-top:8px"><strong>Complement rule:</strong> <code>A' = U - A</code> (everything inside U that is outside A).</div>
+        </div>
+      </div>`;
+  } else if (curSetConcept === 6) {
+    const elems = scState.powerElems;
+    const subsets = [[]];
+    for (const el of elems) {
+      const len = subsets.length;
+      for (let i = 0; i < len; i++) subsets.push([...subsets[i], el]);
+    }
+    body = `
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px">
+        <span style="font-size:.84rem;font-weight:700">Choose Set A:</span>
+        <button class="op-btn${elems.length===2?' active':''}" style="padding:6px 14px;font-size:.8rem" onclick="scState.powerElems=['a','b'];renderSetConcept()">A = {a, b} (2² = 4)</button>
+        <button class="op-btn${elems.length===3?' active':''}" style="padding:6px 14px;font-size:.8rem" onclick="scState.powerElems=['a','b','c'];renderSetConcept()">A = {a, b, c} (2³ = 8)</button>
+      </div>
+      <div class="glass-sm" style="padding:16px;margin-bottom:14px;font-size:.86rem">
+        <strong>Decision Tree Rule:</strong> 2 choices for each element (<em>include</em> or <em>exclude</em>). Total = <strong>|P(A)| = 2<sup>${elems.length}</sup> = ${subsets.length}</strong>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px">
+        ${subsets.map(s => `<span style="padding:8px 14px;border-radius:12px;background:rgba(139,92,246,.16);border:1.5px solid rgba(139,92,246,.45);font-family:monospace;font-weight:800;font-size:.9rem">${s.length ? '{'+s.join(', ')+'}' : '∅'}</span>`).join('')}
+      </div>`;
+  } else if (curSetConcept === 7) {
+    const op = scState.vennOp;
+    const ops = [
+      { id:'union', label:'A ∪ B (Union)', cue:'A or B — shade both circles', res:'{Aarav, Kabir, Diya, Riya, Meera}' },
+      { id:'intersection', label:'A ∩ B (Intersection)', cue:'A and B — purple overlap only', res:'{Diya}' },
+      { id:'difference', label:'A − B (Difference)', cue:'Only A (remove B overlap)', res:'{Aarav, Kabir}' },
+      { id:'complement', label:"A' (Complement)", cue:'U − A (pale yellow region outside A)', res:'{Riya, Meera, Neha}' }
+    ];
+    const curOpObj = ops.find(x => x.id === op) || ops[0];
+    const uBg = op === 'complement' ? 'rgba(254,240,138,0.65)' : 'rgba(148,163,184,0.12)';
+    const aFill = (op === 'union' || op === 'difference') ? 'rgba(59,130,246,0.45)' : 'rgba(59,130,246,0.12)';
+    const bFill = (op === 'union') ? 'rgba(249,115,22,0.45)' : 'rgba(249,115,22,0.12)';
+    const interFill = (op === 'union' || op === 'intersection') ? 'rgba(139,92,246,0.65)' : 'rgba(139,92,246,0.08)';
+    body = `
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+        ${ops.map(x => `<button class="op-btn${op===x.id?' active':''}" style="padding:6px 14px;font-size:.82rem" onclick="scState.vennOp='${x.id}';renderSetConcept()">${x.label}</button>`).join('')}
+      </div>
+      <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:20px;align-items:center">
+        <svg viewBox="0 0 380 215" style="width:100%;max-height:220px">
+          <defs><clipPath id="sc-clip-a"><circle cx="145" cy="110" r="70"/></clipPath></defs>
+          <rect x="8" y="8" width="364" height="198" rx="16" fill="${uBg}" stroke="#64748b" stroke-width="2"/>
+          <text x="22" y="28" font-size="12" font-weight="800" fill="var(--txt)">U</text>
+          <circle cx="145" cy="110" r="70" fill="${op==='complement'?'rgba(255,255,255,0.85)':aFill}" stroke="#3b82f6" stroke-width="2.5"/>
+          <circle cx="235" cy="110" r="70" fill="${bFill}" stroke="#f97316" stroke-width="2.5"/>
+          <circle cx="235" cy="110" r="70" fill="${interFill}" clip-path="url(#sc-clip-a)"/>
+          <text x="108" y="64" font-weight="800" font-size="13" fill="#2563eb">A Cricket</text>
+          <text x="235" y="64" font-weight="800" font-size="13" fill="#ea580c">B Music</text>
+          <text x="110" y="114" font-size="11" font-weight="700" text-anchor="middle" fill="var(--txt)">Aarav, Kabir</text>
+          <text x="190" y="114" font-size="11" font-weight="800" text-anchor="middle" fill="var(--txt)">Diya</text>
+          <text x="270" y="114" font-size="11" font-weight="700" text-anchor="middle" fill="var(--txt)">Riya, Meera</text>
+          <text x="332" y="190" font-size="11" font-weight="700" fill="var(--txt2)">Neha</text>
+        </svg>
+        <div class="glass-sm" style="padding:18px;font-size:.86rem;line-height:1.7">
+          <div style="font-weight:800;font-size:1.05rem;color:var(--accent1)">${curOpObj.label}</div>
+          <div style="margin:6px 0"><strong>Memory cue:</strong> ${curOpObj.cue}</div>
+          <div style="font-family:monospace;font-weight:700;margin-top:8px">${curOpObj.res}</div>
+        </div>
+      </div>`;
+  } else if (curSetConcept === 8) {
+    const laws = [
+      { id:'commutative', label:'Commutative', expr:'A ∪ B = B ∪ A', desc:'Swapping A and B keeps the exact same shaded region.' },
+      { id:'associative', label:'Associative (3 Circles)', expr:'(A ∪ B) ∪ C = A ∪ (B ∪ C)', desc:'Changing the grouping brackets gives the exact same final region.' },
+      { id:'distributive', label:'Distributive', expr:'A ∩ (B ∪ C) = (A ∩ B) ∪ (A ∩ C)', desc:'Both sides produce the identical shaded region.' },
+      { id:'demorgan', label:"De Morgan's Law", expr:"(A ∪ B)' = A' ∩ B'", desc:'Both diagrams shade only the yellow area outside A and B.' }
+    ];
+    const lw = laws.find(x => x.id === scState.lawType) || laws[0];
+    const isDeMorgan = lw.id === 'demorgan';
+    const is3 = lw.id === 'associative' || lw.id === 'distributive';
+    const drawMini = (swap) => is3
+      ? `<svg viewBox="0 0 180 140" style="width:100%;max-width:170px">
+          <circle cx="${swap?108:72}" cy="58" r="36" fill="rgba(59,130,246,.35)" stroke="#3b82f6" stroke-width="2"/>
+          <circle cx="${swap?72:108}" cy="58" r="36" fill="rgba(249,115,22,.35)" stroke="#f97316" stroke-width="2"/>
+          <circle cx="90" cy="88" r="36" fill="rgba(139,92,246,.35)" stroke="#8b5cf6" stroke-width="2"/>
+          <text x="90" y="135" text-anchor="middle" font-size="10" font-weight="700" fill="var(--txt)">${swap?'RHS Same ✅':'LHS'}</text>
+        </svg>`
+      : `<svg viewBox="0 0 180 130" style="width:100%;max-width:170px">
+          <rect x="6" y="6" width="168" height="106" rx="10" fill="${isDeMorgan?'rgba(254,240,138,0.65)':'rgba(148,163,184,0.12)'}" stroke="#64748b" stroke-width="1.5"/>
+          <circle cx="70" cy="58" r="36" fill="${isDeMorgan?'rgba(255,255,255,0.85)':'rgba(59,130,246,0.4)'}" stroke="#3b82f6" stroke-width="2"/>
+          <circle cx="110" cy="58" r="36" fill="${isDeMorgan?'rgba(255,255,255,0.85)':'rgba(249,115,22,0.4)'}" stroke="#f97316" stroke-width="2"/>
+          <text x="90" y="125" text-anchor="middle" font-size="10" font-weight="700" fill="var(--txt)">${swap?'RHS Same ✅':'LHS'}</text>
+        </svg>`;
+    body = `
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+        ${laws.map(x => `<button class="op-btn${lw.id===x.id?' active':''}" style="padding:6px 14px;font-size:.8rem" onclick="scState.lawType='${x.id}';renderSetConcept()">${x.label}</button>`).join('')}
+      </div>
+      <div class="glass-sm" style="padding:16px;text-align:center;margin-bottom:14px">
+        <div style="font-size:1.1rem;font-weight:900;color:var(--accent1)">${lw.expr}</div>
+        <div style="font-size:.84rem;color:var(--txt2);margin-top:4px">${lw.desc}</div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:24px;flex-wrap:wrap">
+        <div class="glass-sm" style="padding:12px">${drawMini(false)}</div>
+        <div style="font-size:1.8rem;font-weight:900;color:var(--accent2)">=</div>
+        <div class="glass-sm" style="padding:12px">${drawMini(true)}</div>
+      </div>`;
+  } else if (curSetConcept === 9) {
+    const aOnly = scState.cardAOnly, inter = scState.cardInter, bOnly = scState.cardBOnly;
+    const nA = aOnly + inter, nB = bOnly + inter, union = nA + nB - inter;
+    body = `
+      <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:20px;align-items:center">
+        <svg viewBox="0 0 360 190" style="width:100%;max-height:200px">
+          <defs><clipPath id="cc-a"><circle cx="135" cy="95" r="70"/></clipPath></defs>
+          <circle cx="135" cy="95" r="70" fill="rgba(59,130,246,0.22)" stroke="#3b82f6" stroke-width="2.5"/>
+          <circle cx="225" cy="95" r="70" fill="rgba(249,115,22,0.22)" stroke="#f97316" stroke-width="2.5"/>
+          <circle cx="225" cy="95" r="70" fill="rgba(139,92,246,0.38)" clip-path="url(#cc-a)"/>
+          <text x="100" y="98" text-anchor="middle" font-size="22" font-weight="900" fill="#2563eb">${aOnly}</text>
+          <text x="180" y="98" text-anchor="middle" font-size="22" font-weight="900" fill="#7c3aed">${inter}</text>
+          <text x="260" y="98" text-anchor="middle" font-size="22" font-weight="900" fill="#ea580c">${bOnly}</text>
+          <text x="100" y="118" text-anchor="middle" font-size="10" fill="var(--txt2)">A-only</text>
+          <text x="180" y="118" text-anchor="middle" font-size="10" fill="var(--txt2)">Overlap</text>
+          <text x="260" y="118" text-anchor="middle" font-size="10" fill="var(--txt2)">B-only</text>
+        </svg>
+        <div class="glass-sm" style="padding:18px;font-size:.86rem">
+          <div style="margin-bottom:8px">A-only: <input type="range" min="1" max="8" value="${aOnly}" oninput="scState.cardAOnly=+this.value;renderSetConcept()"> <strong>${aOnly}</strong></div>
+          <div style="margin-bottom:8px">Overlap: <input type="range" min="0" max="6" value="${inter}" oninput="scState.cardInter=+this.value;renderSetConcept()"> <strong>${inter}</strong></div>
+          <div style="margin-bottom:12px">B-only: <input type="range" min="1" max="8" value="${bOnly}" oninput="scState.cardBOnly=+this.value;renderSetConcept()"> <strong>${bOnly}</strong></div>
+          <div style="font-family:monospace;font-weight:800;font-size:.95rem;color:var(--accent1)">n(A∪B) = ${nA} + ${nB} − ${inter} = ${union}</div>
+        </div>
+      </div>`;
+  } else if (curSetConcept === 10) {
+    const ivs = [
+      { id:'[2,5]', leftInc:true, rightInc:true, desc:'Both 2 and 5 included (filled dots ●)' },
+      { id:'(2,5)', leftInc:false, rightInc:false, desc:'Both 2 and 5 excluded (hollow dots ○)' },
+      { id:'[2,5)', leftInc:true, rightInc:false, desc:'2 included (●), 5 excluded (○)' },
+      { id:'(2,5]', leftInc:false, rightInc:true, desc:'2 excluded (○), 5 included (●)' }
+    ];
+    const iv = ivs.find(x => x.id === scState.intervalType) || ivs[0];
+    body = `
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+        ${ivs.map(x => `<button class="op-btn${iv.id===x.id?' active':''}" style="padding:6px 14px;font-size:.84rem" onclick="scState.intervalType='${x.id}';renderSetConcept()">${x.id}</button>`).join('')}
+      </div>
+      <div class="glass-sm" style="padding:20px;text-align:center">
+        <svg viewBox="0 0 380 95" style="width:100%;max-width:460px">
+          <line x1="25" y1="45" x2="355" y2="45" stroke="var(--txt2)" stroke-width="2"/>
+          <line x1="125" y1="45" x2="260" y2="45" stroke="#8b5cf6" stroke-width="6"/>
+          ${[0,1,2,3,4,5,6].map(n => `<line x1="${35+n*45}" y1="39" x2="${35+n*45}" y2="51" stroke="var(--txt2)" stroke-width="1.5"/><text x="${35+n*45}" y="72" text-anchor="middle" font-size="12" font-weight="700" fill="var(--txt)">${n}</text>`).join('')}
+          <circle cx="125" cy="45" r="8" fill="${iv.leftInc?'#8b5cf6':'#fff'}" stroke="#8b5cf6" stroke-width="3"/>
+          <circle cx="260" cy="45" r="8" fill="${iv.rightInc?'#8b5cf6':'#fff'}" stroke="#8b5cf6" stroke-width="3"/>
+        </svg>
+        <div style="font-weight:800;font-size:1rem;color:var(--accent1);margin-top:6px">${iv.id} → ${iv.desc}</div>
+      </div>`;
+  } else {
+    const swap = scState.cartSwap;
+    const rows = swap ? ['x', 'y'] : [1, 2];
+    const cols = swap ? [1, 2] : ['x', 'y'];
+    body = `
+      <div style="display:flex;gap:10px;margin-bottom:16px;align-items:center">
+        <button class="op-btn${!swap?' active':''}" onclick="scState.cartSwap=false;renderSetConcept()">A × B</button>
+        <button class="op-btn${swap?' active':''}" onclick="scState.cartSwap=true;renderSetConcept()">B × A</button>
+        <span style="font-size:.82rem;color:var(--txt2)">Order matters: <strong>A × B ≠ B × A</strong></span>
+      </div>
+      <div style="display:grid;grid-template-columns:auto 1fr 1fr;gap:8px;max-width:440px;margin:0 auto">
+        <div style="padding:10px;font-weight:800;color:var(--accent1)">${swap?'B \\ A':'A \\ B'}</div>
+        ${cols.map(c => `<div class="glass-sm" style="padding:10px;text-align:center;font-weight:800;color:#ea580c">${c}</div>`).join('')}
+        ${rows.map(r => `
+          <div class="glass-sm" style="padding:10px;text-align:center;font-weight:800;color:#2563eb">${r}</div>
+          ${cols.map(c => `<div style="padding:12px;text-align:center;border-radius:12px;background:rgba(139,92,246,.16);border:1.5px solid rgba(139,92,246,.4);font-family:monospace;font-weight:800">(${r}, ${c})</div>`).join('')}
+        `).join('')}
+      </div>`;
+  }
+
+  stage.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px;flex-wrap:wrap">
+      <div>
+        <div style="font-size:1.35rem;font-weight:900">${c.title}</div>
+        <div style="font-size:.9rem;color:var(--txt2);margin-top:4px">${c.meaning}</div>
+      </div>
+    </div>
+    ${body}
+  `;
+}
+
+function drawVenn() {
+  renderSetPills();
+  renderSetConcept();
+}
+
+/* ══════════════════════════════════════════════════════
+   EDITOR HELPERS
+══════════════════════════════════════════════════════ */
+function updateLineNums(editorId, numsId) {
+  const ed = document.getElementById(editorId);
+  const nums = document.getElementById(numsId);
+  if (!ed || !nums) return;
+  const count = ed.value.split('\n').length;
+  nums.innerHTML = Array.from({length: count}, (_, i) => i + 1).join('<br>');
+}
+
+function setupEditor(editorId, numsId) {
+  const ed = document.getElementById(editorId);
+  if (!ed) return;
+  updateLineNums(editorId, numsId);
+  ed.addEventListener('input', () => updateLineNums(editorId, numsId));
+  ed.addEventListener('scroll', () => {
+    const nums = document.getElementById(numsId);
+    if (nums) nums.scrollTop = ed.scrollTop;
+  });
+  ed.addEventListener('keydown', (e) => {
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      const s = ed.selectionStart, end = ed.selectionEnd;
+      ed.value = ed.value.substring(0, s) + '    ' + ed.value.substring(end);
+      ed.selectionStart = ed.selectionEnd = s + 4;
+      updateLineNums(editorId, numsId);
+    }
+  });
+}
+
+function copyEditor(editorId) {
+  const ed = document.getElementById(editorId);
+  if (ed && navigator.clipboard) navigator.clipboard.writeText(ed.value);
+}
+
+/* ══════════════════════════════════════════════════════
+   SETS SIMULATOR
+══════════════════════════════════════════════════════ */
+let simOp = 'union', simSteps = [], simCurrent = -1, simPlaying = false, simTimer = null;
+
+function selectSimOp(el) {
+  document.querySelectorAll('.op-chip').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  simOp = el.dataset.op;
+  syncSetsEditorFromInputs();
+}
+
+function parseSet(str) {
+  return [...new Set(str.split(',').map(s=>s.trim()).filter(s=>s).map(s=>isNaN(s)?s:Number(s)))];
+}
+
+function syncSetsEditorFromInputs() {
+  const A = parseSet(document.getElementById('sim-set-a').value);
+  const B = parseSet(document.getElementById('sim-set-b').value);
+  const opMap = {union:'|', intersection:'&', difference:'-', symdiff:'^'};
+  const sym = opMap[simOp];
+  const code = `A = {${A.join(', ')}}\nB = {${B.join(', ')}}\n\nresult = A ${sym} B\nprint(result)`;
+  const ed = document.getElementById('sim-editor');
+  if (ed) {
+    ed.value = code;
+    updateLineNums('sim-editor', 'sim-line-nums');
+  }
+  renderSimCode(code.split('\n'));
+}
+
+function initSetsSim() {
+  const ed = document.getElementById('sim-editor');
+  if (ed && !ed.value.trim()) syncSetsEditorFromInputs();
+  else if (ed) renderSimCode(ed.value.split('\n'));
+}
+
+function renderSimCode(lines, hlLines=[], isFinal=false) {
+  const panel = document.getElementById('sim-code-panel');
+  if (!panel) return;
+  panel.innerHTML = lines.map((l,i)=>{
+    const cls = hlLines.includes(i) ? (isFinal ? ' hl-out' : ' hl') : '';
+    return `<div class="code-line${cls}" id="scl-${i}"><span class="line-num">${i+1}</span>${escHtml(l)}</div>`;
+  }).join('');
+}
+
+function parseSetLiteral(expr) {
+  const m = expr.trim().match(/^\{(.*)\}$/);
+  if (!m) return null;
+  if (!m[1].trim()) return [];
+  return [...new Set(m[1].split(',').map(x => {
+    const t = x.trim();
+    if ((t.startsWith('"') && t.endsWith('"')) || (t.startsWith("'") && t.endsWith("'"))) return t.slice(1, -1);
+    return isNaN(t) ? t : Number(t);
+  }).filter(x => x !== ''))];
+}
+
+function formatPySet(arr) {
+  if (!arr.length) return 'set()';
+  return '{' + arr.map(v => typeof v === 'string' ? `"${v}"` : v).join(', ') + '}';
+}
+
+function startSimSets() {
+  clearInterval(simTimer); simPlaying = false;
+  const ed = document.getElementById('sim-editor');
+  const errBox = document.getElementById('sim-syntax-err');
+  errBox.style.display = 'none';
+
+  const code = ed ? ed.value : '';
+  const lines = code.split('\n');
+  renderSimCode(lines);
+
+  const env = {};
+  const steps = [];
+  const outputs = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    const raw = lines[i];
+    const line = raw.replace(/#.*$/, '').trim();
+    if (!line) continue;
+
+    // Check balanced braces/parens
+    const opens = (line.match(/[\{\(\[]/g) || []).length;
+    const closes = (line.match(/[\}\)\]]/g) || []).length;
+    if (opens !== closes) {
+      errBox.textContent = `SyntaxError (line ${i+1}): Unmatched bracket/brace in "${line}"`;
+      errBox.style.display = 'block';
+      document.getElementById('sim-output').textContent = `❌ SyntaxError on line ${i+1}`;
+      document.getElementById('sim-vis-controls').style.display = 'none';
+      return;
+    }
+
+    const assignSet = line.match(/^([A-Za-z_]\w*)\s*=\s*(\{.*\})$/);
+    if (assignSet) {
+      const val = parseSetLiteral(assignSet[2]);
+      if (val === null) {
+        errBox.textContent = `SyntaxError (line ${i+1}): Invalid set literal`;
+        errBox.style.display = 'block';
+        return;
+      }
+      env[assignSet[1]] = val;
+      steps.push({lines:[i], msg:`Defining ${assignSet[1]} = ${formatPySet(val)}`});
+      continue;
+    }
+
+    const assignOp = line.match(/^([A-Za-z_]\w*)\s*=\s*([A-Za-z_]\w*)\s*([|&\-\^])\s*([A-Za-z_]\w*)$/);
+    if (assignOp) {
+      const [, target, left, op, right] = assignOp;
+      if (!(left in env) || !(right in env)) {
+        errBox.textContent = `NameError (line ${i+1}): Set "${!(left in env)?left:right}" is not defined`;
+        errBox.style.display = 'block';
+        return;
+      }
+      const opKey = {'|':'union','&':'intersection','-':'difference','^':'symdiff'}[op];
+      const res = computeOp(env[left], env[right], opKey);
+      env[target] = res;
+      steps.push({lines:[i], msg:`Computing ${target} = ${left} ${op} ${right} → ${formatPySet(res)}`});
+      continue;
+    }
+
+    const printMatch = line.match(/^print\((.+)\)$/);
+    if (printMatch) {
+      const expr = printMatch[1].trim();
+      let printed = '';
+      const inlineOp = expr.match(/^([A-Za-z_]\w*)\s*([|&\-\^])\s*([A-Za-z_]\w*)$/);
+      if (inlineOp && (inlineOp[1] in env) && (inlineOp[3] in env)) {
+        const opKey = {'|':'union','&':'intersection','-':'difference','^':'symdiff'}[inlineOp[2]];
+        printed = formatPySet(computeOp(env[inlineOp[1]], env[inlineOp[3]], opKey));
+      } else if (expr in env) {
+        printed = formatPySet(env[expr]);
+      } else {
+        printed = expr.replace(/^["']|["']$/g, '');
+      }
+      outputs.push(printed);
+      steps.push({lines:[i], msg:`Output: ${outputs.join('\n')}`});
+      continue;
+    }
+
+    errBox.textContent = `SyntaxError (line ${i+1}): Unsupported statement "${line}"`;
+    errBox.style.display = 'block';
+    return;
+  }
+
+  if (!steps.length) {
+    document.getElementById('sim-output').textContent = '⚠️ Write some Python set code first!';
+    return;
+  }
+
+  simSteps = steps;
+  simCurrent = -1;
+  document.getElementById('sim-vis-controls').style.display = 'flex';
+  simStep(1);
+}
+
+function simStep(dir) {
+  simCurrent = Math.max(0, Math.min(simSteps.length-1, simCurrent + dir));
+  renderSimStep();
+}
+
+function renderSimStep() {
+  const step = simSteps[simCurrent];
+  const lines = document.getElementById('sim-editor').value.split('\n');
+  renderSimCode(lines, step.lines, simCurrent === simSteps.length - 1);
+  document.getElementById('sim-output').textContent = step.msg;
+  document.getElementById('sim-step-info').textContent = `Step ${simCurrent+1} / ${simSteps.length}`;
+  document.getElementById('sim-btn-prev').disabled = simCurrent === 0;
+  document.getElementById('sim-btn-next').disabled = simCurrent === simSteps.length-1;
+  if (simCurrent === simSteps.length-1) {
+    clearInterval(simTimer); simPlaying = false;
+    document.getElementById('sim-btn-play').textContent = '▶ Play';
+  }
+}
+
+function simTogglePlay() {
+  if (simPlaying) {
+    clearInterval(simTimer); simPlaying = false;
+    document.getElementById('sim-btn-play').textContent = '▶ Play';
+  } else {
+    simPlaying = true;
+    document.getElementById('sim-btn-play').textContent = '⏸ Pause';
+    simTimer = setInterval(()=>{ if(simCurrent < simSteps.length-1) simStep(1); else { clearInterval(simTimer); simPlaying=false; document.getElementById('sim-btn-play').textContent='▶ Play'; } }, parseInt(document.getElementById('sim-speed').value));
+  }
+}
+
+function resetSim() {
+  clearInterval(simTimer); simPlaying = false;
+  simCurrent = -1;
+  const lines = document.getElementById('sim-editor').value.split('\n');
+  renderSimCode(lines);
+  document.getElementById('sim-output').textContent = '▶ Click "Start Visualizer" to run…';
+  document.getElementById('sim-step-info').textContent = 'Step 0 / 0';
+  document.getElementById('sim-vis-controls').style.display = 'none';
+  document.getElementById('sim-btn-play').textContent = '▶ Play';
+}
+
+/* ══════════════════════════════════════════════════════
+   OOP SIMULATOR (Editable Code + Tracer)
+══════════════════════════════════════════════════════ */
+const DEFAULT_OOP_CODE = `class Student:
+    def __init__(self, name, course, year):
+        self.name = name
+        self.course = course
+        self.year = year
+
+    def introduce(self):
+        return f"Hi, I'm {self.name} in {self.course} (Year {self.year})"
+
+s1 = Student("Rohan", "B.Tech", 2)
+s2 = Student("Priya", "MCA", 1)
+print(s1.introduce())
+print(s2.introduce())`;
+
+let oopObjects = [], oopSteps = [], oopCurrent = -1, oopPlaying = false, oopTimer = null;
+let oopCodeLines = DEFAULT_OOP_CODE.split('\n');
+
+function initOOPSim() {
+  const ed = document.getElementById('oop-editor');
+  if (ed && !ed.value.trim()) ed.value = DEFAULT_OOP_CODE;
+  updateLineNums('oop-editor', 'oop-line-nums');
+  oopCodeLines = (ed ? ed.value : DEFAULT_OOP_CODE).split('\n');
+  renderOOPCode();
+}
+
+function resetOOPCode() {
+  const ed = document.getElementById('oop-editor');
+  if (ed) ed.value = DEFAULT_OOP_CODE;
+  updateLineNums('oop-editor', 'oop-line-nums');
+  resetOOP();
+}
+
+function copyOOPCode() {
+  copyEditor('oop-editor');
+}
+
+function renderOOPCode(hlLines=[], isFinal=false) {
+  const panel = document.getElementById('oop-code-panel');
+  if (!panel) return;
+  panel.innerHTML = oopCodeLines.map((l,i)=>{
+    const cls = hlLines.includes(i) ? (isFinal ? ' hl-out' : ' hl') : '';
+    return `<div class="code-line${cls}" id="ocl-${i}"><span class="line-num">${i+1}</span>${escHtml(l)}</div>`;
+  }).join('');
+}
+
+function parsePyArgs(argStr) {
+  const args = [];
+  let cur = '', quote = null;
+  for (let i = 0; i < argStr.length; i++) {
+    const ch = argStr[i];
+    if (quote) {
+      cur += ch;
+      if (ch === quote && argStr[i-1] !== '\\') quote = null;
+    } else if (ch === '"' || ch === "'") {
+      quote = ch; cur += ch;
+    } else if (ch === ',') {
+      args.push(cur.trim()); cur = '';
+    } else {
+      cur += ch;
+    }
+  }
+  if (cur.trim()) args.push(cur.trim());
+  return args.map(a => {
+    if ((a.startsWith('"') && a.endsWith('"')) || (a.startsWith("'") && a.endsWith("'"))) return a.slice(1, -1);
+    if (a === 'True') return true;
+    if (a === 'False') return false;
+    if (!isNaN(a) && a !== '') return Number(a);
+    return a;
+  });
+}
+
+function formatPyVal(v) {
+  if (typeof v === 'string') return `"${v}"`;
+  return String(v);
+}
+
+function evalFString(expr, obj) {
+  const m = expr.trim().match(/^f(["'])(.*)\1$/);
+  if (!m) {
+    const q = expr.trim().match(/^(["'])(.*)\1$/);
+    return q ? q[2] : expr;
+  }
+  return m[2].replace(/\{([^}]+)\}/g, (_, key) => {
+    const k = key.trim().replace(/^self\./, '');
+    return obj.attrs[k] !== undefined ? obj.attrs[k] : `{${key}}`;
+  });
+}
+
+function runOOPCode() {
+  clearInterval(oopTimer); oopPlaying = false;
+  const ed = document.getElementById('oop-editor');
+  const errBox = document.getElementById('oop-syntax-err');
+  const pill = document.getElementById('oop-exec-pill');
+  errBox.style.display = 'none';
+  pill.style.display = 'none';
+
+  const code = ed ? ed.value : DEFAULT_OOP_CODE;
+  oopCodeLines = code.split('\n');
+  renderOOPCode();
+
+  // 1. Parse & Syntax check
+  const classes = {};
+  const topLines = [];
+  let curClass = null, curMethod = null;
+
+  for (let i = 0; i < oopCodeLines.length; i++) {
+    const raw = oopCodeLines[i];
+    const clean = raw.replace(/#.*$/, '');
+    const trimmed = clean.trim();
+    if (!trimmed) continue;
+
+    const opens = (trimmed.match(/\(/g) || []).length;
+    const closes = (trimmed.match(/\)/g) || []).length;
+    if (opens !== closes) {
+      errBox.textContent = `SyntaxError (line ${i+1}): Unmatched parentheses in "${trimmed}"`;
+      errBox.style.display = 'block';
+      document.getElementById('oop-output').textContent = `❌ SyntaxError on line ${i+1}`;
+      document.getElementById('oop-vis-controls').style.display = 'none';
+      return;
+    }
+
+    const indent = raw.search(/\S/);
+    if (indent === 0) {
+      curMethod = null;
+      const clsMatch = trimmed.match(/^class\s+([A-Za-z_]\w*)(\([^)]*\))?:$/);
+      if (clsMatch) {
+        curClass = { name: clsMatch[1], line: i, methods: {} };
+        classes[clsMatch[1]] = curClass;
+        topLines.push({ type: 'class', name: clsMatch[1], line: i });
+        continue;
+      }
+      if (trimmed.startsWith('class ')) {
+        errBox.textContent = `SyntaxError (line ${i+1}): Expected ":" after class definition`;
+        errBox.style.display = 'block';
+        document.getElementById('oop-output').textContent = `❌ SyntaxError on line ${i+1}`;
+        return;
+      }
+      curClass = null;
+      topLines.push({ type: 'stmt', text: trimmed, line: i });
+    } else if (curClass) {
+      const defMatch = trimmed.match(/^def\s+([A-Za-z_]\w*)\(([^)]*)\):$/);
+      if (defMatch) {
+        const params = defMatch[2].split(',').map(p => p.trim()).filter(Boolean);
+        curMethod = { name: defMatch[1], params, line: i, body: [] };
+        curClass.methods[defMatch[1]] = curMethod;
+        continue;
+      }
+      if (trimmed.startsWith('def ')) {
+        errBox.textContent = `SyntaxError (line ${i+1}): Expected ":" after def`;
+        errBox.style.display = 'block';
+        return;
+      }
+      if (curMethod) {
+        curMethod.body.push({ text: trimmed, line: i });
+      }
+    }
+  }
+
+  // 2. Execute & record steps
+  oopObjects = [];
+  const mainVars = {};
+  const steps = [];
+  const outputs = [];
+
+  const mainSnapshot = () => {
+    const snap = {};
+    for (const [k, v] of Object.entries(mainVars)) {
+      snap[k] = `<${v.className}: ${Object.values(v.attrs)[0] ?? k}>`;
+    }
+    return snap;
+  };
+
+  for (const item of topLines) {
+    if (item.type === 'class') {
+      steps.push({
+        lines: [item.line],
+        msg: `Defined class ${item.name} (blueprint)`,
+        cf: 'main',
+        mainVars: mainSnapshot(),
+        initShow: false,
+        frameTitle: '',
+        frameVars: {}
+      });
+      continue;
+    }
+
+    const stmt = item.text;
+    // Instantiation: var = ClassName(args)
+    const instMatch = stmt.match(/^([A-Za-z_]\w*)\s*=\s*([A-Za-z_]\w*)\((.*)\)$/);
+    if (instMatch) {
+      const [, varName, clsName, argStr] = instMatch;
+      const cls = classes[clsName];
+      if (!cls) {
+        errBox.textContent = `NameError (line ${item.line+1}): name '${clsName}' is not defined`;
+        errBox.style.display = 'block';
+        return;
+      }
+      const args = parsePyArgs(argStr);
+      const obj = { varName, className: clsName, attrs: {} };
+      mainVars[varName] = obj;
+      oopObjects.push(obj);
+
+      steps.push({
+        lines: [item.line],
+        msg: `Creating ${varName} = ${clsName}(${args.map(formatPyVal).join(', ')})`,
+        cf: 'main',
+        mainVars: mainSnapshot(),
+        initShow: false,
+        frameTitle: '',
+        frameVars: {}
+      });
+
+      const initM = cls.methods['__init__'];
+      if (initM) {
+        const locals = { self: `<${clsName} (${varName})>` };
+        initM.params.slice(1).forEach((p, idx) => { locals[p] = formatPyVal(args[idx]); });
+        steps.push({
+          lines: [initM.line],
+          msg: `Calling ${clsName}.__init__(${initM.params.join(', ')})`,
+          cf: 'init',
+          mainVars: mainSnapshot(),
+          initShow: true,
+          frameTitle: `⚙️ ${clsName}.__init__(${initM.params.join(', ')})`,
+          frameVars: { ...locals }
+        });
+
+        for (const b of initM.body) {
+          const attrAssign = b.text.match(/^self\.([A-Za-z_]\w*)\s*=\s*(.+)$/);
+          if (attrAssign) {
+            const attrName = attrAssign[1];
+            const rhs = attrAssign[2].trim();
+            const paramIdx = initM.params.slice(1).indexOf(rhs);
+            const val = paramIdx !== -1 ? args[paramIdx] : parsePyArgs(rhs)[0];
+            obj.attrs[attrName] = val;
+            locals[`self.${attrName}`] = formatPyVal(val);
+            steps.push({
+              lines: [b.line],
+              msg: `Setting ${varName}.${attrName} = ${formatPyVal(val)}`,
+              cf: 'init',
+              mainVars: mainSnapshot(),
+              initShow: true,
+              frameTitle: `⚙️ ${clsName}.__init__(${initM.params.join(', ')})`,
+              frameVars: { ...locals }
+            });
+          }
+        }
+      }
+      continue;
+    }
+
+    // print(var.method()) or print(var.attr) or print("...")
+    const printMatch = stmt.match(/^print\((.+)\)$/);
+    if (printMatch) {
+      const expr = printMatch[1].trim();
+      const callMatch = expr.match(/^([A-Za-z_]\w*)\.([A-Za-z_]\w*)\((.*)\)$/);
+      if (callMatch) {
+        const [, varName, methodName] = callMatch;
+        const obj = mainVars[varName];
+        if (!obj) {
+          errBox.textContent = `NameError (line ${item.line+1}): name '${varName}' is not defined`;
+          errBox.style.display = 'block';
+          return;
+        }
+        const cls = classes[obj.className];
+        const method = cls && cls.methods[methodName];
+        if (!method) {
+          errBox.textContent = `AttributeError (line ${item.line+1}): '${obj.className}' object has no attribute '${methodName}'`;
+          errBox.style.display = 'block';
+          return;
+        }
+        let retVal = '';
+        for (const b of method.body) {
+          const retMatch = b.text.match(/^return\s+(.+)$/);
+          if (retMatch) retVal = evalFString(retMatch[1], obj);
+        }
+        outputs.push(retVal);
+        steps.push({
+          lines: [item.line, method.line, ...(method.body.map(b=>b.line))],
+          msg: `Calling ${varName}.${methodName}() → "${retVal}"\n\nOutput:\n${outputs.join('\n')}`,
+          cf: 'init',
+          mainVars: mainSnapshot(),
+          initShow: true,
+          frameTitle: `⚙️ ${obj.className}.${methodName}(self)`,
+          frameVars: { self: `<${obj.className}: ${varName}>`, return: `"${retVal}"` }
+        });
+        continue;
+      }
+
+      const attrRead = expr.match(/^([A-Za-z_]\w*)\.([A-Za-z_]\w*)$/);
+      if (attrRead && mainVars[attrRead[1]]) {
+        const val = mainVars[attrRead[1]].attrs[attrRead[2]];
+        outputs.push(String(val));
+        steps.push({
+          lines: [item.line],
+          msg: `print(${expr}) → ${val}\n\nOutput:\n${outputs.join('\n')}`,
+          cf: 'main',
+          mainVars: mainSnapshot(),
+          initShow: false,
+          frameTitle: '',
+          frameVars: {}
+        });
+        continue;
+      }
+
+      outputs.push(expr.replace(/^["']|["']$/g, ''));
+      steps.push({
+        lines: [item.line],
+        msg: `Output:\n${outputs.join('\n')}`,
+        cf: 'main',
+        mainVars: mainSnapshot(),
+        initShow: false,
+        frameTitle: '',
+        frameVars: {}
+      });
+      continue;
+    }
+  }
+
+  if (!steps.length) {
+    document.getElementById('oop-output').textContent = '⚠️ Write a Python class and create an object to visualize!';
+    return;
+  }
+
+  // Show verified output first, then allow stepping
+  pill.textContent = '✓ Verified';
+  pill.style.display = 'inline-block';
+  updateOOPPanel();
+  if (oopObjects.length > 0) {
+    const last = oopObjects[oopObjects.length - 1];
+    document.getElementById('flip-new').style.opacity = '1';
+    document.querySelector('#flip-new .fi-name').textContent = last.attrs.name || last.varName;
+    document.querySelector('#flip-new .fi-attr').innerHTML = Object.entries(last.attrs).map(([k,v]) => `${k} = ${formatPyVal(v)}`).join('<br>');
+  }
+
+  oopSteps = steps;
+  oopCurrent = -1;
+  document.getElementById('oop-vis-controls').style.display = 'flex';
+  oopStep(1);
+}
+
+function oopStep(dir) {
+  oopCurrent = Math.max(0, Math.min(oopSteps.length-1, oopCurrent + dir));
+  renderOOPStep();
+}
+
+function renderOOPStep() {
+  const step = oopSteps[oopCurrent];
+  renderOOPCode(step.lines, oopCurrent === oopSteps.length - 1);
+  document.getElementById('oop-output').textContent = step.msg;
+  document.getElementById('oop-step-info').textContent = `Step ${oopCurrent+1} / ${oopSteps.length}`;
+
+  /* Call frames */
+  const initBlock = document.getElementById('cf-init-block');
+  const mainVarsEl = document.getElementById('cf-main-vars');
+  const initVarsEl = document.getElementById('cf-init-vars');
+
+  const mainEntries = Object.entries(step.mainVars || {});
+  mainVarsEl.innerHTML = mainEntries.length
+    ? mainEntries.map(([k,v])=>`<div class="cf-var"><span class="cf-var-name">${escHtml(k)}</span><span class="cf-var-val">${escHtml(v)}</span></div>`).join('')
+    : '<span style="color:#555;font-size:.78rem">No objects yet</span>';
+
+  initBlock.style.display = step.initShow ? 'block' : 'none';
+  if (step.initShow) {
+    initBlock.querySelector('.cf-title').textContent = step.frameTitle;
+    initVarsEl.innerHTML = Object.entries(step.frameVars || {}).map(([k,v])=>`<div class="cf-var"><span class="cf-var-name">${escHtml(k)}</span><span class="cf-var-val">${escHtml(String(v))}</span></div>`).join('');
+  }
+
+  /* SVG arrow connecting Main Block -> active frame */
+  const svg = document.getElementById('cf-arrow-svg');
+  svg.innerHTML = '';
+  if (step.initShow) {
+    const main = document.getElementById('cf-main-block');
+    const init = document.getElementById('cf-init-block');
+    if (main && init) {
+      const mr = main.getBoundingClientRect();
+      const ir = init.getBoundingClientRect();
+      const pr = svg.closest('.call-frames-panel').getBoundingClientRect();
+      const x1 = mr.left + mr.width/2 - pr.left;
+      const y1 = mr.bottom - pr.top;
+      const x2 = ir.left + ir.width/2 - pr.left;
+      const y2 = ir.top - pr.top;
+      const path = `M${x1},${y1} C${x1+30},${(y1+y2)/2} ${x2-30},${(y1+y2)/2} ${x2},${y2}`;
+      svg.innerHTML = `<defs><marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#82aaff"/></marker></defs>
+        <path d="${path}" fill="none" stroke="#82aaff" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrowhead)"/>`;
+    }
+  }
+
+  document.getElementById('oop-btn-prev').disabled = oopCurrent === 0;
+  document.getElementById('oop-btn-next').disabled = oopCurrent === oopSteps.length-1;
+  if (oopCurrent === oopSteps.length-1) { clearInterval(oopTimer); oopPlaying=false; document.getElementById('oop-btn-play').textContent='▶ Play'; }
+}
+
+function updateOOPPanel() {
+  const panel = document.getElementById('oop-obj-panel');
+  if (oopObjects.length === 0) {
+    panel.innerHTML = `<div style="font-size:.85rem;color:var(--txt2);text-align:center;margin:auto;padding:16px">No objects yet — write code and run it!</div>`;
+    return;
+  }
+  panel.innerHTML = oopObjects.map(o => `
+    <div class="obj-instance">
+      <div class="oi-title">🎓 ${escHtml(o.varName)} = ${escHtml(o.className)}</div>
+      ${Object.entries(o.attrs).map(([k,v]) => `<div class="oi-attr">${escHtml(k)} = ${escHtml(formatPyVal(v))}</div>`).join('')}
+    </div>
+  `).join('');
+}
+
+function oopTogglePlay() {
+  if (oopPlaying) {
+    clearInterval(oopTimer); oopPlaying=false; document.getElementById('oop-btn-play').textContent='▶ Play';
+  } else {
+    oopPlaying=true; document.getElementById('oop-btn-play').textContent='⏸ Pause';
+    oopTimer = setInterval(()=>{ if(oopCurrent<oopSteps.length-1) oopStep(1); else{ clearInterval(oopTimer); oopPlaying=false; document.getElementById('oop-btn-play').textContent='▶ Play'; } }, parseInt(document.getElementById('oop-speed').value));
+  }
+}
+
+function resetOOP() {
+  clearInterval(oopTimer); oopPlaying=false; oopCurrent=-1;
+  oopObjects = [];
+  oopSteps = [];
+  const ed = document.getElementById('oop-editor');
+  oopCodeLines = (ed ? ed.value : DEFAULT_OOP_CODE).split('\n');
+  document.getElementById('oop-output').textContent = '▶ Click "Run & Visualize" to start…';
+  document.getElementById('oop-step-info').textContent = 'Step 0 / 0';
+  document.getElementById('oop-vis-controls').style.display = 'none';
+  document.getElementById('oop-btn-play').textContent = '▶ Play';
+  document.getElementById('oop-syntax-err').style.display = 'none';
+  document.getElementById('oop-exec-pill').style.display = 'none';
+  document.getElementById('cf-init-block').style.display = 'none';
+  document.getElementById('cf-main-vars').innerHTML = '<span style="color:#555;font-size:.78rem">No objects yet</span>';
+  document.getElementById('cf-arrow-svg').innerHTML = '';
+  updateOOPPanel();
+  renderOOPCode();
+  document.getElementById('flip-new').style.opacity = '0.4';
+}
+
+/* ══════════════════════════════════════════════════════
+   QUIZ DATA
+══════════════════════════════════════════════════════ */
+const QUIZ_DATA = {
+  sets: [
+    { q: 'What is the result of {1, 2, 3} & {2, 3, 4}?',
+      opts: ['{1, 2, 3, 4}', '{2, 3}', '{1, 4}', '{1, 2, 3}'], ans: 1,
+      exp: 'The & operator gives intersection — items in both sets. {2,3} are common.' },
+    { q: 'Which operator gives the UNION of two sets in Python?',
+      opts: ['&', '+', '|', '^'], ans: 2,
+      exp: '| is the union operator. It combines all unique items from both sets.' },
+    { q: 'What is {1, 2, 3} - {2, 3, 4}?',
+      opts: ['{1}', '{4}', '{2, 3}', '{1, 4}'], ans: 0,
+      exp: 'A - B removes items of B from A. Only 1 remains in A that is not in B.' },
+    { q: 'Sets in Python are…',
+      opts: ['Ordered and indexed', 'Ordered with no index', 'Unordered with no index', 'Unordered and indexed'], ans: 2,
+      exp: 'Sets are unordered — items have no position/index. They only store unique values.' },
+    { q: 'What does {1, 2, 2, 3} give in Python?',
+      opts: ['{1, 2, 2, 3}', '{1, 2, 3}', 'Error', '{2}'], ans: 1,
+      exp: 'Sets automatically remove duplicates. So {1, 2, 2, 3} becomes {1, 2, 3}.' },
+  ],
+  oop: [
+    { q: 'What does the __init__ method do in a Python class?',
+      opts: ['Deletes the object', 'Runs when the object is created', 'Prints the object', 'Copies the class'], ans: 1,
+      exp: '__init__ is the constructor — it runs automatically when you create a new object.' },
+    { q: 'What does "self" refer to in a Python class?',
+      opts: ['The class itself', 'The current object (instance)', 'The parent class', 'None'], ans: 1,
+      exp: 'self refers to the specific object calling the method — each object uses it to store its own data.' },
+    { q: 'If class Student has self.name = name, then s1 = Student("Riya"), what is s1.name?',
+      opts: ['"Student"', '"name"', '"Riya"', 'Error'], ans: 2,
+      exp: 'self.name = name stores the passed-in argument. So s1.name = "Riya".' },
+    { q: 'A class is best described as…',
+      opts: ['A variable', 'A blueprint for creating objects', 'A function', 'A module'], ans: 1,
+      exp: 'A class defines the structure (blueprint); objects are the real instances made from it.' },
+    { q: 'Which line creates an object from a class?',
+      opts: ['class Student():', 'def Student():', 's = Student("Arjun")', 'self.Student()'], ans: 2,
+      exp: 'You create an object by calling the class name like a function: s = Student("Arjun").' },
+  ]
+};
+
+/* ══════════════════════════════════════════════════════
+   QUIZ RENDERER
+══════════════════════════════════════════════════════ */
+let activeQuizTopic = 'sets';
+let quizState = {}; /* {topic: {current, answers, marks, scores}} */
+
+function initQuizPage(topic) {
+  activeQuizTopic = topic;
+  document.querySelectorAll('.ts-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('q-topic-'+topic).classList.add('active');
+  renderQuiz('quiz-container', topic);
+}
+
+function selectQuizTopic(topic) {
+  activeQuizTopic = topic;
+  document.querySelectorAll('.ts-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('q-topic-'+topic).classList.add('active');
+  renderQuiz('quiz-container', topic);
+}
+
+function renderInlineQuiz(containerId, topic) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = `<div style="max-width:900px;margin:0 auto;padding:20px 24px 40px"><div style="font-size:1.2rem;font-weight:800;margin-bottom:16px">🎯 Quick Quiz — ${topic === 'sets' ? 'Sets' : 'OOP'}</div></div>`;
+  renderQuiz(containerId, topic, true);
+}
+
+function renderQuiz(containerId, topic, inline=false) {
+  if (!quizState[topic]) {
+    quizState[topic] = {current:0, answers:new Array(5).fill(-1), marks:new Array(5).fill('not-visited'), showScore:false};
+    quizState[topic].marks[0] = 'not-answered';
+  }
+  const qs = QUIZ_DATA[topic];
+  const state = quizState[topic];
+
+  if (state.showScore) {
+    renderScore(containerId, topic, inline);
+    return;
+  }
+
+  const qi = state.current;
+  const q = qs[qi];
+  const topicLabel = topic === 'sets' ? 'Topic 14: Sets' : 'Topic 23: OOP';
+
+  const html = `
+    <div class="${inline?'':'quiz-portal'}" style="${inline?'padding:0 24px 40px':''}">
+      <div class="q-main-col">
+        <div class="glass q-header-bar">
+          <span class="q-topic-badge">${topicLabel}</span>
+          <span class="q-num">Question ${qi+1} of ${qs.length}</span>
+          <button class="tts-read-btn" onclick="speakText(document.querySelector('#q-${containerId} .q-question-txt').textContent)">🔊</button>
+        </div>
+        <div class="glass q-question-box" id="q-${containerId}">
+          <div class="q-question-txt">${q.q}</div>
+          <ul class="q-options-list" id="opts-${containerId}">
+            ${q.opts.map((o,i)=>`
+              <li class="option-card${state.answers[qi]===i?' selected':''}" onclick="selectAnswer('${containerId}','${topic}',${i})" id="opt-${containerId}-${i}">
+                <div class="opt-label">${String.fromCharCode(65+i)}</div>
+                <span>${o}</span>
+              </li>`).join('')}
+          </ul>
+        </div>
+        <div class="q-action-bar">
+          <button class="q-btn primary" onclick="saveNext('${containerId}','${topic}')">SAVE &amp; NEXT →</button>
+          <button class="q-btn" onclick="markReview('${containerId}','${topic}')">🔖 MARK &amp; NEXT</button>
+          <button class="q-btn" onclick="clearResponse('${containerId}','${topic}')">✕ CLEAR</button>
+          ${qi > 0 ? `<button class="q-btn" onclick="goPrev('${containerId}','${topic}')">← BACK</button>` : ''}
+          ${qi === qs.length-1 ? `<button class="q-btn success" onclick="submitQuiz('${containerId}','${topic}')">🏆 SUBMIT</button>` : ''}
+        </div>
+      </div>
+      ${inline ? '' : `
+      <div class="q-palette-col">
+        <div class="glass palette-card">
+          <div class="palette-title">QUESTION PALETTE</div>
+          <div class="palette-grid">
+            ${state.marks.map((m,i)=>`<button class="pal-btn ${m}${i===qi?' current':''}" onclick="goToQ('${containerId}','${topic}',${i})">${i+1}</button>`).join('')}
+          </div>
+          <div class="palette-legend">
+            <div class="leg-row"><div class="leg-dot" style="background:var(--glass-bg);border:1.5px solid var(--glass-border)"></div>Not Visited</div>
+            <div class="leg-row"><div class="leg-dot" style="background:rgba(249,83,198,.2);border:1px solid #f953c6"></div>Not Answered</div>
+            <div class="leg-row"><div class="leg-dot" style="background:rgba(67,233,123,.2);border:1px solid #43e97b"></div>Answered</div>
+            <div class="leg-row"><div class="leg-dot" style="background:rgba(108,99,255,.3);border:1px solid var(--accent1)"></div>Marked</div>
+          </div>
+        </div>
+      </div>`}
+    </div>`;
+  document.getElementById(containerId).innerHTML = html;
+}
+
+function selectAnswer(cid, topic, optIdx) {
+  const state = quizState[topic];
+  state.answers[state.current] = optIdx;
+  document.querySelectorAll(`#opts-${cid} .option-card`).forEach((el,i)=>{
+    el.classList.toggle('selected', i===optIdx);
+  });
+}
+
+function saveNext(cid, topic) {
+  const state = quizState[topic];
+  const qi = state.current;
+  if (state.answers[qi] !== -1) state.marks[qi] = 'answered';
+  else state.marks[qi] = 'not-answered';
+  if (qi < QUIZ_DATA[topic].length - 1) {
+    state.current++;
+    if (state.marks[state.current] === 'not-visited') state.marks[state.current] = 'not-answered';
+  }
+  renderQuiz(cid, topic, cid !== 'quiz-container');
+}
+
+function markReview(cid, topic) {
+  const state = quizState[topic];
+  state.marks[state.current] = 'marked';
+  if (state.current < QUIZ_DATA[topic].length-1) {
+    state.current++;
+    if (state.marks[state.current] === 'not-visited') state.marks[state.current] = 'not-answered';
+  }
+  renderQuiz(cid, topic, cid !== 'quiz-container');
+}
+
+function clearResponse(cid, topic) {
+  const state = quizState[topic];
+  state.answers[state.current] = -1;
+  state.marks[state.current] = 'not-answered';
+  renderQuiz(cid, topic, cid !== 'quiz-container');
+}
+
+function goPrev(cid, topic) {
+  const state = quizState[topic];
+  if (state.current > 0) state.current--;
+  renderQuiz(cid, topic, cid !== 'quiz-container');
+}
+
+function goToQ(cid, topic, idx) {
+  quizState[topic].current = idx;
+  renderQuiz(cid, topic, cid !== 'quiz-container');
+}
+
+function submitQuiz(cid, topic) {
+  const state = quizState[topic];
+  state.showScore = true;
+  renderScore(cid, topic, cid !== 'quiz-container');
+}
+
+function renderScore(cid, topic, inline) {
+  const state = quizState[topic];
+  const qs = QUIZ_DATA[topic];
+  let correct = 0;
+  qs.forEach((q,i)=>{ if(state.answers[i]===q.ans) correct++; });
+
+  const pct = Math.round(correct/qs.length*100);
+  const emoji = pct === 100 ? '🏆' : pct >= 60 ? '👏' : '📚';
+
+  if (pct >= 60) launchSparkles();
+
+  const breakdown = qs.map((q,i)=>`
+    <div class="review-item">
+      <span class="ri-status">${state.answers[i]===q.ans?'✅':'❌'}</span>
+      <div style="flex:1">
+        <div class="ri-q">${q.q}</div>
+        <div class="ri-ans">Your answer: ${state.answers[i]===-1?'Not answered':q.opts[state.answers[i]]} • Correct: ${q.opts[q.ans]}</div>
+        <div class="ri-ans" style="color:var(--accent2);margin-top:3px">${q.exp}</div>
+      </div>
+    </div>`).join('');
+
+  document.getElementById(cid).innerHTML = `
+    <div style="display:flex;flex-direction:column;align-items:center;gap:24px;padding:50px 24px;text-align:center">
+      <div class="score-circle"><div class="score-num">${correct}/${qs.length}</div><div class="score-label">${pct}%</div></div>
+      <div style="font-size:1.6rem;font-weight:900">${emoji} ${pct===100?'Perfect Score!':pct>=60?'Great job!':'Keep practising!'}</div>
+      <div class="score-breakdown">${breakdown}</div>
+      <button class="tc-btn" style="--grad:linear-gradient(135deg,var(--accent1),#9d50ff)" onclick="retakeQuiz('${cid}','${topic}',${inline})">🔄 Retake Quiz</button>
+    </div>`;
+}
+
+function retakeQuiz(cid, topic, inline) {
+  quizState[topic] = null;
+  renderQuiz(cid, topic, inline);
+}
+
+/* ══════════════════════════════════════════════════════
+   SPARKLES
+══════════════════════════════════════════════════════ */
+function launchSparkles() {
+  const overlay = document.getElementById('sparkle-overlay');
+  overlay.style.display = 'block';
+  overlay.innerHTML = '';
+  const colors = ['#6c63ff','#43e97b','#f7971e','#f953c6','#38f9d7','#fff'];
+  for(let i=0;i<60;i++){
+    const d = document.createElement('div');
+    d.className='spark-dot';
+    d.style.left = Math.random()*100+'vw';
+    d.style.top = Math.random()*10+'vh';
+    d.style.background = colors[Math.floor(Math.random()*colors.length)];
+    d.style.animationDelay = (Math.random()*1.2)+'s';
+    d.style.animationDuration = (1.2+Math.random())+'s';
+    overlay.appendChild(d);
+  }
+  setTimeout(()=>{ overlay.style.display='none'; overlay.innerHTML=''; }, 3000);
+}
+
+/* ══════════════════════════════════════════════════════
+   UTILS
+══════════════════════════════════════════════════════ */
+function escHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ── Init ── */
+document.addEventListener('DOMContentLoaded', () => {
+  drawVenn();
+  setupEditor('sim-editor', 'sim-line-nums');
+  setupEditor('oop-editor', 'oop-line-nums');
+  syncSetsEditorFromInputs();
+  initOOPSim();
+  const sa = document.getElementById('sim-set-a');
+  const sb = document.getElementById('sim-set-b');
+  if (sa) sa.addEventListener('input', syncSetsEditorFromInputs);
+  if (sb) sb.addEventListener('input', syncSetsEditorFromInputs);
+  /* Flip cards click toggle */
+  document.querySelectorAll('.flip-card').forEach(c=>{
+    c.addEventListener('click',()=>c.classList.toggle('flipped'));
+  });
+});
+</script>
+</body>
+</html>

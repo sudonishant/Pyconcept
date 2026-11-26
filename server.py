@@ -1,0 +1,132 @@
+#!/usr/bin/env python3
+"""Local HTTP server for Topic 25 Studio with non-blocking Python pyttsx3 TTS API."""
+
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
+from urllib.parse import parse_qs, urlparse
+import json
+import os
+import subprocess
+import sys
+import tempfile
+import threading
+
+ROOT = Path(__file__).resolve().parent
+TTS_LOCK = threading.Lock()
+TTS_CACHE: dict[tuple[str, str], bytes] = {}
+
+VOICE_MAP = {
+    "en-us": "gmw/en-us",
+    "en-gb": "gmw/en-gb-x-rp",
+    "hi": "inc/hi",
+}
+
+SYNTH_SNIPPET = r"""
+import sys, pyttsx3
+text, voice_id, out_path = sys.argv[1], sys.argv[2], sys.argv[3]
+e = pyttsx3.init()
+e.setProperty("rate", 168)
+for v in e.getProperty("voices"):
+    if v.id == voice_id:
+        e.setProperty("voice", v.id)
+        break
+e.save_to_file(text, out_path)
+e.runAndWait()
+"""
+
+
+def synthesize_wav(text: str, voice_key: str = "en-us") -> bytes:
+    """Synthesize speech audio as WAV bytes in an isolated subprocess (never deadlocks)."""
+    clean = " ".join(text.strip().split())[:280]
+    if not clean:
+        return b""
+    cache_key = (voice_key, clean)
+    if cache_key in TTS_CACHE:
+        return TTS_CACHE[cache_key]
+
+    with TTS_LOCK:
+        if cache_key in TTS_CACHE:
+            return TTS_CACHE[cache_key]
+        target_id = VOICE_MAP.get(voice_key, "gmw/en-us")
+        fd, tmp_path = tempfile.mkstemp(suffix=".wav")
+        os.close(fd)
+        try:
+            subprocess.run(
+                [sys.executable, "-c", SYNTH_SNIPPET, clean, target_id, tmp_path],
+                check=True,
+                timeout=8,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+            data = Path(tmp_path).read_bytes()
+        finally:
+            try:
+                os.remove(tmp_path)
+            except OSError:
+                pass
+
+        if len(TTS_CACHE) > 80:
+            TTS_CACHE.clear()
+        TTS_CACHE[cache_key] = data
+        return data
+
+
+class StudioHandler(SimpleHTTPRequestHandler):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, directory=str(ROOT), **kwargs)
+
+    def end_headers(self):
+        self.send_header("Connection", "close")
+        super().end_headers()
+
+    def do_GET(self):
+        parsed = urlparse(self.path)
+        if parsed.path == "/api/health":
+            payload = json.dumps({
+                "ok": True,
+                "tts": "pyttsx3",
+                "voices": list(VOICE_MAP.keys()),
+            }).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(payload)))
+            self.end_headers()
+            self.wfile.write(payload)
+            return
+
+        if parsed.path == "/api/tts":
+            qs = parse_qs(parsed.query)
+            text = (qs.get("text") or [""])[0]
+            voice = (qs.get("voice") or ["en-us"])[0]
+            try:
+                wav = synthesize_wav(text, voice)
+                if not wav:
+                    self.send_error(400, "Missing text parameter")
+                    return
+                self.send_response(200)
+                self.send_header("Content-Type", "audio/wav")
+                self.send_header("Content-Length", str(len(wav)))
+                self.send_header("Cache-Control", "public, max-age=3600")
+                self.end_headers()
+                self.wfile.write(wav)
+            except Exception as exc:
+                msg = json.dumps({"error": str(exc)}).encode("utf-8")
+                self.send_response(500)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Content-Length", str(len(msg)))
+                self.end_headers()
+                self.wfile.write(msg)
+            return
+
+        super().do_GET()
+
+    def log_message(self, format, *args):
+        return
+
+
+if __name__ == "__main__":
+    host, port = "127.0.0.1", 8095
+    ThreadingHTTPServer.allow_reuse_address = True
+    server = ThreadingHTTPServer((host, port), StudioHandler)
+    print(f"Serving Topic 25 Studio + Python TTS on http://{host}:{port}/", flush=True)
+    server.serve_forever()
