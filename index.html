@@ -954,6 +954,74 @@ header .icon-btn{
 .code-line.hl{background:rgba(206,5,5,0.28) !important;border-left:4px solid #c7c911 !important;font-weight:700}
 .code-line.hl-out{background:rgba(21,128,61,0.28) !important;border-left:4px solid #34c759 !important}
 
+
+/* ═══ MOBILE PHONE OPTIMIZATION (<= 600px) ═══ */
+@media(max-width:600px){
+  /* Reclaim side padding on narrow screens */
+  .tp-section{padding:18px 12px !important}
+  #page-quiz > div{padding:18px 12px 12px !important}
+  .quiz-portal{padding:16px 12px !important;gap:14px}
+  .sets-sim-grid,.oop-sim-grid{padding:14px 12px !important;gap:16px}
+  .oop-lab-grid{gap:16px}
+  .glass,.blueprint-card,.intro-concept-card,.mb-case-body{padding:16px 14px !important}
+  #sc-stage{padding:16px 12px !important;min-height:auto !important}
+  .output-terminal{margin:12px 12px !important;padding:12px 14px !important;font-size:.8rem}
+  #sim-how-it-works-panel,#oop-how-it-works-panel{margin:12px 12px 16px !important;padding:14px 12px !important}
+  .vis-controls{padding:12px !important;gap:8px}
+  .vis-controls .vis-btn{flex:1 1 auto;min-height:42px;padding:8px 10px !important;font-size:.8rem}
+  .vis-controls .step-info{flex-basis:100%;text-align:center}
+  footer{padding:16px 12px 92px !important}
+
+  /* Custom Stamp Inputs: full-width Name row + 2 cols for Branch & Roll */
+  #oop-custom-stamp-inputs{grid-template-columns:1fr 1fr !important;gap:8px !important}
+  #oop-custom-stamp-inputs input:first-child{grid-column:1 / -1}
+
+  /* Prevent iOS Safari auto-zoom on form fields */
+  .sim-input,#ai-input,select,textarea:not(#sim-editor):not(#oop-editor){
+    font-size:16px !important;
+  }
+  #sim-editor,#oop-editor{
+    font-size:13px !important;
+    min-height:220px !important;
+    padding-left:40px !important;
+  }
+  #sim-line-nums,#oop-line-nums{width:32px !important;font-size:12px !important}
+
+  /* Touch-friendly 3D viewports & compact non-overlapping toolbar */
+  #sets-3d-canvas-wrap,#oop-3d-canvas-wrap{
+    height:300px !important;
+    touch-action:none !important;
+  }
+  #sets-3d-canvas-wrap > div:first-child,
+  #oop-3d-canvas-wrap > div:first-child{
+    padding:4px !important;gap:4px !important;
+  }
+  #sets-3d-canvas-wrap .vis-btn,
+  #oop-3d-canvas-wrap .vis-btn{
+    min-height:30px !important;padding:3px 8px !important;font-size:.68rem !important;
+  }
+
+  /* Thumb-friendly Quiz action buttons & palette */
+  .q-question-box{padding:18px 14px !important}
+  .q-action-bar .q-btn{flex:1 1 calc(50% - 6px);text-align:center;min-height:44px}
+  .palette-grid{grid-template-columns:repeat(auto-fill,minmax(38px,1fr)) !important;gap:6px}
+  .pal-btn{width:100% !important;height:38px !important}
+
+  /* Flip cards scale nicely inside narrow screens */
+  .flip-card{width:calc(50% - 8px) !important;min-width:142px;height:145px !important}
+  .obj-cards-row{gap:10px !important}
+
+  /* Full-width mobile bottom sheet for PyBot AI */
+  #ai-fab{
+    right:12px !important;bottom:max(12px,env(safe-area-inset-bottom)) !important;
+    padding:10px 14px !important;font-size:.82rem !important;
+  }
+  #ai-drawer{
+    left:10px !important;right:10px !important;width:auto !important;
+    bottom:66px !important;height:68vh !important;max-height:calc(100vh - 90px) !important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1142,7 +1210,7 @@ header .icon-btn{
           <div class="stage-3d-shell" id="sets-lab-3d-shell">
             <div class="stage-3d-inner" id="sets-lab-venn-stage"></div>
           </div>
-          <div id="sets-3d-canvas-wrap" style="display:none;height:360px;border-radius:14px;overflow:hidden;position:relative;background:radial-gradient(circle at 50% 30%,#111827,#050811);border:2px solid var(--ink);box-shadow:5px 5px 0 var(--ink);cursor:grab">
+          <div id="sets-3d-canvas-wrap" style="touch-action:none;display:none;height:360px;border-radius:14px;overflow:hidden;position:relative;background:radial-gradient(circle at 50% 30%,#111827,#050811);border:2px solid var(--ink);box-shadow:5px 5px 0 var(--ink);cursor:grab">
             <div style="position:absolute;top:10px;left:10px;right:10px;z-index:10;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;pointer-events:auto">
               <div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap">
                 <span id="sets-3d-op-badge" class="nomonkey-sticker" style="transform:none;font-size:.7rem;padding:4px 10px">Op: A ∪ B</span>
@@ -1493,7 +1561,7 @@ CSE
           <div class="oop-object-panel oop-3d-grid" id="oop-obj-panel">
             <div style="font-size:.85rem;color:var(--txt2);text-align:center;margin:auto;padding:16px">No objects yet — write code and run it!</div>
           </div>
-          <div id="oop-3d-canvas-wrap" style="display:none;height:380px;border-radius:18px;overflow:hidden;position:relative;background:radial-gradient(circle at 50% 30%,#111827,#060911);border:1.5px solid rgba(255,255,255,.2);cursor:grab">
+          <div id="oop-3d-canvas-wrap" style="touch-action:none;display:none;height:380px;border-radius:18px;overflow:hidden;position:relative;background:radial-gradient(circle at 50% 30%,#111827,#060911);border:1.5px solid rgba(255,255,255,.2);cursor:grab">
             <div style="position:absolute;top:10px;left:10px;right:10px;z-index:10;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;pointer-events:auto">
               <div style="display:flex;gap:6px">
                 <button class="vis-btn primary" style="padding:4px 12px;font-size:.72rem" onclick="trigger3DStamp()">⚡ Stamp 3D Press</button>
@@ -1856,7 +1924,7 @@ function renderSetConcept() {
         <button class="op-btn${wd?' active':''}" onclick="scState.wellDefined=true;renderSetConcept()">✅ Well-Defined: Cricket Lovers</button>
         <button class="op-btn${!wd?' active':''}" onclick="scState.wellDefined=false;renderSetConcept()">❌ Unclear: "Intelligent Students"</button>
       </div>
-      <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:20px;align-items:center">
+      <div class="responsive-2col">
         <svg viewBox="0 0 380 210" style="width:100%;max-height:220px">
           <rect x="10" y="10" width="360" height="190" rx="18" fill="rgba(59,130,246,0.08)" stroke="${wd?'#3b82f6':'#f953c6'}" stroke-width="2" stroke-dasharray="${wd?'none':'6,4'}"/>
           <text x="190" y="36" text-anchor="middle" font-weight="800" font-size="13" fill="${wd?'#2563eb':'#db2777'}">${wd ? 'A = {Students who like Cricket}' : 'Unclear: "Intelligent students in class"'}</text>
@@ -1883,7 +1951,7 @@ function renderSetConcept() {
   } else if (curSetConcept === 1) {
     const ran = scState.filterRun;
     body = `
-      <div style="display:grid;grid-template-columns:1fr 1.2fr;gap:20px;align-items:center">
+      <div class="responsive-2col">
         <div class="glass-sm" style="padding:20px">
           <div style="font-size:.75rem;font-weight:800;color:#2563eb;text-transform:uppercase;margin-bottom:8px">A. Roster / Tabular Form</div>
           <div style="font-family:monospace;font-size:1.1rem;font-weight:800;margin-bottom:12px">A = {2, 4, 6, 8}</div>
@@ -1916,7 +1984,7 @@ function renderSetConcept() {
         <span style="font-size:.82rem;font-weight:700;padding-top:6px">Pick a student:</span>
         ${all.map(s => `<button class="op-btn${sel===s?' active':''}" style="padding:6px 14px;font-size:.82rem" onclick="scState.selectedMember='${s}';renderSetConcept()">${s}</button>`).join('')}
       </div>
-      <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:20px;align-items:center">
+      <div class="responsive-2col">
         <svg viewBox="0 0 380 200" style="width:100%;max-height:210px">
           <rect x="8" y="8" width="364" height="184" rx="16" fill="rgba(148,163,184,0.12)" stroke="#94a3b8" stroke-width="1.5"/>
           <circle cx="155" cy="104" r="76" fill="rgba(59,130,246,0.2)" stroke="#3b82f6" stroke-width="2.5"/>
@@ -1967,7 +2035,7 @@ function renderSetConcept() {
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
         ${types.map(x => `<button class="op-btn${t===x.id?' active':''}" style="padding:6px 14px;font-size:.8rem" onclick="scState.setType='${x.id}';renderSetConcept()">${x.label}</button>`).join('')}
       </div>
-      <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:20px;align-items:center">
+      <div class="responsive-2col">
         <svg viewBox="0 0 360 ${t==='equal'?115:185}" style="width:100%;max-height:200px">${svg}</svg>
         <div class="glass-sm" style="padding:18px">
           <div style="font-weight:800;font-size:1.05rem;color:var(--accent1)">${cur.label}</div>
@@ -1982,7 +2050,7 @@ function renderSetConcept() {
         <button class="op-btn${!eq?' active':''}" onclick="scState.subsetEqual=false;renderSetConcept()">A ⊂ B (Proper Subset: A ≠ B)</button>
         <button class="op-btn${eq?' active':''}" onclick="scState.subsetEqual=true;renderSetConcept()">A = B (⊆ True, ⊂ False)</button>
       </div>
-      <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:20px;align-items:center">
+      <div class="responsive-2col">
         <svg viewBox="0 0 360 200" style="width:100%;max-height:210px">
           <circle cx="180" cy="100" r="85" fill="rgba(249,115,22,0.16)" stroke="#f97316" stroke-width="2.5"/>
           <text x="180" y="34" text-anchor="middle" font-weight="800" font-size="13" fill="#ea580c">B = ${eq?'{1, 2}':'{1, 2, 3}'}</text>
@@ -1998,7 +2066,7 @@ function renderSetConcept() {
       </div>`;
   } else if (curSetConcept === 5) {
     body = `
-      <div style="display:grid;grid-template-columns:1.3fr 1fr;gap:20px;align-items:center">
+      <div class="responsive-2col">
         <svg viewBox="0 0 380 210" style="width:100%;max-height:220px">
           <rect x="10" y="10" width="360" height="190" rx="16" fill="rgba(148,163,184,0.22)" stroke="#64748b" stroke-width="2.5"/>
           <text x="26" y="34" font-weight="800" font-size="13" fill="var(--txt)">U = All students in the class</text>
@@ -2050,7 +2118,7 @@ function renderSetConcept() {
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
         ${ops.map(x => `<button class="op-btn${op===x.id?' active':''}" style="padding:6px 14px;font-size:.82rem" onclick="scState.vennOp='${x.id}';renderSetConcept()">${x.label}</button>`).join('')}
       </div>
-      <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:20px;align-items:center">
+      <div class="responsive-2col">
         <svg viewBox="0 0 380 215" style="width:100%;max-height:220px">
           <defs><clipPath id="sc-clip-a"><circle cx="145" cy="110" r="70"/></clipPath></defs>
           <rect x="8" y="8" width="364" height="198" rx="16" fill="${uBg}" stroke="#64748b" stroke-width="2"/>
@@ -2111,7 +2179,7 @@ function renderSetConcept() {
     const aOnly = scState.cardAOnly, inter = scState.cardInter, bOnly = scState.cardBOnly;
     const nA = aOnly + inter, nB = bOnly + inter, union = nA + nB - inter;
     body = `
-      <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:20px;align-items:center">
+      <div class="responsive-2col">
         <svg viewBox="0 0 360 190" style="width:100%;max-height:200px">
           <defs><clipPath id="cc-a"><circle cx="135" cy="95" r="70"/></clipPath></defs>
           <circle cx="135" cy="95" r="70" fill="rgba(59,130,246,0.22)" stroke="#3b82f6" stroke-width="2.5"/>
